@@ -361,7 +361,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkM
       <div class="ast"><div id="stPend" class="ast-n cy">0</div><div class="ast-l">Pendentes</div></div>
       <div class="ast"><div id="stAtiv" class="ast-n cg">0</div><div class="ast-l">Ativos</div></div>
     </div>
-    <div style="font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos cadastrados</div>
+    <div id="adminFinSum"></div><div style="font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos cadastrados</div>
     <div id="listaAlunos"><div class="admin-empty">Carregando...</div></div>
   </div>
 </div>
@@ -840,6 +840,8 @@ async function fazerLogout() {
 }
 
 // ── ADMIN ──────────────────────────────────────────────────────
+function fRa(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
 function loadAdmin() {
   db.ref('users').on('value', snap => {
     const data = snap.val() || {};
@@ -851,29 +853,116 @@ function loadAdmin() {
     document.getElementById('stAtiv').textContent = atv;
     const el = document.getElementById('listaAlunos');
     if(!lista.length){el.innerHTML='<div class="admin-empty">Nenhum aluno cadastrado ainda</div>';return;}
-    // ordena: pendentes primeiro
     lista.sort((a,b)=>a.status==='pendente'?-1:1);
-    el.innerHTML = lista.map(u => {
-      const spClass = u.status==='pendente'?'sp-pend':u.status==='ativo'?'sp-ativ':'sp-bloc';
-      const spLabel = u.status==='pendente'?'Pendente':u.status==='ativo'?'Ativo':'Bloqueado';
-      const dt = u.criadoEm ? new Date(u.criadoEm).toLocaleDateString('pt-BR') : '—';
-      return `<div class="aluno-card">
-        <div class="aluno-top">
-          <div><div class="aluno-nome">${u.nome||'—'}</div><div class="aluno-email">${u.email||'—'}</div></div>
-          <span class="status-pill ${spClass}">${spLabel}</span>
+
+    // carrega estado de cada aluno para mostrar dados financeiros
+    let cards = [];
+    let pending = lista.length;
+    lista.forEach(u => {
+      db.ref('users/'+u.uid+'/state').once('value').then(stSnap => {
+        const st = stSnap.val();
+        u._state = st;
+        pending--;
+        if(pending===0) renderAdminCards(lista);
+      });
+    });
+  });
+}
+
+function renderAdminCards(lista) {
+  const el = document.getElementById('listaAlunos');
+
+  // totais financeiros
+  let totalLucro=0, totalDevido=0;
+  lista.filter(u=>u.status==='ativo').forEach(u=>{
+    const st=u._state;
+    if(!st) return;
+    const lucro=st.totalSacado||0;
+    totalLucro+=lucro;
+    totalDevido+=lucro*0.10;
+  });
+
+  // summary financeiro no topo
+  const sumEl = document.getElementById('adminFinSum');
+  if(sumEl){
+    sumEl.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Total sacado pelos alunos</div>
+          <div style="font-size:18px;font-weight:700;color:#00a85a">${fRa(totalLucro)}</div>
         </div>
-        <div class="aluno-info">
-          <span class="aluno-tag">📅 ${dt}</span>
-          ${u.genero?`<span class="aluno-tag">${u.genero}</span>`:''}
-        </div>
-        <div class="aluno-btns">
-          ${u.status!=='ativo'?`<button class="abtn abtn-apr" onclick="setStatus('${u.uid}','ativo')">✓ Aprovar</button>`:''}
-          ${u.status!=='bloqueado'?`<button class="abtn abtn-blk" onclick="setStatus('${u.uid}','bloqueado')">✕ Bloquear</button>`:''}
-          ${u.status==='bloqueado'?`<button class="abtn abtn-apr" onclick="setStatus('${u.uid}','ativo')">↩ Reativar</button>`:''}
+        <div style="background:#fff3e0;border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Total a receber (10%)</div>
+          <div style="font-size:18px;font-weight:700;color:#e65100">${fRa(totalDevido)}</div>
         </div>
       </div>`;
-    }).join('');
-  });
+  }
+
+  el.innerHTML = lista.map(u => {
+    const spClass = u.status==='pendente'?'sp-pend':u.status==='ativo'?'sp-ativ':'sp-bloc';
+    const spLabel = u.status==='pendente'?'Pendente':u.status==='ativo'?'Ativo':'Bloqueado';
+    const dt = u.criadoEm ? new Date(u.criadoEm).toLocaleDateString('pt-BR') : '—';
+    const st = u._state;
+
+    // dados financeiros
+    let finHtml = '';
+    if(st && u.status==='ativo'){
+      const banca = st.banca||0;
+      const bancaBase = st.bancaBase||0;
+      const totalSacado = st.totalSacado||0;
+      const lucroHoje = banca - bancaBase;
+      const pctHoje = bancaBase>0?((banca-bancaBase)/bancaBase*100):0;
+      const devido = totalSacado * 0.10;
+      const corPct = pctHoje>=0?'#00a85a':'#e53935';
+      finHtml = `
+        <div style="background:#f0f2f5;border-radius:7px;padding:9px 11px;margin-bottom:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+            <div style="text-align:center">
+              <div style="font-size:8px;color:#8090b0;margin-bottom:2px">BANCA ATUAL</div>
+              <div style="font-size:13px;font-weight:700;color:#1a2540">${fRa(banca)}</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:8px;color:#8090b0;margin-bottom:2px">HOJE</div>
+              <div style="font-size:13px;font-weight:700;color:${corPct}">${pctHoje>=0?'+':''}${pctHoje.toFixed(1)}%</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:8px;color:#8090b0;margin-bottom:2px">WINS</div>
+              <div style="font-size:13px;font-weight:700;color:#00a85a">${st.wins||0}</div>
+            </div>
+          </div>
+          <div style="border-top:1px solid #d0d8e4;padding-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="text-align:center">
+              <div style="font-size:8px;color:#8090b0;margin-bottom:2px">TOTAL SACADO</div>
+              <div style="font-size:12px;font-weight:700;color:#1565c0">${fRa(totalSacado)}</div>
+            </div>
+            <div style="text-align:center;background:#fff3e0;border-radius:5px;padding:3px">
+              <div style="font-size:8px;color:#8090b0;margin-bottom:2px">A RECEBER (10%)</div>
+              <div style="font-size:13px;font-weight:800;color:#e65100">${fRa(devido)}</div>
+            </div>
+          </div>
+        </div>`;
+    } else if(u.status==='ativo' && !st){
+      finHtml = `<div style="font-size:10px;color:#8090b0;padding:6px 0 8px">Sem operações registradas ainda</div>`;
+    }
+
+    return `<div class="aluno-card">
+      <div class="aluno-top">
+        <div><div class="aluno-nome">${u.nome||'—'}</div><div class="aluno-email">${u.email||'—'}</div></div>
+        <span class="status-pill ${spClass}">${spLabel}</span>
+      </div>
+      <div class="aluno-info">
+        <span class="aluno-tag">📅 ${dt}</span>
+        ${u.genero?`<span class="aluno-tag">${u.genero}</span>`:''}
+        ${st?`<span class="aluno-tag">Perfil: ${st.perfil||'mod'}</span>`:''}
+      </div>
+      ${finHtml}
+      <div class="aluno-btns">
+        ${u.status!=='ativo'?`<button class="abtn abtn-apr" onclick="setStatus('${u.uid}','ativo')">✓ Aprovar</button>`:''}
+        ${u.status!=='bloqueado'?`<button class="abtn abtn-blk" onclick="setStatus('${u.uid}','bloqueado')">✕ Bloquear</button>`:''}
+        ${u.status==='bloqueado'?`<button class="abtn abtn-apr" onclick="setStatus('${u.uid}','ativo')">↩ Reativar</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function setStatus(uid, status) {
