@@ -608,12 +608,14 @@ auth.onAuthStateChanged(function(user){
     }
     if(ud.status==="ativo"){
       uRef=db.ref("users/"+user.uid);
+      if(_stateLoaded) return; // prevent re-loading on auth token refresh
       uRef.child("state").once("value").then(function(ss){
         S=ss.val()||defS();
         if(!S.dataAtual) S.dataAtual=new Date().toDateString();
         if(!S.dataOperando) S.dataOperando=new Date().toDateString();
         if(S.stopWin===undefined) S.stopWin=10;
         if(S.stopLoss===undefined) S.stopLoss=33;
+        _stateLoaded=true;
         show("sApp");
         g("uInfo").textContent=(ud.nome||"")+" · "+(ud.genero||"");
         checkDia();
@@ -670,7 +672,7 @@ async function checkStatus(){
   if(s.val()==="ativo") location.reload();
   else toast("Ainda aguardando aprovação...");
 }
-async function doLogout(){ await auth.signOut(); S=null; uRef=null; CU=null; show("sLogin"); }
+async function doLogout(){ await auth.signOut(); S=null; uRef=null; CU=null; _stateLoaded=false; show("sLogin"); }
 
 // ADMIN
 function loadAdmin(){
