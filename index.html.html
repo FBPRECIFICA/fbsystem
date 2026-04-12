@@ -634,6 +634,29 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkM
 
 <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>Criação e Programação <strong>Fábio Marques</strong> · FB Sistemas v4.0</div>
 </div><!-- .app -->
+
+<!-- POP-UP BANCA INICIAL -->
+<div id="popBanca" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:900;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="font-size:28px;text-align:center;margin-bottom:8px">💰</div>
+    <div style="font-size:16px;font-weight:700;color:#1a2540;text-align:center;margin-bottom:4px">Banca inicial do dia</div>
+    <div style="font-size:12px;color:#8090b0;text-align:center;margin-bottom:16px">Qual é o saldo atual na sua conta de apostas?</div>
+    <input id="popBancaInput" type="number" inputmode="decimal" placeholder="R$ 0,00" style="width:100%;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:12px;font-size:18px;font-weight:700;text-align:center;color:#1a2540;margin-bottom:12px">
+    <button onclick="confirmarBanca()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:800;cursor:pointer">Confirmar e começar</button>
+  </div>
+</div>
+
+<!-- POP-UP BANCA REAL (STOP) -->
+<div id="popBancaReal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:900;align-items:center;justify-content:center;padding:20px">
+  <input type="hidden" id="popBancaRealTipo" value="win">
+  <div style="background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div id="popBancaRealMsg" style="font-size:14px;font-weight:700;color:#1a2540;text-align:center;margin-bottom:12px;line-height:1.6"></div>
+    <div style="font-size:12px;color:#8090b0;text-align:center;margin-bottom:14px">Confirme o saldo real na sua conta de apostas para atualizar o sistema:</div>
+    <input id="popBancaRealInput" type="number" inputmode="decimal" placeholder="R$ 0,00" style="width:100%;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:12px;font-size:18px;font-weight:700;text-align:center;color:#1a2540;margin-bottom:12px">
+    <button onclick="confirmarBancaReal()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:800;cursor:pointer">Confirmar saldo</button>
+  </div>
+</div>
+
 </div><!-- screenApp -->
 
 <div id="toastEl" class="toast"></div>
@@ -1022,8 +1045,8 @@ function reg(tipo){
   S.operacoes.unshift({tipo:{W0:'WIN G0',W1:'WIN G1',W2:'WIN G2',L:'LOSS G2'}[tipo],cat:tipo==='L'?'L':'W',prev,after:S.banca,delta,ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
   if(S.operacoes.length>30) S.operacoes.pop();
   const pct=((S.banca-S.bancaBase)/S.bancaBase*100);
-  if(pct>=S.stopWin&&!S.travado){S.travado=true;S.tipoTrava='win';}
-  if(pct<=-S.stopLoss&&!S.travado){S.travado=true;S.tipoTrava='loss';}
+  if(pct>=S.stopWin&&!S.travado){S.travado=true;S.tipoTrava='win';setTimeout(()=>showPopBancaReal('win'),300);}
+  if(pct<=-S.stopLoss&&!S.travado){S.travado=true;S.tipoTrava='loss';setTimeout(()=>showPopBancaReal('loss'),300);}
   if(tipo==='L'){S.travado=true;S.tipoTrava='loss_emo';}
   if(S.banca>S.limite){
     const exc=S.banca-S.limite;
@@ -1043,8 +1066,8 @@ function desfazer(){
   sv();render();toast('Desfeito');
 }
 
-function confSaque(){document.getElementById('sqModal').classList.remove('show');toast('Saque registrado!');}
-function fechSaque(){document.getElementById('sqModal').classList.remove('show');}
+function confSaque(){gel('sqModal').classList.remove('show');toast('Saque registrado!');}
+function fechSaque(){gel('sqModal').classList.remove('show');}
 
 function salvarDia(){
   const txt=document.getElementById('diaInput').value.trim();
@@ -1056,15 +1079,15 @@ function salvarDia(){
 }
 
 function salvarCfg(){
-  S.stopWin=parseFloat(document.getElementById('cfgSW').value)||10;
-  S.stopLoss=parseFloat(document.getElementById('cfgSL').value)||33;
-  S.limite=parseFloat(document.getElementById('cfgL').value)||10000;
-  S.odd=parseFloat(document.getElementById('cfgOd').value)||1.44;
+  S.stopWin=parseFloat(gel('cfgSW').value)||10;
+  S.stopLoss=parseFloat(gel('cfgSL').value)||33;
+  S.limite=parseFloat(gel('cfgL').value)||10000;
+  S.odd=parseFloat(gel('cfgOd').value)||1.44;
   sv();render();toast('Configurações salvas! Histórico preservado.');
 }
 
 function reiniciarBanca(){
-  const nb=parseFloat(document.getElementById('cfgB').value)||1000;
+  const nb=parseFloat(gel('cfgB').value)||1000;
   if(!confirm('Reiniciar banca com R$'+nb.toLocaleString('pt-BR')+'?\nHistórico preservado.')) return;
   if(S.ops>0){
     const res=((S.banca-S.bancaBase)/S.bancaBase*100);
@@ -1181,7 +1204,7 @@ function renderCal(){
     if(h){cls+=' has-op';if(h.metaBatida)cls+=' meta-d';if(h.losses>0)cls+=' loss-d';}
     html+=`<div class="${cls}" onclick="calClick('${key}')">${d}</div>`;
   }
-  document.getElementById('calGrid').innerHTML=html;
+  gel('calGrid').innerHTML=html;
   renderCalDet();
 }
 
@@ -1239,6 +1262,67 @@ function usarDia(){
 
 // ── RENDER ─────────────────────────────────────────────────────
 let _dCI=null;
+function gel(id){return document.getElementById(id);}
+function setTxt(id,val){const e=gel(id);if(e)e.textContent=val;}
+function setHTML(id,val){const e=gel(id);if(e)e.innerHTML=val;}
+function setClass(id,val){const e=gel(id);if(e)e.className=val;}
+
+// POP-UP BANCA INICIAL
+function checkBancaInicial(){
+  if(!S) return;
+  const hoje = new Date().toDateString();
+  if(S.ops===0 && !S._bancaConfirmada && S.dataOperando===hoje){
+    setTimeout(()=>showPopBanca(),400);
+  }
+}
+
+function showPopBanca(){
+  const pop = gel('popBanca');
+  if(pop){
+    gel('popBancaInput').value = S.bancaBase||'';
+    pop.style.display='flex';
+  }
+}
+
+function confirmarBanca(){
+  const val = parseFloat(gel('popBancaInput').value);
+  if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}
+  S.bancaBase = val;
+  S.banca = val;
+  S.dayChart = [val];
+  S._bancaConfirmada = true;
+  gel('popBanca').style.display='none';
+  sv();render();toast('Banca inicial definida: R$'+val.toLocaleString('pt-BR'));
+}
+
+// POP-UP BANCA REAL AO BATER STOP
+function showPopBancaReal(tipo){
+  const pop = gel('popBancaReal');
+  if(pop){
+    const pct = ((S.banca-S.bancaBase)/S.bancaBase*100);
+    const msg = tipo==='win'
+      ? `🎯 Você ganhou ${pct.toFixed(2)}% hoje! Mantenha sempre a gestão indicada pelo Fábio.\n\nQual é o saldo atual na sua conta de apostas?`
+      : `🛑 Stop Loss atingido. Qual é o saldo atual na sua conta de apostas?`;
+    gel('popBancaRealMsg').textContent = tipo==='win'
+      ? `🎯 Você ganhou ${pct.toFixed(2)}% hoje! Mantenha a gestão do Fábio.`
+      : `🛑 Stop Loss atingido.`;
+    gel('popBancaRealInput').value = S.banca.toFixed(2);
+    gel('popBancaRealTipo').value = tipo;
+    pop.style.display='flex';
+  }
+}
+
+function confirmarBancaReal(){
+  const val = parseFloat(gel('popBancaRealInput').value);
+  const tipo = gel('popBancaRealTipo').value;
+  if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}
+  S.banca = val;
+  S.dayChart.push(val);
+  gel('popBancaReal').style.display='none';
+  sv();render();
+  toast('Banca atualizada: R$'+val.toLocaleString('pt-BR'));
+}
+
 function render(){
   if(!S) return;
   checkDia();
@@ -1248,49 +1332,46 @@ function render(){
   const dOp=new Date(S.dataOperando);
   const isHoje=S.dataOperando===new Date().toDateString();
   const dStr=isHoje?'Hoje · '+dOp.toLocaleDateString('pt-BR'):dOp.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  document.getElementById('dbTxt').textContent=dStr;
-  document.getElementById('dbExec').textContent=dStr;
+  setTxt('dbTxt',dStr);
+  setTxt('dbExec',dStr);
 
-  ['cons','mod','agr'].forEach(p=>{document.getElementById('pc-'+p).className='pc'+(S.perfil===p?' sel-'+p:'');});
-  document.getElementById('pBadge').textContent=Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%';
-  document.getElementById('ePerfil').textContent=Pf.n;
+  ['cons','mod','agr'].forEach(p=>{const e=gel('pc-'+p);if(e)e.className='pc'+(S.perfil===p?' sel-'+p:'');});
+  setTxt('pBadge',Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%';
+  setTxt('ePerfil',Pf.n);
 
-  ['sl0p','el0p'].forEach(id=>document.getElementById(id).textContent='G0 · '+(Pf.g0*100)+'%');
-  ['sl1p','el1p'].forEach(id=>document.getElementById(id).textContent='G1 · '+(Pf.g1*100)+'%');
-  ['sl2p','el2p'].forEach(id=>document.getElementById(id).textContent='G2 · '+(Pf.g2*100)+'%');
-  document.getElementById('sl0l').textContent='+'+Math.round(Pf.w*100)+'%';
-  document.getElementById('sl2l').textContent='win≈-'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
-  document.getElementById('bs0').textContent='+'+Math.round(Pf.w*100)+'% na banca';
-  document.getElementById('bs2').textContent='≈ -'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
-  document.getElementById('bsl').textContent='≈ -'+(Pf.g2*100).toFixed(0)+'% da stake';
-  document.getElementById('dOdd').textContent=S.odd.toFixed(2);
+  ['sl0p','el0p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G0 · '+(Pf.g0*100)+'%';});
+  ['sl1p','el1p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G1 · '+(Pf.g1*100)+'%';});
+  ['sl2p','el2p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G2 · '+(Pf.g2*100)+'%';});
+  setTxt('sl0l','+'+Math.round(Pf.w*100)+'%';
+  setTxt('sl2l','win≈-'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
+  setTxt('bs0','+'+Math.round(Pf.w*100)+'% na banca';
+  setTxt('bs2','≈ -'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
+  setTxt('bsl','≈ -'+(Pf.g2*100).toFixed(0)+'% da stake';
+  setTxt('dOdd',S.odd.toFixed(2));
 
   const s0=fD(b*Pf.g0),s1=fD(b*Pf.g1),s2=fD(b*Pf.g2);
   ['sl0','el0'].forEach(id=>document.getElementById(id).textContent=s0);
   ['sl1','el1'].forEach(id=>document.getElementById(id).textContent=s1);
   ['sl2','el2'].forEach(id=>document.getElementById(id).textContent=s2);
 
-  const bEl=document.getElementById('dBanca');
-  bEl.textContent=fR(b);bEl.className='mv '+(lucro>=0?'cg':'cr');
-  document.getElementById('dBSub').textContent='Base: '+fR(base);
-  const lEl=document.getElementById('dLucro');
-  lEl.textContent=(lucro>=0?'+':'-')+fR(lucro);lEl.className='mv '+(lucro>=0?'cg':'cr');
-  document.getElementById('dLPct').textContent=fP(pct);
-  document.getElementById('dGreens').textContent=S.greensSeq;
-  document.getElementById('dWins').textContent=S.wins;
-  document.getElementById('dLosses').textContent=S.losses;
+  const bEl=gel('dBanca');if(bEl){bEl.textContent=fR(b);bEl.className='mv '+(lucro>=0?'cg':'cr');}
+  gel('dBSub').textContent='Base: '+fR(base);
+  const lEl=gel('dLucro');if(lEl){lEl.textContent=(lucro>=0?'+':'-')+fR(lucro);lEl.className='mv '+(lucro>=0?'cg':'cr');}
+  gel('dLPct').textContent=fP(pct);
+  gel('dGreens').textContent=S.greensSeq;
+  gel('dWins').textContent=S.wins;
+  gel('dLosses').textContent=S.losses;
   const mw=Math.ceil(S.stopWin/Math.round(Pf.w*100));
-  document.getElementById('dFaltam').textContent=pct>=S.stopWin?'Meta!':Math.max(0,mw-S.wins);
-  document.getElementById('metaLbl').textContent='Meta +'+S.stopWin+'%';
+  gel('dFaltam').textContent=pct>=S.stopWin?'Meta!':Math.max(0,mw-S.wins);
+  gel('metaLbl').textContent='Meta +'+S.stopWin+'%';
   const pN=Math.min(1,Math.max(0,(pct+S.stopLoss)/(S.stopWin+S.stopLoss)));
-  const pf=document.getElementById('dProg');
-  pf.style.width=(pN*100)+'%';pf.style.background=pct>=0?'var(--green)':'var(--red)';
-  document.getElementById('dProgPct').textContent=fP(pct);
+  const pf=gel('dProg');if(pf){pf.style.width=(pN*100)+'%';pf.style.background=pct>=0?'var(--green)':'var(--red)';}
+  gel('dProgPct').textContent=fP(pct);
 
-  const sp=document.getElementById('sPill');
-  const alD=document.getElementById('alD'),alE=document.getElementById('alE');
-  const emD=document.getElementById('emoD'),emE=document.getElementById('emoE');
-  ['bW0','bW1','bW2','bL'].forEach(id=>document.getElementById(id).disabled=S.travado);
+  const sp=gel('sPill');
+  const alD=gel('alD'),alE=gel('alE');
+  const emD=gel('emoD'),emE=gel('emoE');
+  ['bW0','bW1','bW2','bL'].forEach(id=>{const el=gel(id);if(el)el.disabled=S.travado;});
 
   if(S.tipoTrava==='win'){
     sp.textContent='◆ STOP WIN';sp.className='spill ssw';
@@ -1308,13 +1389,13 @@ function render(){
     emD.classList.remove('show');emE.classList.remove('show');
   }
 
-  const sqM=document.getElementById('sqModal');
+  const sqM=gel('sqModal');
   if(S.saques.length&&!sqM.dataset.shown&&S.tipoTrava!=='loss_emo'){
-    document.getElementById('sqVal').textContent=fD(S.saques[0].valor);
+    gel('sqVal').textContent=fD(S.saques[0].valor);
     sqM.classList.add('show');sqM.dataset.shown='1';
   }
 
-  document.getElementById('recentOps').innerHTML=S.operacoes.length?S.operacoes.slice(0,8).map(op=>`
+  setHTML('recentOps', S.operacoes.length?S.operacoes.slice(0,8).map(op=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px">
       <div style="display:flex;align-items:center;gap:7px">
         <span class="bdg ${op.cat==='W'?'bw':'blb'}">${op.cat==='W'?'WIN':'LOSS'}</span>
@@ -1326,14 +1407,14 @@ function render(){
       </div>
     </div>`).join(''):'<div class="empty">Nenhuma operação</div>';
 
-  document.getElementById('diaEntries').innerHTML=S.diario.slice(0,5).map(d=>`
+  gel('diaEntries').innerHTML=S.diario.slice(0,5).map(d=>`
     <div style="padding:8px 12px;border-top:1px solid var(--border)">
       <div style="color:var(--txt2);font-size:11px">${d.texto}</div>
       <div style="font-size:9px;color:var(--txt3);margin-top:2px">${d.ts}</div>
     </div>`).join('');
 
-  const evoEl=document.getElementById('evoLista');
-  document.getElementById('totalDias').textContent=S.histDiario.length+' dias';
+  const evoEl=gel('evoLista');
+  gel('totalDias').textContent=S.histDiario.length+' dias';
   if(S.histDiario.length){
     const maxPct=Math.max(...S.histDiario.map(d=>Math.abs(d.resultado)));
     evoEl.innerHTML=S.histDiario.slice(0,30).map(d=>{
@@ -1345,15 +1426,15 @@ function render(){
     }).join('');
   } else {evoEl.innerHTML='<div class="empty">Sem histórico</div>';}
 
-  document.getElementById('histBody').innerHTML=S.histDiario.length?S.histDiario.slice(0,30).map(d=>`
+  gel('histBody').innerHTML=S.histDiario.length?S.histDiario.slice(0,30).map(d=>`
     <tr><td>${d.data}</td><td>R$${d.bancaInicial.toFixed(0)}</td>
     <td style="color:${d.bancaFinal>=d.bancaInicial?'var(--green)':'var(--red)'};font-weight:600">R$${d.bancaFinal.toFixed(0)}</td>
     <td style="color:${d.resultado>=0?'var(--green)':'var(--red)'};font-weight:600">${fP(d.resultado)}</td>
     <td>${d.wins}W/${d.losses}L</td>
     <td><span class="bdg ${d.metaBatida?'bw':'blb'}">${d.metaBatida?'SIM':'NÃO'}</span></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Sem histórico</td></tr>';
 
-  document.getElementById('totalSq').textContent='Total: '+fR(S.totalSacado);
-  document.getElementById('saqLista').innerHTML=S.saques.length?S.saques.map((s,i)=>`
+  gel('totalSq').textContent='Total: '+fR(S.totalSacado);
+  gel('saqLista').innerHTML=S.saques.length?S.saques.map((s,i)=>`
     <div class="sqit"><div><div style="color:var(--green);font-weight:700;font-size:13px">+${fR(s.valor)}</div><div style="font-size:9px;color:var(--txt3)">${s.data} ${s.ts||''}</div></div><span class="tag-g">Saque #${S.saques.length-i}</span></div>`).join(''):'<div class="empty">Nenhum saque</div>';
 
   if(S.histDiario.length){
@@ -1363,7 +1444,7 @@ function render(){
     const res=bi>0?((bf2-bi)/bi*100):0;
     const mt=sem.filter(d=>d.metaBatida).length;
     const msg=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss':tl+' losses esta semana';
-    document.getElementById('resumoSem').innerHTML=`<div style="background:#e6f7ef;border:1px solid var(--gbd);border-radius:8px;padding:12px;margin:10px">
+    gel('resumoSem').innerHTML=`<div style="background:#e6f7ef;border:1px solid var(--gbd);border-radius:8px;padding:12px;margin:10px">
       <div style="font-size:9px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Últimos ${sem.length} dias</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px">
         <div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid var(--border)"><div style="font-size:15px;font-weight:700;color:var(--green)">${tw}</div><div style="font-size:8px;color:var(--txt3)">Wins</div></div>
@@ -1374,20 +1455,20 @@ function render(){
     </div>`;
   }
 
-  document.getElementById('cfgSW').value=S.stopWin;
-  document.getElementById('cfgSL').value=S.stopLoss;
-  document.getElementById('cfgL').value=S.limite;
-  document.getElementById('cfgOd').value=S.odd;
-  document.getElementById('cfgB').value=S.bancaBase;
+  gel('cfgSW').value=S.stopWin;
+  gel('cfgSL').value=S.stopLoss;
+  gel('cfgL').value=S.limite;
+  gel('cfgOd').value=S.odd;
+  gel('cfgB').value=S.bancaBase;
 
   const data=S.dayChart.length?S.dayChart:[S.bancaBase];
   const labels=data.map((_,i)=>i===0?'Início':'Op '+i);
   const cor2=S.banca>=S.bancaBase?'#00a85a':'#e53935';
   if(_dCI) _dCI.destroy();
-  const ctx=document.getElementById('dayC');
+  const ctx=gel('dayC');
   if(ctx) _dCI=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:cor2,backgroundColor:cor2+'18',borderWidth:2,pointRadius:2,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:v=>'R$'+v.toFixed(0)},grid:{color:'#e8ebf0'}}}}});
 
-  if(document.getElementById('calGrid').innerHTML) renderCal();
+  if(gel('calGrid').innerHTML) renderCal();
 }
 
 function goP(id){
@@ -1397,6 +1478,7 @@ function goP(id){
   const map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6};
   document.querySelectorAll('.nb')[map[id]].classList.add('active');
   if(['dash','meta'].includes(id)) setTimeout(render,50);
+  if(id==='exec') setTimeout(checkBancaInicial,300);
   if(id==='cal'){
     calSel=S?.dataOperando||new Date().toDateString();
     const d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();
