@@ -1336,17 +1336,17 @@ function render(){
   setTxt('dbExec',dStr);
 
   ['cons','mod','agr'].forEach(p=>{const e=gel('pc-'+p);if(e)e.className='pc'+(S.perfil===p?' sel-'+p:'');});
-  setTxt('pBadge',Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%';
+  setTxt('pBadge',Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%');
   setTxt('ePerfil',Pf.n);
 
   ['sl0p','el0p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G0 · '+(Pf.g0*100)+'%';});
   ['sl1p','el1p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G1 · '+(Pf.g1*100)+'%';});
   ['sl2p','el2p'].forEach(id=>{const e=gel(id);if(e)e.textContent='G2 · '+(Pf.g2*100)+'%';});
-  setTxt('sl0l','+'+Math.round(Pf.w*100)+'%';
-  setTxt('sl2l','win≈-'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
-  setTxt('bs0','+'+Math.round(Pf.w*100)+'% na banca';
-  setTxt('bs2','≈ -'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%';
-  setTxt('bsl','≈ -'+(Pf.g2*100).toFixed(0)+'% da stake';
+  setTxt('sl0l','+'+Math.round(Pf.w*100)+'%');
+  setTxt('sl2l','win≈-'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%');
+  setTxt('bs0','+'+Math.round(Pf.w*100)+'% na banca');
+  setTxt('bs2','≈ -'+(Pf.g2*(2-S.odd)*100).toFixed(1)+'%');
+  setTxt('bsl','≈ -'+(Pf.g2*100).toFixed(0)+'% da stake');
   setTxt('dOdd',S.odd.toFixed(2));
 
   const s0=fD(b*Pf.g0),s1=fD(b*Pf.g1),s2=fD(b*Pf.g2);
