@@ -1405,7 +1405,7 @@ function render(){
         <div style="color:${op.delta>=0?'var(--green)':'var(--red)'};font-weight:600">${op.delta>=0?'+':'-'}${fD(op.delta)}</div>
         <div style="font-size:9px;color:var(--txt3)">${op.ts}</div>
       </div>
-    </div>`).join(''):'<div class="empty">Nenhuma operação</div>';
+    </div>`).join(''):'<div class="empty">Nenhuma operação</div>');
 
   gel('diaEntries').innerHTML=S.diario.slice(0,5).map(d=>`
     <div style="padding:8px 12px;border-top:1px solid var(--border)">
