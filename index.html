@@ -841,7 +841,51 @@ function reg(tipo){
     S.saques.unshift({valor:exc,data:fmtBR(new Date().toDateString()),ts:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})});
     S.totalSacado+=exc; S.banca=S.limite;
   }
-  sv(); render();
+  sv();
+  // Direct update of exec elements - guaranteed to run
+  try {
+    var Pf2=PR[S.perfil]||PR.mod;
+    var b2=S.banca;
+    if(g('esl0')) g('esl0').textContent=fD(b2*Pf2.g0);
+    if(g('esl1')) g('esl1').textContent=fD(b2*Pf2.g1);
+    if(g('esl2')) g('esl2').textContent=fD(b2*Pf2.g2);
+    ['bW0','bW1','bW2','bL'].forEach(function(id){var el=g(id);if(el)el.disabled=S.travado;});
+    var ro=g('recentOps');
+    if(ro && S.operacoes.length){
+      var opsHtml='';
+      S.operacoes.slice(0,8).forEach(function(op){
+        opsHtml+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px">'+
+          '<div style="display:flex;align-items:center;gap:7px">'+
+          '<span class="bdg '+(op.cat==='W'?'bwg':'bwl')+'">'+(op.cat==='W'?'WIN':'LOSS')+'</span>'+
+          '<span style="color:var(--txt2)">'+op.tipo+'</span></div>'+
+          '<div style="text-align:right">'+
+          '<div style="color:'+(op.delta>=0?'var(--green)':'var(--red)')+';font-weight:600">'+(op.delta>=0?'+':'-')+fD(op.delta)+'</div>'+
+          '<div style="font-size:9px;color:var(--txt3)">'+op.ts+'</div></div></div>';
+      });
+      ro.innerHTML=opsHtml;
+    } else if(ro){
+      ro.innerHTML='<div class="empty">Nenhuma operação ainda</div>';
+    }
+    // Stop alerts
+    var pct2=S.bancaBase>0?((S.banca-S.bancaBase)/S.bancaBase*100):0;
+    var alE=g('alE'), emE=g('emoE'), sp=g('sPill');
+    var alD=g('alD'), emD=g('emoD');
+    if(S.tipoTrava==='win'){
+      if(sp){sp.textContent='◆ STOP WIN';sp.className='spill ssw';}
+      var msg='🎯 Você ganhou '+pct2.toFixed(2)+'% hoje! Mantenha a gestão do Fábio.';
+      if(alE){alE.textContent=msg;alE.className='al show alsw';}
+      if(alD){alD.textContent=msg;alD.className='al show alsw';}
+      if(emE) emE.classList.remove('show');
+      if(emD) emD.classList.remove('show');
+    } else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){
+      if(sp){sp.textContent='✕ LOSS';sp.className='spill ssl';}
+      if(alE) alE.className='al';
+      if(alD) alD.className='al';
+      if(emE) emE.classList.add('show');
+      if(emD) emD.classList.add('show');
+    }
+  } catch(e){ console.warn('reg direct update:',e); }
+  render();
 }
 
 function desfazer(){
@@ -1070,6 +1114,86 @@ function usarDia(){
 // RENDER
 var _dCI=null;
 function render(){
+  if(!S) return;
+  try { checkDia(); } catch(e){}
+  // Update exec elements FIRST and independently
+  try { updateExecElements(); } catch(e){ console.warn('exec:',e); }
+  // Then rest of render
+  try { updateDashElements(); } catch(e){ console.warn('dash:',e); }
+  try { updateHistElements(); } catch(e){ console.warn('hist:',e); }
+  try { updateChart(); } catch(e){ console.warn('chart:',e); }
+}
+
+function updateExecElements(){
+  if(!S) return;
+  var b=S.banca, Pf=PR[S.perfil]||PR.mod;
+  var stopW=parseFloat(S.stopWin)||10;
+  var stopL=parseFloat(S.stopLoss)||33;
+  var pct=S.bancaBase>0?((S.banca-S.bancaBase)/S.bancaBase*100):0;
+  // Stakes exec
+  var s0=fD(b*Pf.g0),s1=fD(b*Pf.g1),s2=fD(b*Pf.g2);
+  if(g('esl0p')) g('esl0p').textContent='G0·'+(Pf.g0*100)+'%';
+  if(g('esl1p')) g('esl1p').textContent='G1·'+(Pf.g1*100)+'%';
+  if(g('esl2p')) g('esl2p').textContent='G2·'+(Pf.g2*100)+'%';
+  if(g('esl0')) g('esl0').textContent=s0;
+  if(g('esl1')) g('esl1').textContent=s1;
+  if(g('esl2')) g('esl2').textContent=s2;
+  if(g('ePerfil')) g('ePerfil').textContent=Pf.n;
+  if(g('bs0')) g('bs0').textContent='+'+Math.round(Pf.w*100)+'% na banca';
+  if(g('bs2')) g('bs2').textContent='≈ -'+(Pf.g2*(2-(parseFloat(S.odd)||1.44))*100).toFixed(1)+'%';
+  if(g('bsl')) g('bsl').textContent='≈ -'+(Pf.g2*100).toFixed(0)+'% stake';
+  // Buttons
+  ['bW0','bW1','bW2','bL'].forEach(function(id){var el=g(id);if(el)el.disabled=S.travado;});
+  // Alerts exec
+  var alE=g('alE'), emE=g('emoE');
+  if(S.tipoTrava==='win'){
+    if(alE){alE.textContent='🎯 Você ganhou '+pct.toFixed(2)+'% hoje! Mantenha a gestão do Fábio.';alE.className='al show alsw';}
+    if(emE) emE.classList.remove('show');
+  } else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){
+    if(alE) alE.className='al';
+    if(emE) emE.classList.add('show');
+  } else {
+    if(alE) alE.className='al';
+    if(emE) emE.classList.remove('show');
+  }
+  // Banner data
+  var dOp=new Date(S.dataOperando);
+  var isHoje=S.dataOperando===new Date().toDateString();
+  var dStr=isHoje?'Hoje · '+dOp.toLocaleDateString('pt-BR'):dOp.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
+  if(g('dbExec')) g('dbExec').textContent=dStr;
+  // Status pill
+  var sp=g('sPill');
+  if(sp){
+    if(S.tipoTrava==='win'){sp.textContent='◆ STOP WIN';sp.className='spill ssw';}
+    else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){sp.textContent='✕ LOSS';sp.className='spill ssl';}
+    else{sp.textContent='● OPERANDO';sp.className='spill sop';}
+  }
+  // Recent ops - ALWAYS update this
+  var ro=g('recentOps');
+  if(ro){
+    if(S.operacoes.length){
+      var html='';
+      S.operacoes.slice(0,8).forEach(function(op){
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px">'+
+          '<div style="display:flex;align-items:center;gap:7px">'+
+          '<span class="bdg '+(op.cat==='W'?'bwg':'bwl')+'">'+(op.cat==='W'?'WIN':'LOSS')+'</span>'+
+          '<span style="color:var(--txt2)">'+op.tipo+'</span></div>'+
+          '<div style="text-align:right">'+
+          '<div style="color:'+(op.delta>=0?'var(--green)':'var(--red)')+';font-weight:600">'+(op.delta>=0?'+':'-')+fD(op.delta)+'</div>'+
+          '<div style="font-size:9px;color:var(--txt3)">'+op.ts+'</div></div></div>';
+      });
+      ro.innerHTML=html;
+    } else {
+      ro.innerHTML='<div class="empty">Nenhuma operação ainda</div>';
+    }
+  }
+}
+
+function updateDashElements(){}
+function updateHistElements(){}
+function updateChart(){}
+
+function _oldrender(){
   if(!S) return;
   checkDia();
   var b=S.banca, base=S.bancaBase, Pf=PR[S.perfil]||PR.mod;
