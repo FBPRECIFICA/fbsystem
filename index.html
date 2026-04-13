@@ -293,9 +293,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 <div id="p-sim" class="pg">
 <div class="sec" style="margin-bottom:10px"><div class="sh">Simulador de Crescimento</div>
 <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
-<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Perfil</div><select id="simP" class="simi" style="width:130px"><option value="cons">Conservador +2%</option><option value="mod" selected>Moderado +3%</option><option value="agr">Agressivo +4%</option></select></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Meta diária (%)</div><input id="simMeta" type="number" class="simi" value="10" inputmode="decimal"></div>
 <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
-<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Odd média</div><input id="simOd" type="number" class="simi" value="1.44" step="0.01" inputmode="decimal"></div>
 <button class="simbtn" onclick="rodarSim()">Simular</button></div>
 <div id="simRes" class="sec" style="display:none"><div class="sh" id="simTit">Projeção</div>
 <div style="overflow-x:auto"><table class="stt"><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
@@ -584,11 +583,24 @@ function regManual(){
 
 // SIMULADOR
 function rodarSim(){
-  var bi=parseFloat(g('simB').value)||1000,p=g('simP').value,sq=Math.min(95,parseFloat(g('simSq').value)||50)/100,Pf=PR[p],b=bi,acum=0,rows=[],bancas=[bi];
-  for(var i=1;i<=8;i++){for(var d=0;d<5;d++)b*=(1+Pf.w);var sq2=b*sq;acum+=sq2;b-=sq2;rows.push({i:i,b:b,sq2:sq2,acum:acum});bancas.push(b);}
+  var bi=parseFloat(g('simB').value)||1000;
+  var sq=Math.min(95,parseFloat(g('simSq').value)||50)/100;
+  var meta=parseFloat(g('simMeta').value)||10;
+  var taxa=meta/100;
+  var b=bi,acum=0,rows=[],bancas=[bi];
+  var bOrig=bi; // banca original — referência fixa de lucro
+  for(var i=1;i<=8;i++){
+    var fim=b;
+    for(var d=0;d<5;d++)fim*=(1+taxa);
+    var lucro=fim-bOrig;   // lucro = tudo acima da banca original
+    var sq2=lucro*sq;
+    acum+=sq2;
+    b=fim-sq2;             // banca segue = fim - saque
+    rows.push({i:i,b:b,sq2:sq2,acum:acum});bancas.push(b);
+  }
   var tb='';rows.forEach(function(r){tb+='<tr><td>Sem '+r.i+'</td><td style="color:#00a85a;font-weight:600">'+fR(r.b)+'</td><td style="color:#e67e00;font-weight:600">'+fR(r.sq2)+'</td><td style="color:#e65100;font-weight:600">'+fR(r.acum)+'</td></tr>';});
-  g('simBody').innerHTML=tb;g('simTit').textContent='Projeção 8 sem · '+Pf.n+' · saque '+(sq*100).toFixed(0)+'%';
-  g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> → Semana 8: <strong style="color:#00a85a">'+fR(rows[7].b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(rows[7].acum)+'</strong>';
+  g('simBody').innerHTML=tb;g('simTit').textContent='Projeção 8 semanas · Meta +'+meta+'%/dia · Saque '+(sq*100).toFixed(0)+'%';
+  g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> · Meta +'+meta+'%/dia · Saque '+(sq*100).toFixed(0)+'%<br>Semana 8: banca <strong style="color:#00a85a">'+fR(rows[7].b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(rows[7].acum)+'</strong>';
   g('simRes').style.display='block';
   if(window._sCI)window._sCI.destroy();
   window._sCI=new Chart(g('simC'),{type:'line',data:{labels:['Início'].concat(rows.map(function(r){return 'S'+r.i;})),datasets:[{data:bancas,borderColor:'#00a85a',backgroundColor:'rgba(0,168,90,.1)',borderWidth:2,pointRadius:3,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
@@ -596,13 +608,27 @@ function rodarSim(){
 
 // META
 function calcMeta(){
-  var alvo=parseFloat(g('metaAlvo').value)||150000,sq=Math.min(95,parseFloat(g('metaSq').value)||50)/100,Pf=PR[S.perfil],b=S.banca,acum=S.totalSacado||0,sem=0,pts=[{s:0,v:acum}];
-  while(acum<alvo&&sem<1000){sem++;for(var d=0;d<5;d++)b*=(1+Pf.w);if(b>S.limite){var e2=b-S.limite;acum+=e2;b=S.limite;}var sq2=b*sq;acum+=sq2;b-=sq2;if(sem<=40||sem%5===0)pts.push({s:sem,v:acum});}
+  var alvo=parseFloat(g('metaAlvo').value)||150000;
+  var sq=Math.min(95,parseFloat(g('metaSq').value)||50)/100;
+  var taxa=0.10;
+  var b=S.banca,acum=S.totalSacado||0,sem=0,pts=[{s:0,v:acum}];
+  var bOrig=S.banca; // banca original — referência fixa de lucro
+  while(acum<alvo&&sem<1000){
+    sem++;
+    var fim=b;
+    for(var d=0;d<5;d++)fim*=(1+taxa);
+    if(fim>S.limite){var e2=fim-S.limite;acum+=e2;fim=S.limite;bOrig=S.limite;}
+    var lucro=fim-bOrig;   // lucro = tudo acima da banca original
+    var sq2=Math.max(0,lucro)*sq;
+    acum+=sq2;
+    b=fim-sq2;
+    if(sem<=40||sem%5===0)pts.push({s:sem,v:acum});
+  }
   g('metaV').textContent=sem>=1000?'1000+':sem;
   var pctF=Math.min(100,((S.totalSacado||0)/alvo*100));g('metaPF').style.width=pctF+'%';g('metaPT').textContent=pctF.toFixed(1)+'% · '+fR(S.totalSacado||0)+' de '+fR(alvo)+' sacado';
   var mHtml='';[[5000,'R$5k'],[10000,'R$10k'],[25000,'R$25k'],[50000,'R$50k'],[100000,'R$100k'],[150000,'R$150k'],[200000,'R$200k']].filter(function(m){return m[0]<=alvo*1.1;}).forEach(function(m){
-    var v=m[0],lbl=m[1],b2=S.banca,d2=0,ac2=S.totalSacado||0;
-    while(ac2<v&&d2<500){d2++;for(var x=0;x<5;x++)b2*=(1+Pf.w);if(b2>S.limite){var ex=b2-S.limite;ac2+=ex;b2=S.limite;}var s2=b2*sq;ac2+=s2;b2-=s2;}
+    var v=m[0],lbl=m[1],b2=S.banca,bOr2=S.banca,d2=0,ac2=S.totalSacado||0;
+    while(ac2<v&&d2<500){d2++;var f2=b2;for(var x=0;x<5;x++)f2*=(1+taxa);if(f2>S.limite){var ex=f2-S.limite;ac2+=ex;f2=S.limite;bOr2=S.limite;}var l2=f2-bOr2,s2=Math.max(0,l2)*sq;ac2+=s2;b2=f2-s2;}
     var ok=(S.totalSacado||0)>=v;
     mHtml+='<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px"><span style="color:'+(ok?'#00a85a':'#4a5880')+';font-weight:'+(ok?'700':'400')+'">'+lbl+'</span><span style="color:'+(ok?'#00a85a':'#8090b0')+'">'+(ok?'✓ Atingido':d2>=500?'500+ sem':d2+' semanas')+'</span></div>';
   });
