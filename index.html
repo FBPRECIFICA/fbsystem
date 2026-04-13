@@ -2,314 +2,220 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>FB Sistemas</title>
 <style>
-:root{
-  --bg:#f0f2f5;--bg2:#fff;--bg3:#e8ebf0;--bg4:#dde2ea;
-  --border:#d0d8e4;--b2:#b8c4d4;
-  --green:#00a85a;--gbg:rgba(0,168,90,.08);--gbd:rgba(0,168,90,.3);
-  --red:#e53935;--rbg:rgba(229,57,53,.07);--rbd:rgba(229,57,53,.3);
-  --yel:#e67e00;--ybg:rgba(230,126,0,.08);--ybd:rgba(230,126,0,.3);
-  --blue:#1565c0;--bbg:rgba(21,101,192,.07);--bbd:rgba(21,101,192,.3);
-  --oran:#e65100;
-  --txt:#1a2540;--txt2:#4a5880;--txt3:#8090b0;
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
-.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.loading{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:#f0f2f5;color:#1a2540;min-height:100vh}
+/* TELAS */
+.tela{display:none!important}
+.tela.on{display:flex!important;flex-direction:column;min-height:100vh}
+#app.on{display:flex!important;flex-direction:column}
+/* LOADING */
+#tLoad{align-items:center;justify-content:center;gap:12px;background:#f0f2f5}
+.spin{width:36px;height:36px;border:3px solid #d0d8e4;border-top-color:#00a85a;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
 /* AUTH */
-.aw{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
-.ali{width:56px;height:56px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:10px}
-.ati{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}
-.asu{font-size:12px;color:var(--txt3);text-align:center;margin-bottom:24px}
-.ac{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:400px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-.ac h3{font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:16px;text-align:center;text-transform:uppercase;letter-spacing:.5px}
-.fld{margin-bottom:13px}
-.fld label{display:block;font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
-.fld input,.fld select{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--txt);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit}
-.fld input:focus,.fld select:focus{outline:none;border-color:var(--green)}
-.fld select{-webkit-appearance:none}
-.bmain{width:100%;background:var(--green);color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
-.bsec{width:100%;background:#fff;color:var(--txt2);border:1.5px solid var(--border);border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
-.alink{text-align:center;margin-top:14px;font-size:12px;color:var(--txt3)}
-.alink a{color:var(--green);font-weight:600;cursor:pointer}
-.aerr{background:#feecec;border:1px solid var(--rbd);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);margin-bottom:12px;display:none}
-.aerr.show{display:block}
-.aok{background:#e6f7ef;border:1px solid var(--gbd);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green);margin-bottom:12px;display:none}
-.aok.show{display:block}
-/* PENDING */
-.pw{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-.pic{font-size:56px;margin-bottom:16px}
-.pti{font-size:20px;font-weight:700;margin-bottom:8px}
-.pbdg{background:var(--ybg);border:1px solid var(--ybd);border-radius:20px;padding:6px 18px;font-size:12px;font-weight:700;color:var(--yel);display:inline-block;margin-bottom:12px}
-.pmsg{font-size:13px;color:var(--txt3);line-height:1.8;margin-bottom:20px;max-width:320px}
+.awr{align-items:center;justify-content:center;padding:20px;background:#f0f2f5}
+.alo{width:52px;height:52px;background:#00a85a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;margin-bottom:10px}
+.ati{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.asu{font-size:12px;color:#8090b0;margin-bottom:22px;text-align:center}
+.acard{background:#fff;border:1px solid #d0d8e4;border-radius:14px;padding:20px;width:100%;max-width:400px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.acard h3{font-size:12px;font-weight:700;color:#4a5880;margin-bottom:16px;text-align:center;text-transform:uppercase;letter-spacing:.5px}
+.campo label{display:block;font-size:11px;font-weight:600;color:#4a5880;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.campo{margin-bottom:13px}
+.campo input,.campo select{width:100%;background:#f0f2f5;border:1px solid #d0d8e4;color:#1a2540;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none}
+.campo input:focus,.campo select:focus{border-color:#00a85a}
+.bv{width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.bb{width:100%;background:#fff;color:#4a5880;border:1.5px solid #d0d8e4;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+.alink{text-align:center;margin-top:14px;font-size:12px;color:#8090b0}
+.alink a{color:#00a85a;font-weight:600;cursor:pointer}
+.merr{background:#feecec;border:1px solid rgba(229,57,53,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#e53935;margin-bottom:12px;display:none}
+.merr.v{display:block}
+.mok{background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#00a85a;margin-bottom:12px;display:none}
+.mok.v{display:block}
+/* PENDENTE */
+#tPend{align-items:center;justify-content:center;padding:24px;text-align:center;background:#f0f2f5}
 /* ADMIN */
+#tAdm{background:#f0f2f5;overflow-y:auto}
 .adw{max-width:480px;margin:0 auto;padding:12px 14px}
-.adhdr{background:#1a2540;border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.adbdg{background:var(--red);color:#fff;border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700}
-.adst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.adsc{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
-.adscn{font-size:20px;font-weight:700}
-.adscl{font-size:9px;color:var(--txt3);margin-top:2px}
-.alcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
-.alname{font-size:13px;font-weight:600}
-.alemail{font-size:11px;color:var(--txt3);margin-top:1px}
-.stp{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
-.spp{background:var(--ybg);color:var(--yel);border:1px solid var(--ybd)}
-.spa{background:var(--gbg);color:var(--green);border:1px solid var(--gbd)}
-.spb{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}
-.altag{background:var(--bg3);border-radius:5px;padding:2px 8px;font-size:10px;color:var(--txt2)}
-.albtns{display:flex;gap:6px;margin-top:8px}
-.abtn{flex:1;border:none;border-radius:7px;padding:8px;font-size:11px;font-weight:700;cursor:pointer}
-.abapr{background:#e6f7ef;color:var(--green);border:1px solid var(--gbd)}
-.abblk{background:#feecec;color:var(--red);border:1px solid var(--rbd)}
-.abrel{background:var(--bg3);color:var(--txt3);border:1px solid var(--border)}
+.adhdr{background:#1a2540;border-radius:10px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 /* APP */
-.hdr{background:#fff;border-bottom:1px solid var(--border);padding:10px 14px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.hdrt{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+#app{max-width:480px;margin:0 auto;background:#f0f2f5}
+.hdr{background:#fff;border-bottom:1px solid #d0d8e4;padding:10px 14px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .logo{display:flex;align-items:center;gap:8px}
-.logi{width:30px;height:30px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
-.logn{font-size:15px;font-weight:700;color:var(--green)}
-.logs{font-size:9px;color:var(--txt3)}
-.spill{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
-.sop{background:var(--gbg);color:var(--green);border:1px solid var(--gbd)}
-.ssw{background:var(--bbg);color:var(--blue);border:1px solid var(--bbd)}
-.ssl{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}
-.hdrb{display:flex;align-items:center;justify-content:space-between}
-.uinfo{font-size:9px;color:var(--txt3)}
-.sairbtn{background:none;border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:9px;color:var(--txt3);cursor:pointer}
-.nav{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none}
+.li{width:30px;height:30px;background:#00a85a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+.ln{font-size:15px;font-weight:700;color:#00a85a}
+.ls{font-size:9px;color:#8090b0}
+.pill{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pop{background:rgba(0,168,90,.08);color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.psw{background:rgba(21,101,192,.07);color:#1565c0;border:1px solid rgba(21,101,192,.3)}
+.psl{background:rgba(229,57,53,.07);color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.hbot{display:flex;align-items:center;justify-content:space-between}
+.uinf{font-size:9px;color:#8090b0}
+.bsair{background:none;border:1px solid #d0d8e4;border-radius:5px;padding:2px 8px;font-size:9px;color:#8090b0;cursor:pointer}
+.nav{background:#fff;border-bottom:2px solid #d0d8e4;display:flex;overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nb{background:none;border:none;color:var(--txt3);padding:9px 11px;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;margin-bottom:-2px;cursor:pointer}
-.nb.act{color:var(--green);border-bottom-color:var(--green)}
+.nb{background:none;border:none;color:#8090b0;padding:9px 11px;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;margin-bottom:-2px;cursor:pointer}
+.nb.a{color:#00a85a;border-bottom-color:#00a85a}
 .pg{display:none;padding:12px 14px}
-.pg.act{display:block}
-/* CARDS */
+.pg.a{display:block}
+/* cards */
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
-.mc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.ml{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.mc{background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:10px 12px}
+.ml{font-size:9px;color:#8090b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .mv{font-size:20px;font-weight:700;line-height:1}
-.ms{font-size:9px;color:var(--txt3);margin-top:2px}
-.cg{color:var(--green)}.cr{color:var(--red)}.cy{color:var(--yel)}.cb{color:var(--blue)}.co{color:var(--oran)}.ct{color:var(--txt)}
-.sec{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.sh{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
-.pl{display:flex;justify-content:space-between;padding:0 12px;margin-bottom:4px;font-size:9px;color:var(--txt3)}
-.pb{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:0 12px 10px}
+.ms{font-size:9px;color:#8090b0;margin-top:2px}
+.cg{color:#00a85a}.cr{color:#e53935}.cy{color:#e67e00}.cb{color:#1565c0}.co{color:#e65100}.ct{color:#1a2540}
+.sec{background:#fff;border:1px solid #d0d8e4;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sh{padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:10px;font-weight:700;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;background:#e8ebf0}
+.pl{display:flex;justify-content:space-between;padding:0 12px;margin-bottom:4px;font-size:9px;color:#8090b0}
+.pb{height:6px;background:#e8ebf0;border-radius:3px;overflow:hidden;margin:0 12px 10px}
 .pf{height:100%;border-radius:3px;transition:width .4s}
 .sr{display:grid;grid-template-columns:1fr 1fr 1fr}
-.si{padding:10px 8px;border-right:1px solid var(--border);text-align:center}
+.si{padding:10px 8px;border-right:1px solid #d0d8e4;text-align:center}
 .si:last-child{border-right:none}
-.sip{font-size:9px;color:var(--txt3);margin-bottom:2px}
-.siv{font-size:15px;font-weight:700;color:var(--oran)}
-.sil{font-size:8px;color:var(--txt3);margin-top:2px}
-/* EXEC BTNS */
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.sip{font-size:9px;color:#8090b0;margin-bottom:2px}
+.siv{font-size:15px;font-weight:700;color:#e65100}
+.sil{font-size:8px;color:#8090b0;margin-top:2px}
+.bgr{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
 .eb{border:none;border-radius:8px;padding:14px 8px;cursor:pointer;font-weight:800;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;touch-action:manipulation;transition:.1s}
 .eb:active{transform:scale(.96)}
 .eb:disabled{opacity:.3;cursor:not-allowed}
 .es{font-size:9px;font-weight:500;opacity:.8}
-.bw0{background:#e6f7ef;color:var(--green);border:1.5px solid var(--gbd)}
-.bw1{background:#e8f0fc;color:var(--blue);border:1.5px solid var(--bbd)}
-.bw2{background:#fff3e0;color:var(--yel);border:1.5px solid var(--ybd)}
-.bloss{background:#feecec;color:var(--red);border:1.5px solid var(--rbd)}
+.ew0{background:#e6f7ef;color:#00a85a;border:1.5px solid rgba(0,168,90,.3)}
+.ew1{background:#e8f0fc;color:#1565c0;border:1.5px solid rgba(21,101,192,.3)}
+.ew2{background:#fff3e0;color:#e67e00;border:1.5px solid rgba(230,126,0,.3)}
+.el{background:#feecec;color:#e53935;border:1.5px solid rgba(229,57,53,.3)}
 .al{padding:10px 14px;font-size:12px;font-weight:600;text-align:center;margin-bottom:10px;border-radius:10px;display:none;line-height:1.7}
-.al.show{display:block}
-.alsw{background:var(--gbg);color:var(--green);border:1px solid var(--gbd)}
-.alsl{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}
-.emo{background:#feecec;border:2px solid var(--rbd);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;display:none}
-.emo.show{display:block}
-/* PERFIL */
-.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:10px}
-.pc{border-radius:8px;padding:10px 7px;text-align:center;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);transition:.15s}
-.pc.selc{border-color:var(--blue);background:#e8f0fc}
-.pc.selm{border-color:var(--green);background:#e6f7ef}
-.pc.sela{border-color:var(--oran);background:#fff3e0}
-/* CAL */
-.calhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:10px 12px 0}
-.calnav{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:14px;cursor:pointer;color:var(--txt2)}
-.calti{font-size:13px;font-weight:700}
-.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 10px}
-.caldw{font-size:9px;font-weight:700;color:var(--txt3);text-align:center;padding:2px 0 5px}
-.cald{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--txt2);cursor:pointer;border:1.5px solid transparent;position:relative}
-.cald.other{color:var(--border)}
-.cald.today{border-color:var(--green);color:var(--green);font-weight:700}
-.cald.csel{background:var(--green);color:#fff;font-weight:700}
-.cald.hop::after,.cald.hmeta::after,.cald.hloss::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%}
-.cald.hop::after{background:var(--blue)}
-.cald.hmeta::after{background:var(--green)}
-.cald.hloss::after{background:var(--red)}
-.cald.csel::after{background:#fff!important}
-/* SIM/META */
-.simr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border)}
-.siml{font-size:12px;color:var(--txt2);font-weight:500}
-.simi{background:var(--bg3);border:1px solid var(--b2);color:var(--txt);border-radius:6px;padding:6px 8px;font-size:12px;width:115px;text-align:right;font-weight:600}
-.simi:focus{outline:none;border-color:var(--green)}
-.simbtn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:13px;cursor:pointer;width:calc(100% - 24px);margin:10px 12px 4px}
+.al.v{display:block}
+.asw{background:rgba(21,101,192,.07);color:#1565c0;border:1px solid rgba(21,101,192,.3)}
+.emo{background:#feecec;border:2px solid rgba(229,57,53,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;display:none}
+.emo.v{display:block}
+.pgr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:10px}
+.pc{border-radius:8px;padding:10px 7px;text-align:center;cursor:pointer;border:1.5px solid #d0d8e4;background:#e8ebf0;transition:.15s}
+.pc.sc{border-color:#1565c0;background:#e8f0fc}
+.pc.sm{border-color:#00a85a;background:#e6f7ef}
+.pc.sa{border-color:#e65100;background:#fff3e0}
+.sqm{background:#e6f7ef;border:1.5px solid rgba(0,168,90,.3);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center;display:none}
+.sqm.v{display:block}
+.dbanner{background:rgba(0,168,90,.08);border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.ajbox{background:rgba(230,126,0,.08);border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px 12px;margin:0 0 10px}
+/* sim */
+.simr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #d0d8e4}
+.simi{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:6px 8px;font-size:12px;width:115px;text-align:right;font-weight:600;outline:none}
+.simbtn{background:#00a85a;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:13px;cursor:pointer;width:calc(100% - 24px);margin:10px 12px 4px}
 .stt{width:100%;border-collapse:collapse;font-size:11px}
-.stt th{padding:6px 8px;text-align:center;color:var(--txt3);font-weight:600;border-bottom:1px solid var(--border);background:var(--bg3);font-size:10px}
-.stt td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--txt2);text-align:center}
-.stt tr:last-child td{border-bottom:none}
-.metabox{background:#e6f7ef;border:1.5px solid var(--gbd);border-radius:10px;padding:14px;margin:10px;text-align:center}
-/* HIST */
+.stt th{padding:6px 8px;text-align:center;color:#8090b0;font-weight:600;border-bottom:1px solid #d0d8e4;background:#e8ebf0;font-size:10px}
+.stt td{padding:7px 8px;border-bottom:1px solid #d0d8e4;color:#4a5880;text-align:center}
+/* hist */
 .ht{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
-.ht th{padding:6px 8px;text-align:left;color:var(--txt3);font-weight:600;border-bottom:1px solid var(--border);background:var(--bg3);font-size:10px}
-.ht td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--txt2)}
-.ht tr:last-child td{border-bottom:none}
+.ht th{padding:6px 8px;text-align:left;color:#8090b0;font-weight:600;border-bottom:1px solid #d0d8e4;background:#e8ebf0;font-size:10px}
+.ht td{padding:6px 8px;border-bottom:1px solid #d0d8e4;color:#4a5880}
 .bdg{padding:2px 7px;border-radius:8px;font-size:9px;font-weight:700}
-.bwg{background:#e6f7ef;color:var(--green)}
-.bwl{background:#feecec;color:var(--red)}
-.evrow{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);gap:8px;font-size:11px}
-.evrow:last-child{border-bottom:none}
-/* CFG */
-.cfgrow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border)}
-.cfgrow:last-child{border-bottom:none}
-.cfgi{background:var(--bg3);border:1px solid var(--b2);color:var(--txt);border-radius:6px;padding:6px 8px;font-size:13px;width:105px;text-align:right;font-weight:600}
-.cfgi:focus{outline:none;border-color:var(--green)}
-.savebtn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:8px}
-.rstbtn{background:#fff;color:var(--red);border:1.5px solid var(--rbd);border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:6px}
-/* SAQUE */
-.sqm{background:#e6f7ef;border:1.5px solid var(--gbd);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center;display:none}
-.sqm.show{display:block}
-/* POP-UP */
-.popwrap{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:900;align-items:center;justify-content:center;padding:20px}
-.popwrap.show{display:flex}
-.popcard{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2);text-align:center}
-.popic{font-size:36px;margin-bottom:8px}
-.popti{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px}
-.popsu{font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.6}
-.popinp{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:12px;font-size:20px;font-weight:700;text-align:center;color:var(--txt);margin-bottom:12px}
-.popinp:focus{outline:none;border-color:var(--green)}
-/* MISC */
-.dbanner{background:var(--gbg);border:1px solid var(--gbd);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.dta{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--txt);border-radius:8px;padding:9px;font-size:12px;resize:none;height:60px;font-family:inherit}
-.dta:focus{outline:none;border-color:var(--green)}
-.dbt{background:var(--bg3);border:1.5px solid var(--b2);color:var(--txt2);border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;margin-top:6px;font-weight:600}
+.bwg{background:#e6f7ef;color:#00a85a}.bwl{background:#feecec;color:#e53935}
+/* cfg */
+.crow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #d0d8e4}
+.crow:last-child{border-bottom:none}
+.cinp{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:6px 8px;font-size:13px;width:105px;text-align:right;font-weight:600;outline:none}
+.savebtn{background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:8px}
+.rstbtn{background:#fff;color:#e53935;border:1.5px solid rgba(229,57,53,.3);border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:6px}
+/* cal */
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cdw{font-size:9px;font-weight:700;color:#8090b0;text-align:center;padding:2px 0 5px}
+.cd{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#4a5880;cursor:pointer;border:1.5px solid transparent;position:relative}
+.cd.outro{color:#d0d8e4}
+.cd.hoje{border-color:#00a85a;color:#00a85a;font-weight:700}
+.cd.sel{background:#00a85a;color:#fff;font-weight:700}
+.cd.hop::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#1565c0}
+.cd.sel::after{background:#fff!important}
+.cd.hmeta::after{background:#00a85a}
+.cd.hloss::after{background:#e53935}
 .cw{padding:10px 12px;position:relative;height:160px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--txt);color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;display:none;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.2);white-space:nowrap}
-.footer{text-align:center;padding:10px;font-size:8px;color:var(--txt3);border-top:1px solid var(--border);background:#fff;line-height:1.7;margin-top:auto}
-.empty{padding:16px;text-align:center;color:var(--txt3);font-size:11px}
+.evrow{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid #d0d8e4;gap:8px;font-size:11px}
+.evrow:last-child{border-bottom:none}
 .mfrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.mfinp{background:var(--bg3);border:1px solid var(--b2);color:var(--txt);border-radius:6px;padding:7px 8px;font-size:12px;font-weight:600;flex:1;text-align:right}
-.ajbox{background:var(--ybg);border:1px solid var(--ybd);border-radius:8px;padding:10px 12px;margin:0 0 10px}
+.mfinp{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:7px 8px;font-size:12px;font-weight:600;flex:1;text-align:right;outline:none}
+/* pop */
+.popw{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:900;align-items:center;justify-content:center;padding:20px}
+.popw.v{display:flex}
+.popc{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px;text-align:center}
+.pinp{width:100%;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:12px;font-size:20px;font-weight:700;text-align:center;color:#1a2540;margin-bottom:12px;outline:none}
+.pinp:focus{border-color:#00a85a}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a2540;color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;display:none;pointer-events:none;white-space:nowrap}
+.empty{padding:16px;text-align:center;color:#8090b0;font-size:11px}
+.footer{text-align:center;padding:10px;font-size:8px;color:#8090b0;border-top:1px solid #d0d8e4;background:#fff;line-height:1.7}
+/* adm */
+.adst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.adsc{background:#fff;border:1px solid #d0d8e4;border-radius:8px;padding:10px;text-align:center}
+.astag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.stp{background:rgba(230,126,0,.08);color:#e67e00;border:1px solid rgba(230,126,0,.3)}
+.sta{background:rgba(0,168,90,.08);color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.stb{background:rgba(229,57,53,.07);color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.abtns{display:flex;gap:6px;margin-top:8px}
+.abtn{flex:1;border:none;border-radius:7px;padding:8px;font-size:11px;font-weight:700;cursor:pointer}
+.aapr{background:#e6f7ef;color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.ablk{background:#feecec;color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.dta{width:100%;background:#e8ebf0;border:1px solid #d0d8e4;color:#1a2540;border-radius:8px;padding:9px;font-size:12px;resize:none;height:60px;font-family:inherit;outline:none}
+.dbt{background:#e8ebf0;border:1.5px solid #b8c4d4;color:#4a5880;border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;margin-top:6px;font-weight:600}
 </style>
 </head>
 <body>
 
-<div id="sLoad" class="loading"><div class="spinner"></div><div style="font-size:12px;color:var(--txt3)">Carregando...</div></div>
+<div id="tLoad" class="tela on"><div class="spin"></div><div style="font-size:12px;color:#8090b0">Carregando...</div></div>
 
-<div id="sLogin" style="display:none">
-  <div class="aw">
-    <div class="ali">FB</div>
-    <div class="ati">FB Sistemas</div>
-    <div class="asu">Estratégia Personalizada de Fábio Marques</div>
-    <div class="ac">
-      <h3>Entrar na conta</h3>
-      <div id="loginErr" class="aerr"></div>
-      <div class="fld"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com" inputmode="email"></div>
-      <div class="fld"><label>Senha</label><input type="password" id="loginSenha" placeholder="Sua senha"></div>
-      <button class="bmain" onclick="doLogin()">Entrar</button>
-      <button class="bsec" onclick="show('sRec')">Esqueci minha senha</button>
-      <div class="alink">Não tem conta? <a onclick="show('sCad')">Cadastrar</a></div>
-    </div>
-  </div>
+<div id="tLogin" class="tela awr"><div class="alo">FB</div><div class="ati">FB Sistemas</div><div class="asu">Estratégia Exclusiva · Fábio Marques</div>
+<div class="acard"><h3>Entrar na conta</h3><div id="eLogin" class="merr"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iEmail" placeholder="seu@email.com" inputmode="email"></div>
+<div class="campo"><label>Senha</label><input type="password" id="iSenha" placeholder="Sua senha"></div>
+<button class="bv" onclick="doLogin()">Entrar</button>
+<button class="bb" onclick="show('tRec')">Esqueci minha senha</button>
+<div class="alink">Não tem conta? <a onclick="show('tCad')">Cadastrar</a></div>
+</div></div>
+
+<div id="tCad" class="tela awr"><div class="alo">FB</div><div class="ati">Criar conta</div><div class="asu">Preencha os dados abaixo</div>
+<div class="acard"><h3>Novo cadastro</h3><div id="eCad" class="merr"></div><div id="okCad" class="mok"></div>
+<div class="campo"><label>Nome completo</label><input type="text" id="iNome" placeholder="Seu nome"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iCEmail" placeholder="seu@email.com" inputmode="email"></div>
+<div class="campo"><label>Senha</label><input type="password" id="iCSenha" placeholder="Mínimo 6 caracteres"></div>
+<div class="campo"><label>Confirmar senha</label><input type="password" id="iCSenha2" placeholder="Repita a senha"></div>
+<div class="campo"><label>Gênero</label><select id="iGenero"><option value="">Selecione...</option><option value="Homem">Homem</option><option value="Mulher">Mulher</option><option value="Indeciso">Indeciso</option><option value="Prefere não dizer">Prefere não dizer</option></select></div>
+<button class="bv" onclick="doCad()">Criar conta</button>
+<div class="alink">Já tem conta? <a onclick="show('tLogin')">Entrar</a></div>
+</div></div>
+
+<div id="tRec" class="tela awr"><div class="alo">FB</div><div class="ati">Recuperar senha</div><div class="asu">Enviaremos um link para seu e-mail</div>
+<div class="acard"><h3>Redefinir senha</h3><div id="eRec" class="merr"></div><div id="okRec" class="mok"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iREmail" placeholder="seu@email.com" inputmode="email"></div>
+<button class="bv" onclick="doRec()">Enviar link</button>
+<button class="bb" onclick="show('tLogin')">Voltar ao login</button>
+</div></div>
+
+<div id="tPend" class="tela"><div style="font-size:52px;margin-bottom:16px">⏳</div>
+<div id="pendBadge" style="background:rgba(230,126,0,.08);border:1px solid rgba(230,126,0,.3);border-radius:20px;padding:6px 18px;font-size:12px;font-weight:700;color:#e67e00;margin-bottom:12px">AGUARDANDO APROVAÇÃO</div>
+<div id="pendTit" style="font-size:20px;font-weight:700;margin-bottom:8px;text-align:center">Cadastro realizado!</div>
+<div style="font-size:13px;color:#8090b0;margin-bottom:20px;text-align:center;line-height:1.8">Aguarde a aprovação do gestor.</div>
+<button class="bb" style="max-width:280px" onclick="checkStatus()">Verificar aprovação</button>
+<button class="bb" style="max-width:280px;margin-top:8px;color:#e53935;border-color:rgba(229,57,53,.3)" onclick="doLogout()">Sair</button>
 </div>
 
-<div id="sCad" style="display:none">
-  <div class="aw">
-    <div class="ali">FB</div>
-    <div class="ati">Criar conta</div>
-    <div class="asu">Preencha os dados para se cadastrar</div>
-    <div class="ac">
-      <h3>Novo cadastro</h3>
-      <div id="cadErr" class="aerr"></div>
-      <div id="cadOk" class="aok"></div>
-      <div class="fld"><label>Nome completo</label><input type="text" id="cadNome" placeholder="Seu nome"></div>
-      <div class="fld"><label>E-mail</label><input type="email" id="cadEmail" placeholder="seu@email.com" inputmode="email"></div>
-      <div class="fld"><label>Senha</label><input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres"></div>
-      <div class="fld"><label>Confirmar senha</label><input type="password" id="cadSenha2" placeholder="Repita a senha"></div>
-      <div class="fld"><label>Gênero</label>
-        <select id="cadGenero">
-          <option value="">Selecione...</option>
-          <option value="Homem">Homem</option>
-          <option value="Mulher">Mulher</option>
-          <option value="Indeciso">Indeciso</option>
-          <option value="Prefere não dizer">Prefere não dizer</option>
-        </select>
-      </div>
-      <button class="bmain" onclick="doCad()">Criar conta</button>
-      <div class="alink">Já tem conta? <a onclick="show('sLogin')">Entrar</a></div>
-    </div>
-  </div>
-</div>
+<div id="tAdm" class="tela"><div class="adw">
+<div class="adhdr"><div style="display:flex;align-items:center;gap:10px"><div class="li">FB</div><div><div style="color:#fff;font-size:14px;font-weight:700">Painel Admin</div><div style="color:#7A9BB5;font-size:9px">FB Sistemas</div></div></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="background:#e53935;color:#fff;border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700">ADMIN</span><button onclick="doLogout()" style="background:none;border:none;color:#7A9BB5;font-size:10px;cursor:pointer">Sair</button></div></div>
+<div class="adst"><div class="adsc"><div id="stTot" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Total</div></div><div class="adsc"><div id="stPend" style="font-size:20px;font-weight:700;color:#e67e00">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Pendentes</div></div><div class="adsc"><div id="stAtiv" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Ativos</div></div></div>
+<div id="admFin" style="margin-bottom:14px"></div>
+<div style="font-size:11px;font-weight:600;color:#4a5880;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos</div>
+<div id="admLista"><div class="empty">Carregando...</div></div>
+</div></div>
 
-<div id="sRec" style="display:none">
-  <div class="aw">
-    <div class="ali">FB</div>
-    <div class="ati">Recuperar senha</div>
-    <div class="asu">Enviaremos um link para seu e-mail</div>
-    <div class="ac">
-      <h3>Redefinir senha</h3>
-      <div id="recErr" class="aerr"></div>
-      <div id="recOk" class="aok"></div>
-      <div class="fld"><label>E-mail</label><input type="email" id="recEmail" placeholder="seu@email.com" inputmode="email"></div>
-      <button class="bmain" onclick="doRec()">Enviar link</button>
-      <button class="bsec" onclick="show('sLogin')">Voltar ao login</button>
-    </div>
-  </div>
-</div>
-
-<div id="sPend" style="display:none">
-  <div class="pw">
-    <div class="pic">⏳</div>
-    <div class="pbdg" id="pendBadge">AGUARDANDO APROVAÇÃO</div>
-    <div class="pti" id="pendTi">Cadastro realizado!</div>
-    <div class="pmsg" id="pendMsg">Aguarde a aprovação do gestor. Você receberá acesso em breve.</div>
-    <button class="bsec" style="max-width:280px" onclick="checkStatus()">Verificar aprovação</button>
-    <button class="bsec" style="max-width:280px;margin-top:8px;color:var(--red);border-color:var(--rbd)" onclick="doLogout()">Sair</button>
-  </div>
-</div>
-
-<div id="sAdmin" style="display:none">
-  <div class="adw">
-    <div class="adhdr">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="logi">FB</div>
-        <div><div style="color:#fff;font-size:14px;font-weight:700">Painel Admin</div><div style="color:#7A9BB5;font-size:9px">FB Sistemas · Gestão de Alunos</div></div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <span class="adbdg">ADMIN</span>
-        <button onclick="doLogout()" style="background:none;border:none;color:#7A9BB5;font-size:10px;cursor:pointer">Sair</button>
-      </div>
-    </div>
-    <div class="adst">
-      <div class="adsc"><div id="stTotal" class="adscn cg">0</div><div class="adscl">Total</div></div>
-      <div class="adsc"><div id="stPend" class="adscn cy">0</div><div class="adscl">Pendentes</div></div>
-      <div class="adsc"><div id="stAtiv" class="adscn cg">0</div><div class="adscl">Ativos</div></div>
-    </div>
-    <div id="adFinSum"></div>
-    <div style="font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos</div>
-    <div id="adLista"><div class="empty">Carregando...</div></div>
-  </div>
-</div>
-
-<div id="sApp" style="display:none">
-<div class="app">
+<div id="app" class="tela">
 <div class="hdr">
-  <div class="hdrt">
-    <div class="logo"><div class="logi">FB</div><div><div class="logn">FB Sistemas</div><div class="logs">Estratégia Exclusiva · Fábio Marques</div></div></div>
-    <div id="sPill" class="spill sop">● OPERANDO</div>
-  </div>
-  <div class="hdrb">
-    <div class="uinfo" id="uInfo">—</div>
-    <button class="sairbtn" onclick="doLogout()">Sair</button>
-  </div>
+  <div class="htop"><div class="logo"><div class="li">FB</div><div><div class="ln">FB Sistemas</div><div class="ls">Estratégia Exclusiva · Fábio Marques</div></div></div><div id="sPill" class="pill pop">● OPERANDO</div></div>
+  <div class="hbot"><div class="uinf" id="uInfo">—</div><button class="bsair" onclick="doLogout()">Sair</button></div>
 </div>
 <div class="nav">
-  <button class="nb act" onclick="goP('dash')">Dashboard</button>
+  <button class="nb a" onclick="goP('dash')">Dashboard</button>
   <button class="nb" onclick="goP('exec')">Execução</button>
   <button class="nb" onclick="goP('cal')">Calendário</button>
   <button class="nb" onclick="goP('sim')">Simulador</button>
@@ -318,182 +224,133 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkM
   <button class="nb" onclick="goP('cfg')">Config</button>
 </div>
 
-<div id="p-dash" class="pg act">
-  <div id="alD" class="al"></div>
-  <div id="sqModal" class="sqm">
-    <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px">💰 SAQUE DISPONÍVEL</div>
-    <div id="sqVal" style="font-size:28px;font-weight:800;color:var(--green);margin-bottom:8px">R$0</div>
-    <div style="font-size:10px;color:var(--txt3);margin-bottom:10px">Banca travada no limite</div>
-    <div style="display:flex;gap:8px;justify-content:center">
-      <button onclick="confSaque()" style="background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Confirmar Saque</button>
-      <button onclick="fechSaque()" style="background:var(--bg3);color:var(--txt2);border:1px solid var(--b2);border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Depois</button>
-    </div>
-  </div>
-  <div id="emoD" class="emo">
-    <div style="font-size:36px;margin-bottom:8px">🛑</div>
-    <div style="font-size:19px;font-weight:800;color:var(--red);margin-bottom:8px">NÃO CONTINUE.</div>
-    <div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:var(--red)">Volte só amanhã.</strong></div>
-  </div>
-  <div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:var(--green)" id="dbTxt">Hoje</div><div style="font-size:10px;color:var(--txt3)">Toque para trocar o dia · 📅</div></div><div style="color:var(--green);font-size:18px">›</div></div>
-  <div class="sec">
-    <div class="sh"><span>Perfil Operacional</span><span id="pBadge" style="color:var(--green);font-weight:700;font-size:10px">MODERADO</span></div>
-    <div class="pgrid">
-      <div class="pc" id="pc-cons" onclick="setPerfil('cons')"><div style="font-size:20px;font-weight:800;color:var(--blue)">+2%</div><div style="font-size:10px;font-weight:700;color:var(--blue)">Conservador</div><div style="font-size:8px;color:var(--txt3)">Stake 5% · 5 wins=+10%</div></div>
-      <div class="pc selm" id="pc-mod" onclick="setPerfil('mod')"><div style="font-size:20px;font-weight:800;color:var(--green)">+3%</div><div style="font-size:10px;font-weight:700;color:var(--green)">Moderado</div><div style="font-size:8px;color:var(--txt3)">Stake 7,5% · 5 wins=+15%</div></div>
-      <div class="pc" id="pc-agr" onclick="setPerfil('agr')"><div style="font-size:20px;font-weight:800;color:var(--oran)">+4%</div><div style="font-size:10px;font-weight:700;color:var(--oran)">Agressivo</div><div style="font-size:8px;color:var(--txt3)">Stake 10% · 5 wins=+20%</div></div>
-    </div>
-  </div>
-  <div class="g3">
-    <div class="mc"><div class="ml">Banca Atual</div><div id="dBanca" class="mv ct">R$0</div><div id="dBSub" class="ms">Base: R$0</div></div>
-    <div class="mc"><div class="ml">Lucro do Dia</div><div id="dLucro" class="mv cg">+R$0</div><div id="dLPct" class="ms">0,00%</div></div>
-    <div class="mc"><div class="ml">Greens Seq.</div><div id="dGreens" class="mv cg">0</div><div class="ms">seguidos</div></div>
-  </div>
-  <div class="g3">
-    <div class="mc"><div class="ml">Wins</div><div id="dWins" class="mv cg">0</div></div>
-    <div class="mc"><div class="ml">Losses</div><div id="dLosses" class="mv cr">0</div></div>
-    <div class="mc"><div class="ml">Faltam</div><div id="dFaltam" class="mv cy">5</div><div class="ms" style="font-size:8px">wins p/ meta</div></div>
-  </div>
-  <div class="sec">
-    <div class="sh"><span>Progresso</span><span id="dProgPct" style="font-weight:700">0%</span></div>
-    <div class="pl"><span>Stop Loss</span><span>0%</span><span id="metaLbl">Meta +15%</span></div>
-    <div class="pb"><div id="dProg" class="pf" style="width:50%;background:var(--green)"></div></div>
-  </div>
-  <div class="sec">
-    <div class="sh">Stakes — Odd <span id="dOdd">1.44</span></div>
-    <div class="sr">
-      <div class="si"><div class="sip" id="dsl0p">G0·7,5%</div><div id="dsl0" class="siv">R$0</div><div class="sil" id="dsl0l">+3%</div></div>
-      <div class="si"><div class="sip" id="dsl1p">G1·18,75%</div><div id="dsl1" class="siv">R$0</div><div class="sil">Empate</div></div>
-      <div class="si"><div class="sip" id="dsl2p">G2·22,5%</div><div id="dsl2" class="siv">R$0</div><div class="sil" id="dsl2l">win≈-1,5%</div></div>
-    </div>
-  </div>
-  <div class="ajbox"><div style="font-size:11px;font-weight:700;color:var(--yel);margin-bottom:5px">⚖️ Ajustar banca real</div><div style="font-size:10px;color:var(--txt3);margin-bottom:7px">Corrija se o saldo real for diferente</div><div style="display:flex;gap:8px"><input id="ajInput" type="number" inputmode="decimal" placeholder="R$ valor real" style="flex:1;background:#fff;border:1px solid var(--ybd);color:var(--txt);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700;text-align:center"><button onclick="ajustarBanca()" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;font-size:12px;cursor:pointer">Ajustar</button></div></div>
-  <div class="sec"><div class="sh">Evolução do Dia</div><div class="cw"><canvas id="dayC"></canvas></div></div>
+<div id="p-dash" class="pg a">
+<div id="alD" class="al"></div>
+<div id="emoD" class="emo"><div style="font-size:36px;margin-bottom:8px">🛑</div><div style="font-size:19px;font-weight:800;color:#e53935;margin-bottom:8px">NÃO CONTINUE.</div><div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:#e53935">Volte só amanhã.</strong></div></div>
+<div id="sqModal" class="sqm"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:3px">💰 SAQUE DISPONÍVEL</div><div id="sqVal" style="font-size:28px;font-weight:800;color:#00a85a;margin-bottom:8px">R$0</div><div style="font-size:10px;color:#8090b0;margin-bottom:10px">Banca travada no limite</div><div style="display:flex;gap:8px;justify-content:center"><button onclick="confSq()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Confirmar</button><button onclick="fechSq()" style="background:#e8ebf0;color:#4a5880;border:1px solid #b8c4d4;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Depois</button></div></div>
+<div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:#00a85a" id="dbD">Hoje</div><div style="font-size:10px;color:#8090b0">Toque para trocar o dia 📅</div></div><div style="color:#00a85a;font-size:18px">›</div></div>
+<div class="sec"><div class="sh"><span>Perfil Operacional</span><span id="pBadge" style="color:#00a85a;font-weight:700;font-size:10px">MODERADO</span></div>
+<div class="pgr">
+<div class="pc" id="pc-cons" onclick="setPerfil('cons')"><div style="font-size:20px;font-weight:800;color:#1565c0">+2%</div><div style="font-size:10px;font-weight:700;color:#1565c0">Conservador</div><div style="font-size:8px;color:#8090b0">Stake 5%·5w=+10%</div></div>
+<div class="pc sm" id="pc-mod" onclick="setPerfil('mod')"><div style="font-size:20px;font-weight:800;color:#00a85a">+3%</div><div style="font-size:10px;font-weight:700;color:#00a85a">Moderado</div><div style="font-size:8px;color:#8090b0">Stake 7,5%·5w=+15%</div></div>
+<div class="pc" id="pc-agr" onclick="setPerfil('agr')"><div style="font-size:20px;font-weight:800;color:#e65100">+4%</div><div style="font-size:10px;font-weight:700;color:#e65100">Agressivo</div><div style="font-size:8px;color:#8090b0">Stake 10%·5w=+20%</div></div>
+</div></div>
+<div class="g3">
+<div class="mc"><div class="ml">Banca Atual</div><div id="dBanca" class="mv ct">R$0</div><div id="dBSub" class="ms">Base: R$0</div></div>
+<div class="mc"><div class="ml">Lucro do Dia</div><div id="dLucro" class="mv cg">+R$0</div><div id="dLPct" class="ms">0,00%</div></div>
+<div class="mc"><div class="ml">Greens Seq.</div><div id="dGreens" class="mv cg">0</div><div class="ms">seguidos</div></div>
+</div>
+<div class="g3">
+<div class="mc"><div class="ml">Wins</div><div id="dWins" class="mv cg">0</div></div>
+<div class="mc"><div class="ml">Losses</div><div id="dLoss" class="mv cr">0</div></div>
+<div class="mc"><div class="ml">Faltam</div><div id="dFalt" class="mv cy">5</div><div class="ms" style="font-size:8px">wins p/ meta</div></div>
+</div>
+<div class="sec"><div class="sh"><span>Progresso</span><span id="dPPct" style="font-weight:700">0%</span></div>
+<div class="pl"><span>Stop Loss</span><span>0%</span><span id="mLbl">Meta +10%</span></div>
+<div class="pb"><div id="dProg" class="pf" style="width:50%;background:#00a85a"></div></div></div>
+<div class="sec"><div class="sh">Stakes — Odd <span id="dOdd">1.44</span></div>
+<div class="sr">
+<div class="si"><div class="sip" id="ds0p">G0·7,5%</div><div id="ds0" class="siv">R$0</div><div class="sil" id="ds0l">+3%</div></div>
+<div class="si"><div class="sip" id="ds1p">G1·18,75%</div><div id="ds1" class="siv">R$0</div><div class="sil">Empate</div></div>
+<div class="si"><div class="sip" id="ds2p">G2·22,5%</div><div id="ds2" class="siv">R$0</div><div class="sil" id="ds2l">≈-1,5%</div></div>
+</div></div>
+<div class="ajbox"><div style="font-size:11px;font-weight:700;color:#e67e00;margin-bottom:5px">⚖️ Ajustar banca real</div><div style="font-size:10px;color:#8090b0;margin-bottom:7px">Corrija se o saldo real for diferente</div><div style="display:flex;gap:8px"><input id="ajV" type="number" inputmode="decimal" placeholder="R$ valor real" style="flex:1;background:#fff;border:1px solid rgba(230,126,0,.3);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700;text-align:center;outline:none"><button onclick="ajustar()" style="background:#00a85a;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;font-size:12px;cursor:pointer">Ajustar</button></div></div>
+<div class="sec"><div class="sh">Evolução do Dia</div><div class="cw"><canvas id="dayC"></canvas></div></div>
 </div>
 
 <div id="p-exec" class="pg">
-  <div id="alE" class="al"></div>
-  <div id="emoE" class="emo">
-    <div style="font-size:36px;margin-bottom:8px">🛑</div>
-    <div style="font-size:19px;font-weight:800;color:var(--red);margin-bottom:8px">NÃO CONTINUE.</div>
-    <div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:var(--red)">Volte só amanhã.</strong></div>
-  </div>
-  <div class="dbanner" onclick="goP('cal')" style="margin-bottom:10px"><div><div style="font-size:12px;font-weight:600;color:var(--green)" id="dbExec">Hoje</div><div style="font-size:10px;color:var(--txt3)">Toque para trocar o dia</div></div><div style="color:var(--green);font-size:18px">›</div></div>
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Stakes Ativas — <span id="ePerfil">Moderado</span></div>
-    <div class="sr">
-      <div class="si"><div class="sip" id="esl0p">G0·7,5%</div><div id="esl0" class="siv">R$0</div></div>
-      <div class="si"><div class="sip" id="esl1p">G1·18,75%</div><div id="esl1" class="siv">R$0</div></div>
-      <div class="si"><div class="sip" id="esl2p">G2·22,5%</div><div id="esl2" class="siv">R$0</div></div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sh">Registrar Resultado</div>
-    <div class="bgrid">
-      <button id="bW0" class="eb bw0" onclick="reg('W0')">WIN G0<span id="bs0" class="es">+3% na banca</span></button>
-      <button id="bW1" class="eb bw1" onclick="reg('W1')">WIN G1<span class="es">Empate 0x0</span></button>
-      <button id="bW2" class="eb bw2" onclick="reg('W2')">WIN G2<span id="bs2" class="es">≈ -1,5%</span></button>
-      <button id="bL" class="eb bloss" onclick="reg('L')">LOSS G2<span id="bsl" class="es">≈ -22,5%</span></button>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sh"><span>Últimas Operações</span><button onclick="desfazer()" style="background:var(--bg3);border:1px solid var(--b2);color:var(--txt2);border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:600">↩ Desfazer</button></div>
-    <div id="recentOps"><div class="empty">Nenhuma operação ainda</div></div>
-  </div>
-  <div class="sec" style="margin-top:10px">
-    <div class="sh">Diário Operacional</div>
-    <div style="padding:10px"><textarea class="dta" id="diaInput" placeholder="Como você está? Seguiu o método?"></textarea><button class="dbt" onclick="salvarDia()">Salvar anotação</button></div>
-    <div id="diaEntries"></div>
-  </div>
+<div id="alE" class="al"></div>
+<div id="emoE" class="emo"><div style="font-size:36px;margin-bottom:8px">🛑</div><div style="font-size:19px;font-weight:800;color:#e53935;margin-bottom:8px">NÃO CONTINUE.</div><div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:#e53935">Volte só amanhã.</strong></div></div>
+<div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:#00a85a" id="dbE">Hoje</div><div style="font-size:10px;color:#8090b0">Toque para trocar o dia</div></div><div style="color:#00a85a;font-size:18px">›</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Stakes Ativas — <span id="ePerfil">Moderado</span></div>
+<div class="sr">
+<div class="si"><div class="sip" id="es0p">G0·7,5%</div><div id="es0" class="siv">R$0</div></div>
+<div class="si"><div class="sip" id="es1p">G1·18,75%</div><div id="es1" class="siv">R$0</div></div>
+<div class="si"><div class="sip" id="es2p">G2·22,5%</div><div id="es2" class="siv">R$0</div></div>
+</div></div>
+<div class="sec"><div class="sh">Registrar Resultado</div>
+<div class="bgr">
+<button id="bW0" class="eb ew0" onclick="reg('W0')">WIN G0<span id="bs0" class="es">+3% na banca</span></button>
+<button id="bW1" class="eb ew1" onclick="reg('W1')">WIN G1<span class="es">Empate 0x0</span></button>
+<button id="bW2" class="eb ew2" onclick="reg('W2')">WIN G2<span id="bs2" class="es">≈ -1,5%</span></button>
+<button id="bL" class="eb el" onclick="reg('L')">LOSS G2<span id="bsl" class="es">≈ -22,5%</span></button>
+</div></div>
+<div class="sec"><div class="sh"><span>Últimas Operações</span><button onclick="desfazer()" style="background:#e8ebf0;border:1px solid #b8c4d4;color:#4a5880;border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:600">↩ Desfazer</button></div><div id="recentOps"><div class="empty">Nenhuma operação ainda</div></div></div>
+<div class="sec" style="margin-top:10px"><div class="sh">Diário Operacional</div><div style="padding:10px"><textarea class="dta" id="diaInp" placeholder="Como você está? Seguiu o método?"></textarea><button class="dbt" onclick="salvarDia()">Salvar anotação</button></div><div id="diaList"></div></div>
 </div>
 
 <div id="p-cal" class="pg">
-  <div class="sec">
-    <div class="sh">Calendário de Operações</div>
-    <div class="calhdr"><button class="calnav" onclick="calNav(-1)">‹</button><div class="calti" id="calTitle">Abril 2026</div><button class="calnav" onclick="calNav(1)">›</button></div>
-    <div class="calg" id="calGrid"></div>
-    <div style="display:flex;gap:14px;margin:8px 10px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--txt3)">
-      <span><span style="width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block;margin-right:3px;vertical-align:middle"></span>Operou</span>
-      <span><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:3px;vertical-align:middle"></span>Meta</span>
-      <span><span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-right:3px;vertical-align:middle"></span>Loss</span>
-    </div>
-  </div>
-  <div class="sec" id="calDet"><div class="sh" id="calDetTi">Selecione um dia</div><div id="calDetBody"><div class="empty">Toque em um dia</div></div></div>
-  <button onclick="usarDia()" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:13px;font-weight:800;font-size:14px;width:100%;cursor:pointer;margin-bottom:4px">Operar neste dia</button>
-  <div style="font-size:10px;color:var(--txt3);text-align:center;margin-bottom:10px">Define o dia selecionado como dia ativo</div>
+<div class="sec"><div class="sh">Calendário de Operações</div>
+<div style="padding:10px 12px 8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><button onclick="cNav(-1)" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:6px;padding:4px 12px;font-size:14px;cursor:pointer;color:#4a5880">‹</button><div style="font-size:13px;font-weight:700" id="cTit">Abril 2026</div><button onclick="cNav(1)" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:6px;padding:4px 12px;font-size:14px;cursor:pointer;color:#4a5880">›</button></div>
+<div class="calg" id="calGrid"></div>
+<div style="display:flex;gap:14px;margin-top:8px;padding-top:8px;border-top:1px solid #d0d8e4;font-size:10px;color:#8090b0"><span><span style="width:7px;height:7px;border-radius:50%;background:#1565c0;display:inline-block;margin-right:3px;vertical-align:middle"></span>Operou</span><span><span style="width:7px;height:7px;border-radius:50%;background:#00a85a;display:inline-block;margin-right:3px;vertical-align:middle"></span>Meta</span><span><span style="width:7px;height:7px;border-radius:50%;background:#e53935;display:inline-block;margin-right:3px;vertical-align:middle"></span>Loss</span></div>
+</div></div>
+<div class="sec" id="calDet"><div class="sh" id="cDetTit">Selecione um dia</div><div id="cDetBody"><div class="empty">Toque em um dia</div></div></div>
+<button onclick="usarDia()" style="background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:800;font-size:14px;width:100%;cursor:pointer;margin-bottom:4px">Operar neste dia</button>
+<div style="font-size:10px;color:#8090b0;text-align:center;margin-bottom:10px">Define o dia selecionado como dia ativo</div>
 </div>
 
 <div id="p-sim" class="pg">
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Simulador de Crescimento</div>
-    <div class="simr"><div class="siml">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
-    <div class="simr"><div class="siml">Perfil</div><select id="simP" class="simi" style="width:130px"><option value="cons">Conservador +2%</option><option value="mod" selected>Moderado +3%</option><option value="agr">Agressivo +4%</option></select></div>
-    <div class="simr"><div class="siml">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
-    <div class="simr"><div class="siml">Odd média</div><input id="simOd" type="number" class="simi" value="1.44" step="0.01" inputmode="decimal"></div>
-    <button class="simbtn" onclick="rodarSim()">Simular</button>
-  </div>
-  <div id="simRes" class="sec" style="display:none">
-    <div class="sh" id="simTi">Projeção</div>
-    <div style="overflow-x:auto"><table class="stt"><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
-    <div class="cw" style="height:140px"><canvas id="simC"></canvas></div>
-    <div id="simSum" style="padding:8px 12px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)"></div>
-  </div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Simulador de Crescimento</div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Perfil</div><select id="simP" class="simi" style="width:130px"><option value="cons">Conservador +2%</option><option value="mod" selected>Moderado +3%</option><option value="agr">Agressivo +4%</option></select></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Odd média</div><input id="simOd" type="number" class="simi" value="1.44" step="0.01" inputmode="decimal"></div>
+<button class="simbtn" onclick="rodarSim()">Simular</button></div>
+<div id="simRes" class="sec" style="display:none"><div class="sh" id="simTit">Projeção</div>
+<div style="overflow-x:auto"><table class="stt"><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
+<div class="cw" style="height:140px"><canvas id="simC"></canvas></div>
+<div id="simSum" style="padding:8px 12px;font-size:10px;color:#8090b0;border-top:1px solid #d0d8e4"></div></div>
 </div>
 
 <div id="p-meta" class="pg">
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Meta de Longo Prazo</div>
-    <div class="simr"><div class="siml">Minha meta (R$)</div><input id="metaAlvo" type="number" class="simi" value="150000" inputmode="decimal"></div>
-    <div class="simr"><div class="siml">Saque semanal (%)</div><input id="metaSq" type="number" class="simi" value="50" inputmode="decimal"></div>
-    <button class="simbtn" onclick="calcMeta()">Calcular</button>
-  </div>
-  <div class="metabox"><div id="metaV" style="font-size:30px;font-weight:800;color:var(--green);margin-bottom:2px">—</div><div style="font-size:9px;color:var(--txt3);text-transform:uppercase">semanas para atingir a meta</div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:10px 0 5px"><div id="metaPF" style="height:100%;background:var(--green);border-radius:4px;transition:width .6s;width:0%"></div></div><div id="metaPT" style="font-size:9px;color:var(--txt3)">0% do caminho</div></div>
-  <div class="sec" style="margin-bottom:10px"><div class="sh">Marcos</div><div id="marcosDiv"></div></div>
-  <div class="sec"><div class="sh">Curva Projetada</div><div class="cw" style="height:150px"><canvas id="metaC"></canvas></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Meta de Longo Prazo</div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Minha meta (R$)</div><input id="metaAlvo" type="number" class="simi" value="150000" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="metaSq" type="number" class="simi" value="50" inputmode="decimal"></div>
+<button class="simbtn" onclick="calcMeta()">Calcular</button></div>
+<div style="background:#e6f7ef;border:1.5px solid rgba(0,168,90,.3);border-radius:10px;padding:14px;margin:0 0 10px;text-align:center">
+<div id="metaV" style="font-size:30px;font-weight:800;color:#00a85a;margin-bottom:2px">—</div>
+<div style="font-size:9px;color:#8090b0;text-transform:uppercase">semanas para atingir a meta</div>
+<div style="height:7px;background:#e8ebf0;border-radius:4px;overflow:hidden;margin:10px 0 5px"><div id="metaPF" style="height:100%;background:#00a85a;border-radius:4px;transition:width .6s;width:0%"></div></div>
+<div id="metaPT" style="font-size:9px;color:#8090b0">0% do caminho</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Marcos</div><div id="marcosDiv"></div></div>
+<div class="sec"><div class="sh">Curva Projetada</div><div class="cw" style="height:150px"><canvas id="metaC"></canvas></div></div>
 </div>
 
 <div id="p-hist" class="pg">
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Registrar Dia Manualmente</div>
-    <div style="padding:10px 12px">
-      <div class="mfrow"><span style="font-size:11px;color:var(--txt2);font-weight:500;flex-shrink:0">Data</span><input type="date" id="mfData" class="mfinp" style="width:160px"></div>
-      <div class="mfrow"><span style="font-size:11px;color:var(--txt2);font-weight:500;flex-shrink:0">Banca inicial</span><input type="number" id="mfBI" class="mfinp" placeholder="R$" inputmode="decimal"></div>
-      <div class="mfrow"><span style="font-size:11px;color:var(--txt2);font-weight:500;flex-shrink:0">Banca final</span><input type="number" id="mfBF" class="mfinp" placeholder="R$" inputmode="decimal"></div>
-      <div id="mfResult" style="background:var(--gbg);border:1px solid var(--gbd);border-radius:7px;padding:8px 12px;font-size:11px;color:var(--green);font-weight:600;text-align:center;display:none;margin-bottom:8px"></div>
-      <button onclick="regManual()" style="background:var(--green);color:#fff;border:none;border-radius:7px;padding:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%">Calcular e Registrar</button>
-    </div>
-  </div>
-  <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Evolução da Banca</span><span id="totalDias" style="color:var(--txt3)">0 dias</span></div><div id="evoLista"><div class="empty">Sem histórico</div></div></div>
-  <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Resumo Semanal</span><button onclick="resetDia()" style="background:var(--bg3);border:1px solid var(--rbd);color:var(--red);border-radius:5px;padding:3px 9px;font-size:9px;cursor:pointer;font-weight:600">Reset Dia</button></div><div id="resumoSem"><div class="empty">Sem histórico</div></div></div>
-  <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Saques</span><span id="totalSq" style="color:var(--green);font-weight:700">R$0</span></div><div id="saqLista"><div class="empty">Nenhum saque</div></div></div>
-  <div class="sec"><div class="sh">Histórico Completo</div><div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead><tbody id="histBody"><tr><td colspan="6" class="empty">Sem histórico</td></tr></tbody></table></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Registrar Dia Manualmente</div>
+<div style="padding:10px 12px">
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Data</span><input type="date" id="mfD" class="mfinp" style="width:160px"></div>
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca inicial</span><input type="number" id="mfBI" class="mfinp" placeholder="R$" inputmode="decimal"></div>
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca final</span><input type="number" id="mfBF" class="mfinp" placeholder="R$" inputmode="decimal"></div>
+<div id="mfRes" style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:7px;padding:8px 12px;font-size:11px;color:#00a85a;font-weight:600;text-align:center;display:none;margin-bottom:8px"></div>
+<button onclick="regManual()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%">Calcular e Registrar</button>
+</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Evolução da Banca</span><span id="totDias" style="color:#8090b0">0 dias</span></div><div id="evoLista"><div class="empty">Sem histórico</div></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Resumo Semanal</span><button onclick="resetDia()" style="background:#e8ebf0;border:1px solid rgba(229,57,53,.3);color:#e53935;border-radius:5px;padding:3px 9px;font-size:9px;cursor:pointer;font-weight:600">Reset Dia</button></div><div id="resSem"><div class="empty">Sem histórico</div></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Saques</span><span id="totSq" style="color:#00a85a;font-weight:700">R$0</span></div><div id="saqLista"><div class="empty">Nenhum saque</div></div></div>
+<div class="sec"><div class="sh">Histórico Completo</div><div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead><tbody id="histBody"><tr><td colspan="6" class="empty">Sem histórico</td></tr></tbody></table></div></div>
 </div>
 
 <div id="p-cfg" class="pg">
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Configurações</div>
-    <div style="padding:8px 12px;font-size:10px;color:var(--txt3);background:var(--ybg);border-bottom:1px solid var(--ybd)">⚠️ Salvar não apaga histórico nem operações do dia.</div>
-    <div class="cfgrow"><div style="font-size:12px;color:var(--txt2);font-weight:500">Stop Win (%)</div><input id="cfgSW" type="number" class="cfgi" value="10" inputmode="decimal"></div>
-    <div class="cfgrow"><div style="font-size:12px;color:var(--txt2);font-weight:500">Stop Loss (%)</div><input id="cfgSL" type="number" class="cfgi" value="33" inputmode="decimal"></div>
-    <div class="cfgrow"><div style="font-size:12px;color:var(--txt2);font-weight:500">Limite de Saque (R$)</div><input id="cfgL" type="number" class="cfgi" value="10000" inputmode="decimal"></div>
-    <div class="cfgrow"><div style="font-size:12px;color:var(--txt2);font-weight:500">Odd (1.30–1.60)</div><input id="cfgOd" type="number" class="cfgi" value="1.44" step="0.01" inputmode="decimal"></div>
-    <div style="padding:10px 12px"><button class="savebtn" onclick="salvarCfg()">Salvar Configurações</button></div>
-  </div>
-  <div class="sec" style="margin-bottom:10px">
-    <div class="sh">Reiniciar Banca</div>
-    <div style="padding:10px 12px">
-      <div class="cfgrow" style="padding:0 0 10px"><div style="font-size:12px;color:var(--txt2);font-weight:500">Nova banca (R$)</div><input id="cfgB" type="number" class="cfgi" value="1000" inputmode="decimal"></div>
-      <div style="font-size:10px;color:var(--txt3);margin-bottom:8px">Cria novo ciclo. Histórico preservado.</div>
-      <button class="rstbtn" onclick="reiniciarBanca()">Reiniciar Banca (novo ciclo)</button>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sh">Sobre</div>
-    <div style="padding:13px 12px;font-size:10px;color:var(--txt3);line-height:2.2">
-      <div>Estratégia de <strong style="color:var(--txt2)">Fábio Marques</strong></div>
-      <div>Criação e Programação: <strong style="color:var(--txt2)">Fábio Marques</strong></div>
-      <div style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">FB Sistemas · Versão 4.0</div>
-    </div>
-  </div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Configurações</div>
+<div style="padding:8px 12px;font-size:10px;color:#8090b0;background:rgba(230,126,0,.08);border-bottom:1px solid rgba(230,126,0,.3)">⚠️ Salvar não apaga histórico nem operações do dia.</div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Stop Win (%)</div><input id="cfgSW" type="number" class="cinp" value="10" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Stop Loss (%)</div><input id="cfgSL" type="number" class="cinp" value="33" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Limite de Saque (R$)</div><input id="cfgL" type="number" class="cinp" value="10000" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Odd (1.30–1.60)</div><input id="cfgOd" type="number" class="cinp" value="1.44" step="0.01" inputmode="decimal"></div>
+<div style="padding:10px 12px"><button class="savebtn" onclick="salvarCfg()">Salvar Configurações</button></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Reiniciar Banca</div>
+<div style="padding:10px 12px">
+<div class="crow" style="padding:0 0 10px"><div style="font-size:12px;color:#4a5880;font-weight:500">Nova banca (R$)</div><input id="cfgB" type="number" class="cinp" value="1000" inputmode="decimal"></div>
+<div style="font-size:10px;color:#8090b0;margin-bottom:8px">Cria novo ciclo. Histórico preservado.</div>
+<button class="rstbtn" onclick="reiniciar()">Reiniciar Banca (novo ciclo)</button></div></div>
+<div class="sec"><div class="sh">Sobre</div>
+<div style="padding:13px 12px;font-size:10px;color:#8090b0;line-height:2.2">
+<div>Estratégia de <strong style="color:#4a5880">Fábio Marques</strong></div>
+<div>Criação e Programação: <strong style="color:#4a5880">Fábio Marques</strong></div>
+<div style="margin-top:6px;padding-top:8px;border-top:1px solid #d0d8e4">FB Sistemas · Versão 4.0</div>
+</div></div>
 </div>
 
 <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v4.0 · Todos os direitos reservados</div>
@@ -501,27 +358,22 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkM
 </div>
 
 <!-- POP BANCA INICIAL -->
-<div id="popBI" class="popwrap">
-  <div class="popcard">
-    <div class="popic">💰</div>
-    <div class="popti">Banca inicial do dia</div>
-    <div class="popsu">Qual é o saldo atual na sua conta de apostas?</div>
-    <input id="popBIval" type="number" inputmode="decimal" placeholder="R$ 0,00" class="popinp">
-    <button onclick="confirmarBI()" class="bmain">Confirmar e começar</button>
-  </div>
-</div>
+<div id="popBI" class="popw"><div class="popc">
+<div style="font-size:32px;margin-bottom:8px">💰</div>
+<div style="font-size:16px;font-weight:700;margin-bottom:4px">Banca inicial do dia</div>
+<div style="font-size:12px;color:#8090b0;margin-bottom:14px">Qual é o saldo atual na sua conta de apostas?</div>
+<input id="pBIv" type="number" inputmode="decimal" placeholder="R$ 0,00" class="pinp">
+<button onclick="confirmarBI()" class="bv">Confirmar e começar</button>
+</div></div>
 
-<!-- POP BANCA REAL (STOP) -->
-<div id="popBR" class="popwrap">
-  <input type="hidden" id="popBRtipo" value="win">
-  <div class="popcard">
-    <div id="popBRic" class="popic">🎯</div>
-    <div id="popBRmsg" class="popti">Stop Win!</div>
-    <div id="popBRsub" class="popsu">Confirme o saldo real na sua conta de apostas:</div>
-    <input id="popBRval" type="number" inputmode="decimal" placeholder="R$ 0,00" class="popinp">
-    <button onclick="confirmarBR()" class="bmain">Confirmar saldo</button>
-  </div>
-</div>
+<!-- POP STOP -->
+<div id="popStop" class="popw"><div class="popc">
+<div id="pStIc" style="font-size:32px;margin-bottom:8px">🎯</div>
+<div id="pStMsg" style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.6"></div>
+<div style="font-size:12px;color:#8090b0;margin-bottom:14px">Confirme o saldo real na sua conta:</div>
+<input id="pStV" type="number" inputmode="decimal" placeholder="R$ 0,00" class="pinp">
+<button onclick="confirmarStop()" class="bv">Confirmar saldo</button>
+</div></div>
 
 <div id="toastEl" class="toast"></div>
 
@@ -530,801 +382,381 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkM
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyBSw0VsSPNnwdhaWgQFCBF1Gg1MUYJY3bc",
-  authDomain:"fb-system-67c4c.firebaseapp.com",
-  databaseURL:"https://fb-system-67c4c-default-rtdb.firebaseio.com",
-  projectId:"fb-system-67c4c",
-  storageBucket:"fb-system-67c4c.firebasestorage.app",
-  messagingSenderId:"731901344391",
-  appId:"1:731901344391:web:ef8bd5c7d0be9d31439622"
-});
-const auth=firebase.auth();
-const db=firebase.database();
-const ADMIN_UID="u4XdK84rhVOOObBKJikwpodflv12";
-const ADMIN_EMAIL="contato@mmservicecar.com.br";
+// ───────────────────────────────────────────────
+// FIREBASE — APENAS AUTH/LOGIN
+// ───────────────────────────────────────────────
+firebase.initializeApp({apiKey:"AIzaSyBSw0VsSPNnwdhaWgQFCBF1Gg1MUYJY3bc",authDomain:"fb-system-67c4c.firebaseapp.com",databaseURL:"https://fb-system-67c4c-default-rtdb.firebaseio.com",projectId:"fb-system-67c4c",storageBucket:"fb-system-67c4c.firebasestorage.app",messagingSenderId:"731901344391",appId:"1:731901344391:web:ef8bd5c7d0be9d31439622"});
+var auth=firebase.auth(), db=firebase.database();
+var ADM_UID="u4XdK84rhVOOObBKJikwpodflv12", ADM_EMAIL="contato@mmservicecar.com.br";
+var _uid=null, _carregado=false;
 
-const PR={
-  cons:{n:"Conservador",g0:.05,g1:.125,g2:.15,w:.02},
-  mod:{n:"Moderado",g0:.075,g1:.1875,g2:.225,w:.03},
-  agr:{n:"Agressivo",g0:.10,g1:.25,g2:.30,w:.04}
-};
+// ───────────────────────────────────────────────
+// SISTEMA OPERACIONAL — IDÊNTICO AO QUE FUNCIONAVA
+// ───────────────────────────────────────────────
+var PR={cons:{n:'Conservador',g0:.05,g1:.125,g2:.15,w:.02},mod:{n:'Moderado',g0:.075,g1:.1875,g2:.225,w:.03},agr:{n:'Agressivo',g0:.10,g1:.25,g2:.30,w:.04}};
+var S=null;
+function defS(){return{banca:1000,bancaBase:1000,limite:10000,stopWin:10,stopLoss:33,odd:1.44,perfil:'mod',wins:0,losses:0,ops:0,greensSeq:0,operacoes:[],histDiario:[],saques:[],totalSacado:0,dayChart:[],diario:[],travado:false,tipoTrava:null,dataAtual:new Date().toDateString(),dataOperando:new Date().toDateString(),_biOk:false};}
 
-let CU=null,S=null,uRef=null,_stateLoaded=false;
-
-function defS(){
-  return {
-    banca:1000,bancaBase:1000,limite:10000,
-    stopWin:10,stopLoss:33,odd:1.44,
-    perfil:"mod",wins:0,losses:0,ops:0,greensSeq:0,
-    operacoes:[],histDiario:[],saques:[],totalSacado:0,
-    dayChart:[],diario:[],travado:false,tipoTrava:null,
-    dataAtual:new Date().toDateString(),
-    dataOperando:new Date().toDateString(),
-    _biConfirmada:false
-  };
-}
+// SAVE — só persiste, não lê de volta
+function sv(){if(_uid&&S)db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(S)));}
 
 // HELPERS
-function show(id){
-  ["sLoad","sLogin","sCad","sRec","sPend","sAdmin","sApp"].forEach(function(s){
-    var e=document.getElementById(s);
-    if(e) e.style.display="none";
-  });
-  var t=document.getElementById(id);
-  if(t) t.style.display="block";
-}
-function g(id){ return document.getElementById(id); }
-function sv(){ if(uRef&&S){ uRef.child("state").set(S); } }
-function toast(m){
-  var e=g("toastEl");
-  e.textContent=m; e.style.display="block";
-  setTimeout(function(){ e.style.display="none"; }, 2800);
-}
-function fR(v){ return "R$"+Math.abs(v).toLocaleString("pt-BR",{maximumFractionDigits:0}); }
-function fD(v){ return "R$"+Math.abs(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fP(v){ return (v>=0?"+":"")+v.toFixed(2)+"%"; }
-function fmtBR(d){ return new Date(d).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"}); }
-function fmtLong(d){ return new Date(d).toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}); }
-function fRa(v){ return "R$"+Math.abs(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function g(id){return document.getElementById(id);}
+function show(id){['tLoad','tLogin','tCad','tRec','tPend','tAdm','app'].forEach(function(t){var e=g(t);if(!e)return;e.classList.remove('on');});var e=g(id);if(e)e.classList.add('on');}
+function toast(m){var e=g('toastEl');e.textContent=m;e.style.display='block';setTimeout(function(){e.style.display='none';},2500);}
+function fR(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:0});}
+function fD(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fP(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
+function fmtBR(d){return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtL(d){return new Date(d).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 
 // AUTH
 auth.onAuthStateChanged(function(user){
-  if(!user){ show("sLogin"); return; }
-  CU=user;
-  if(user.uid===ADMIN_UID||user.email===ADMIN_EMAIL){
-    show("sAdmin"); loadAdmin(); return;
-  }
-  db.ref("users/"+user.uid).once("value").then(function(snap){
+  if(!user){_uid=null;_carregado=false;show('tLogin');return;}
+  if(_carregado)return; // IMPEDE re-trigger por refresh de token
+  _uid=user.uid;
+  if(user.uid===ADM_UID||user.email===ADM_EMAIL){_carregado=true;show('tAdm');loadAdm();return;}
+  db.ref('users/'+user.uid).once('value').then(function(snap){
     var ud=snap.val();
-    if(!ud){ auth.signOut(); show("sLogin"); return; }
-    if(ud.status==="pendente"){ show("sPend"); return; }
-    if(ud.status==="bloqueado"){
-      show("sPend");
-      g("pendBadge").textContent="ACESSO BLOQUEADO";
-      g("pendTi").textContent="Acesso bloqueado";
-      g("pendMsg").textContent="Sua conta foi bloqueada. Entre em contato com o gestor.";
-      return;
-    }
-    if(ud.status==="ativo"){
-      uRef=db.ref("users/"+user.uid);
-      if(_stateLoaded) return; // prevent re-loading on auth token refresh
-      uRef.child("state").once("value").then(function(ss){
+    if(!ud){auth.signOut();return;}
+    if(ud.status==='pendente'){show('tPend');return;}
+    if(ud.status==='bloqueado'){show('tPend');g('pendBadge').textContent='ACESSO BLOQUEADO';g('pendTit').textContent='Acesso bloqueado';return;}
+    if(ud.status==='ativo'){
+      db.ref('users/'+user.uid+'/state').once('value').then(function(ss){
         S=ss.val()||defS();
-        if(!S.dataAtual) S.dataAtual=new Date().toDateString();
-        if(!S.dataOperando) S.dataOperando=new Date().toDateString();
-        if(S.stopWin===undefined) S.stopWin=10;
-        if(S.stopLoss===undefined) S.stopLoss=33;
-        _stateLoaded=true;
-        show("sApp");
-        g("uInfo").textContent=(ud.nome||"")+" · "+(ud.genero||"");
+        if(!S.dataAtual)S.dataAtual=new Date().toDateString();
+        if(!S.dataOperando)S.dataOperando=new Date().toDateString();
+        if(S.stopWin==null)S.stopWin=10;
+        if(S.stopLoss==null)S.stopLoss=33;
+        if(!S.operacoes)S.operacoes=[];
+        if(!S.histDiario)S.histDiario=[];
+        if(!S.saques)S.saques=[];
+        if(!S.dayChart)S.dayChart=[];
+        if(!S.diario)S.diario=[];
+        _carregado=true;
+        g('uInfo').textContent=(ud.nome||'')+' · '+(ud.genero||'');
+        show('app');
         checkDia();
         render();
-        setTimeout(function(){
-          if(!S._biConfirmada && S.ops===0){
-            g("popBIval").value="";
-            g("popBI").classList.add("show");
-          }
-        }, 600);
+        setTimeout(function(){if(!S._biOk&&S.ops===0){g('pBIv').value='';g('popBI').classList.add('v');}},600);
       });
     }
   });
 });
 
 async function doLogin(){
-  var e=g("loginEmail").value.trim(), s=g("loginSenha").value, err=g("loginErr");
-  err.className="aerr";
-  if(!e||!s){ err.textContent="Preencha e-mail e senha"; err.className="aerr show"; return; }
-  try{ await auth.signInWithEmailAndPassword(e,s); }
-  catch(ex){
-    err.textContent=(ex.code==="auth/user-not-found"||ex.code==="auth/wrong-password")?"E-mail ou senha incorretos":"Erro ao entrar.";
-    err.className="aerr show";
-  }
+  var e=g('iEmail').value.trim(),s=g('iSenha').value,err=g('eLogin');err.className='merr';
+  if(!e||!s){err.textContent='Preencha e-mail e senha';err.className='merr v';return;}
+  try{await auth.signInWithEmailAndPassword(e,s);}
+  catch(ex){err.textContent=(ex.code==='auth/user-not-found'||ex.code==='auth/wrong-password')?'E-mail ou senha incorretos':'Erro ao entrar.';err.className='merr v';}
 }
 async function doCad(){
-  var nome=g("cadNome").value.trim(), email=g("cadEmail").value.trim();
-  var s=g("cadSenha").value, s2=g("cadSenha2").value, gen=g("cadGenero").value;
-  var err=g("cadErr"), ok=g("cadOk");
-  err.className="aerr"; ok.className="aok";
-  if(!nome||!email||!s||!gen){ err.textContent="Preencha todos os campos"; err.className="aerr show"; return; }
-  if(s!==s2){ err.textContent="As senhas não coincidem"; err.className="aerr show"; return; }
-  if(s.length<6){ err.textContent="Senha mínimo 6 caracteres"; err.className="aerr show"; return; }
+  var nome=g('iNome').value.trim(),email=g('iCEmail').value.trim(),s=g('iCSenha').value,s2=g('iCSenha2').value,gen=g('iGenero').value;
+  var err=g('eCad'),ok=g('okCad');err.className='merr';ok.className='mok';
+  if(!nome||!email||!s||!gen){err.textContent='Preencha todos os campos';err.className='merr v';return;}
+  if(s!==s2){err.textContent='As senhas não coincidem';err.className='merr v';return;}
+  if(s.length<6){err.textContent='Senha mínimo 6 caracteres';err.className='merr v';return;}
   try{
     var c=await auth.createUserWithEmailAndPassword(email,s);
-    await db.ref("users/"+c.user.uid).set({nome:nome,email:email,genero:gen,status:"pendente",criadoEm:new Date().toISOString()});
-    ok.textContent="Cadastro realizado! Aguarde aprovação."; ok.className="aok show";
-    setTimeout(function(){ show("sPend"); }, 1500);
-  }catch(ex){
-    err.textContent=(ex.code==="auth/email-already-in-use")?"E-mail já cadastrado":"Erro ao cadastrar.";
-    err.className="aerr show";
-  }
+    await db.ref('users/'+c.user.uid).set({nome:nome,email:email,genero:gen,status:'pendente',criadoEm:new Date().toISOString()});
+    ok.textContent='Cadastro realizado! Aguarde aprovação.';ok.className='mok v';
+    setTimeout(function(){show('tPend');},1500);
+  }catch(ex){err.textContent=ex.code==='auth/email-already-in-use'?'E-mail já cadastrado':'Erro ao cadastrar.';err.className='merr v';}
 }
 async function doRec(){
-  var e=g("recEmail").value.trim(), err=g("recErr"), ok=g("recOk");
-  err.className="aerr"; ok.className="aok";
-  if(!e){ err.textContent="Digite seu e-mail"; err.className="aerr show"; return; }
-  try{ await auth.sendPasswordResetEmail(e); ok.textContent="Link enviado! Verifique sua caixa."; ok.className="aok show"; }
-  catch(ex){ err.textContent="E-mail não encontrado."; err.className="aerr show"; }
+  var e=g('iREmail').value.trim(),err=g('eRec'),ok=g('okRec');err.className='merr';ok.className='mok';
+  if(!e){err.textContent='Digite seu e-mail';err.className='merr v';return;}
+  try{await auth.sendPasswordResetEmail(e);ok.textContent='Link enviado! Verifique sua caixa.';ok.className='mok v';}
+  catch(ex){err.textContent='E-mail não encontrado.';err.className='merr v';}
 }
 async function checkStatus(){
-  if(!CU) return;
-  var s=await db.ref("users/"+CU.uid+"/status").once("value");
-  if(s.val()==="ativo") location.reload();
-  else toast("Ainda aguardando aprovação...");
+  if(!_uid)return;
+  var snap=await db.ref('users/'+_uid+'/status').once('value');
+  if(snap.val()==='ativo'){_carregado=false;location.reload();}else toast('Ainda aguardando...');
 }
-async function doLogout(){ await auth.signOut(); S=null; uRef=null; CU=null; _stateLoaded=false; show("sLogin"); }
+async function doLogout(){_carregado=false;_uid=null;S=null;await auth.signOut();show('tLogin');}
 
 // ADMIN
-function loadAdmin(){
-  db.ref("users").on("value",function(snap){
+function loadAdm(){
+  db.ref('users').on('value',function(snap){
     var data=snap.val()||{};
-    var lista=Object.entries(data).map(function(e){ return Object.assign({uid:e[0]},e[1]); });
-    g("stTotal").textContent=lista.length;
-    g("stPend").textContent=lista.filter(function(u){ return u.status==="pendente"; }).length;
-    g("stAtiv").textContent=lista.filter(function(u){ return u.status==="ativo"; }).length;
-    if(!lista.length){ g("adLista").innerHTML='<div class="empty">Nenhum aluno</div>'; return; }
-    lista.sort(function(a,b){ return a.status==="pendente"?-1:1; });
-    var done=0;
-    lista.forEach(function(u){
-      db.ref("users/"+u.uid+"/state").once("value").then(function(ss){
-        u._st=ss.val(); done++;
-        if(done===lista.length) renderAdmin(lista);
-      });
-    });
+    var lista=Object.keys(data).map(function(uid){return Object.assign({uid:uid},data[uid]);});
+    g('stTot').textContent=lista.length;
+    g('stPend').textContent=lista.filter(function(u){return u.status==='pendente';}).length;
+    g('stAtiv').textContent=lista.filter(function(u){return u.status==='ativo';}).length;
+    if(!lista.length){g('admLista').innerHTML='<div class="empty">Nenhum aluno</div>';return;}
+    lista.sort(function(a,b){return a.status==='pendente'?-1:1;});
+    var done=0;lista.forEach(function(u){db.ref('users/'+u.uid+'/state').once('value').then(function(ss){u._st=ss.val();done++;if(done===lista.length)renderAdm(lista);});});
   });
 }
-function renderAdmin(lista){
-  var tSac=0;
-  lista.filter(function(u){ return u.status==="ativo"&&u._st; }).forEach(function(u){ tSac+=u._st.totalSacado||0; });
-  g("adFinSum").innerHTML=
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">'+
-    '<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px;text-align:center">'+
-    '<div style="font-size:8px;color:var(--txt3);margin-bottom:2px">TOTAL SACADO</div>'+
-    '<div style="font-size:18px;font-weight:700;color:var(--green)">'+fRa(tSac)+'</div></div>'+
-    '<div style="background:#fff3e0;border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px;text-align:center">'+
-    '<div style="font-size:8px;color:var(--txt3);margin-bottom:2px">A RECEBER (10%)</div>'+
-    '<div style="font-size:18px;font-weight:700;color:var(--oran)">'+fRa(tSac*0.10)+'</div></div></div>';
-  g("adLista").innerHTML=lista.map(function(u){
-    var sc=u.status==="pendente"?"spp":u.status==="ativo"?"spa":"spb";
-    var sl=u.status==="pendente"?"Pendente":u.status==="ativo"?"Ativo":"Bloqueado";
-    var dt=u.criadoEm?new Date(u.criadoEm).toLocaleDateString("pt-BR"):"—";
-    var st=u._st;
-    var fin="";
-    if(st&&u.status==="ativo"){
-      var b=st.banca||0,bb=st.bancaBase||0,ts=st.totalSacado||0;
-      var pct=bb>0?((b-bb)/bb*100):0;
-      var cor=pct>=0?"var(--green)":"var(--red)";
-      fin='<div style="background:var(--bg3);border-radius:7px;padding:9px;margin-bottom:8px">'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">'+
-        '<div style="text-align:center"><div style="font-size:8px;color:var(--txt3)">BANCA</div><div style="font-size:13px;font-weight:700">'+fRa(b)+'</div></div>'+
-        '<div style="text-align:center"><div style="font-size:8px;color:var(--txt3)">HOJE</div><div style="font-size:13px;font-weight:700;color:'+cor+'">'+(pct>=0?"+":"")+pct.toFixed(1)+'%</div></div>'+
-        '<div style="text-align:center"><div style="font-size:8px;color:var(--txt3)">WINS</div><div style="font-size:13px;font-weight:700;color:var(--green)">'+(st.wins||0)+'</div></div>'+
-        '</div><div style="border-top:1px solid var(--border);padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
-        '<div style="text-align:center"><div style="font-size:8px;color:var(--txt3)">TOTAL SACADO</div><div style="font-size:12px;font-weight:700;color:var(--blue)">'+fRa(ts)+'</div></div>'+
-        '<div style="text-align:center;background:#fff3e0;border-radius:5px;padding:3px"><div style="font-size:8px;color:var(--txt3)">A RECEBER 10%</div>'+
-        '<div style="font-size:13px;font-weight:800;color:var(--oran)">'+fRa(ts*0.10)+'</div></div></div></div>';
-    }
-    var btns='<div class="albtns">';
-    if(u.status!=="ativo") btns+='<button class="abtn abapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">✓ Aprovar</button>';
-    if(u.status!=="bloqueado") btns+='<button class="abtn abblk" data-uid="'+u.uid+'" data-st="bloqueado" onclick="setStatus(this.dataset.uid,this.dataset.st)">✕ Bloquear</button>';
-    if(u.status==="bloqueado") btns+='<button class="abtn abapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">↩ Reativar</button>';
+function renderAdm(lista){
+  var tSac=0;lista.forEach(function(u){if(u.status==='ativo'&&u._st)tSac+=u._st.totalSacado||0;});
+  g('admFin').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:8px;color:#8090b0;margin-bottom:2px">TOTAL SACADO</div><div style="font-size:18px;font-weight:700;color:#00a85a">'+fD(tSac)+'</div></div><div style="background:#fff3e0;border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:8px;color:#8090b0;margin-bottom:2px">A RECEBER (10%)</div><div style="font-size:18px;font-weight:700;color:#e65100">'+fD(tSac*0.10)+'</div></div></div>';
+  g('admLista').innerHTML=lista.map(function(u){
+    var sc=u.status==='pendente'?'stp':u.status==='ativo'?'sta':'stb';
+    var sl=u.status==='pendente'?'Pendente':u.status==='ativo'?'Ativo':'Bloqueado';
+    var dt=u.criadoEm?new Date(u.criadoEm).toLocaleDateString('pt-BR'):'—';
+    var fin='';
+    if(u._st&&u.status==='ativo'){var b=u._st.banca||0,bb=u._st.bancaBase||0,ts=u._st.totalSacado||0,pct=bb>0?((b-bb)/bb*100):0,cor=pct>=0?'#00a85a':'#e53935';fin='<div style="background:#f0f2f5;border-radius:7px;padding:9px;margin-bottom:8px"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px"><div style="text-align:center"><div style="font-size:8px;color:#8090b0">BANCA</div><div style="font-size:13px;font-weight:700">'+fD(b)+'</div></div><div style="text-align:center"><div style="font-size:8px;color:#8090b0">HOJE</div><div style="font-size:13px;font-weight:700;color:'+cor+'">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</div></div><div style="text-align:center"><div style="font-size:8px;color:#8090b0">WINS</div><div style="font-size:13px;font-weight:700;color:#00a85a">'+(u._st.wins||0)+'</div></div></div><div style="border-top:1px solid #d0d8e4;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="text-align:center"><div style="font-size:8px;color:#8090b0">TOTAL SACADO</div><div style="font-size:12px;font-weight:700;color:#1565c0">'+fD(ts)+'</div></div><div style="text-align:center;background:#fff3e0;border-radius:5px;padding:3px"><div style="font-size:8px;color:#8090b0">A RECEBER 10%</div><div style="font-size:13px;font-weight:800;color:#e65100">'+fD(ts*0.10)+'</div></div></div></div>';}
+    var btns='<div class="abtns">';
+    if(u.status!=='ativo')btns+='<button class="abtn aapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">✓ Aprovar</button>';
+    if(u.status!=='bloqueado')btns+='<button class="abtn ablk" data-uid="'+u.uid+'" data-st="bloqueado" onclick="setStatus(this.dataset.uid,this.dataset.st)">✕ Bloquear</button>';
+    if(u.status==='bloqueado')btns+='<button class="abtn aapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">↩ Reativar</button>';
     btns+='</div>';
-    return '<div class="alcard">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
-      '<div><div class="alname">'+(u.nome||"—")+'</div><div class="alemail">'+(u.email||"—")+'</div></div>'+
-      '<span class="stp '+sc+'">'+sl+'</span></div>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">'+
-      '<span class="altag">📅 '+dt+'</span>'+(u.genero?'<span class="altag">'+u.genero+'</span>':'')+
-      '</div>'+fin+btns+'</div>';
-  }).join("");
+    return '<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:12px 14px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600">'+(u.nome||'—')+'</div><div style="font-size:11px;color:#8090b0;margin-top:1px">'+(u.email||'—')+'</div></div><span class="astag '+sc+'">'+sl+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">📅 '+dt+'</span>'+(u.genero?'<span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">'+u.genero+'</span>':'')+'</div>'+fin+btns+'</div>';
+  }).join('');
 }
-async function setStatus(uid,status){
-  await db.ref("users/"+uid+"/status").set(status);
-  toast(status==="ativo"?"Aluno aprovado!":"Aluno bloqueado");
-}
+async function setStatus(uid,status){await db.ref('users/'+uid+'/status').set(status);toast(status==='ativo'?'Aluno aprovado!':'Aluno bloqueado');}
 
 // POP-UPS
-function confirmarBI(){
-  var val=parseFloat(g("popBIval").value);
-  if(!val||isNaN(val)||val<=0){ toast("Digite o valor correto"); return; }
-  S.bancaBase=val; S.banca=val; S.dayChart=[val]; S._biConfirmada=true;
-  g("popBI").classList.remove("show");
-  sv(); render(); toast("Banca inicial: "+fR(val));
-}
-function confirmarBR(){
-  var val=parseFloat(g("popBRval").value);
-  if(!val||isNaN(val)||val<=0){ toast("Digite o valor correto"); return; }
-  S.banca=val; S.dayChart.push(val);
-  g("popBR").classList.remove("show");
-  sv(); render(); toast("Banca atualizada: "+fR(val));
-}
+function confirmarBI(){var val=parseFloat(g('pBIv').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}S.bancaBase=val;S.banca=val;S.dayChart=[val];S._biOk=true;g('popBI').classList.remove('v');sv();render();toast('Banca inicial: '+fR(val));}
+function confirmarStop(){var val=parseFloat(g('pStV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}S.banca=val;S.dayChart.push(val);g('popStop').classList.remove('v');sv();render();toast('Banca atualizada: '+fR(val));}
 
-// OPERAÇÕES
+// ─── OPERAÇÕES ───────────────────────────────────
 function checkDia(){
   var hoje=new Date().toDateString();
-  if(!S.dataAtual) S.dataAtual=hoje;
-  if(!S.dataOperando) S.dataOperando=hoje;
-  if(S.dataAtual!==hoje && S.dataOperando===hoje){
-    if(S.ops>0){
-      var res=((S.banca-S.bancaBase)/S.bancaBase*100);
-      S.histDiario.unshift({data:fmtBR(S.dataAtual),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});
-    }
-    S.wins=0; S.losses=0; S.ops=0; S.bancaBase=S.banca;
-    S.operacoes=[]; S.dayChart=[S.banca];
-    S.travado=false; S.tipoTrava=null; S._biConfirmada=false;
-    S.dataAtual=hoje; S.dataOperando=hoje; sv();
+  if(!S.dataAtual)S.dataAtual=hoje;
+  if(!S.dataOperando)S.dataOperando=hoje;
+  if(S.dataAtual!==hoje&&S.dataOperando===hoje){
+    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataAtual),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+    S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;S.dataAtual=hoje;S.dataOperando=hoje;sv();
   }
 }
 function resetDia(){
-  if(!confirm("Resetar o dia? Histórico preservado.")) return;
-  if(S.ops>0){
-    var res=((S.banca-S.bancaBase)/S.bancaBase*100);
-    S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});
-  }
-  S.wins=0; S.losses=0; S.ops=0; S.bancaBase=S.banca;
-  S.operacoes=[]; S.dayChart=[S.banca];
-  S.travado=false; S.tipoTrava=null; S._biConfirmada=false;
-  sv(); render(); toast("Dia resetado");
+  if(!confirm('Resetar o dia? Histórico preservado.'))return;
+  if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+  S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;sv();render();toast('Dia resetado');
 }
-function setPerfil(p){ S.perfil=p; sv(); render(); toast("Perfil: "+PR[p].n); }
-function ajustarBanca(){
-  var val=parseFloat(g("ajInput").value);
-  if(!val||isNaN(val)||val<=0){ toast("Digite o valor real"); return; }
-  S.banca=val; S.dayChart.push(val);
-  sv(); render(); g("ajInput").value=""; toast("Banca ajustada: "+fR(val));
-}
+function setPerfil(p){S.perfil=p;sv();render();toast('Perfil: '+PR[p].n);}
+function ajustar(){var val=parseFloat(g('ajV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor real');return;}S.banca=val;S.dayChart.push(val);sv();render();g('ajV').value='';toast('Banca ajustada: '+fR(val));}
 
 function reg(tipo){
-  if(S.travado) return;
-  var b=S.banca, Pf=PR[S.perfil], od=parseFloat(S.odd)||1.44;
-  var stopW=parseFloat(S.stopWin)||10;
-  var stopL=parseFloat(S.stopLoss)||33;
+  if(S.travado)return;
+  var b=S.banca,Pf=PR[S.perfil],od=parseFloat(S.odd)||1.44;
+  var stopW=parseFloat(S.stopWin)||10,stopL=parseFloat(S.stopLoss)||33;
   var delta;
-  if(tipo==="W0") delta=b*Pf.w;
-  else if(tipo==="W1") delta=0;
-  else if(tipo==="W2") delta=-(b*Pf.g2*(2-od));
+  if(tipo==='W0')delta=b*Pf.w;
+  else if(tipo==='W1')delta=0;
+  else if(tipo==='W2')delta=-(b*Pf.g2*(2-od));
   else delta=-(b*Pf.g2);
-  S.banca=Math.max(0,b+delta);
-  S.ops++;
-  if(tipo!=="L"){ S.wins++; S.greensSeq++; }
-  else { S.losses++; S.greensSeq=0; }
+  S.banca=Math.max(0,b+delta);S.ops++;
+  if(tipo!=='L'){S.wins++;S.greensSeq++;}else{S.losses++;S.greensSeq=0;}
   S.dayChart.push(S.banca);
-  S.operacoes.unshift({
-    tipo:{W0:"WIN G0",W1:"WIN G1",W2:"WIN G2",L:"LOSS G2"}[tipo],
-    cat:tipo==="L"?"L":"W",
-    prev:b, after:S.banca, delta:delta,
-    ts:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
-  });
-  if(S.operacoes.length>30) S.operacoes.pop();
+  S.operacoes.unshift({tipo:{W0:'WIN G0',W1:'WIN G1',W2:'WIN G2',L:'LOSS G2'}[tipo],cat:tipo==='L'?'L':'W',prev:b,after:S.banca,delta:delta,ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  if(S.operacoes.length>30)S.operacoes.pop();
   var pct=((S.banca-S.bancaBase)/S.bancaBase*100);
-  if(pct>=stopW && !S.travado){
-    S.travado=true; S.tipoTrava="win";
-    setTimeout(function(){
-      g("popBRic").textContent="🎯";
-      g("popBRmsg").textContent="Você ganhou "+pct.toFixed(2)+"% hoje! Mantenha a gestão do Fábio.";
-      g("popBRval").value=S.banca.toFixed(2);
-      g("popBR").classList.add("show");
-    }, 400);
-  }
-  if(pct<=-stopL && !S.travado){
-    S.travado=true; S.tipoTrava="loss";
-    setTimeout(function(){
-      g("popBRic").textContent="🛑";
-      g("popBRmsg").textContent="Stop Loss atingido. Não continue hoje.";
-      g("popBRval").value=S.banca.toFixed(2);
-      g("popBR").classList.add("show");
-    }, 400);
-  }
-  if(tipo==="L"){ S.travado=true; S.tipoTrava="loss_emo"; }
-  if(S.banca>S.limite){
-    var exc=S.banca-S.limite;
-    S.saques.unshift({valor:exc,data:fmtBR(new Date().toDateString()),ts:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})});
-    S.totalSacado+=exc; S.banca=S.limite;
-  }
-  sv();
-  render();
+  if(pct>=stopW&&!S.travado){S.travado=true;S.tipoTrava='win';setTimeout(function(){g('pStIc').textContent='🎯';g('pStMsg').textContent='Você ganhou '+pct.toFixed(2)+'% hoje!';g('pStV').value=S.banca.toFixed(2);g('popStop').classList.add('v');},400);}
+  if(pct<=-stopL&&!S.travado){S.travado=true;S.tipoTrava='loss';setTimeout(function(){g('pStIc').textContent='🛑';g('pStMsg').textContent='Stop Loss atingido.';g('pStV').value=S.banca.toFixed(2);g('popStop').classList.add('v');},400);}
+  if(tipo==='L'){S.travado=true;S.tipoTrava='loss_emo';}
+  if(S.banca>S.limite){var exc=S.banca-S.limite;S.saques.unshift({valor:exc,data:fmtBR(new Date().toDateString()),ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});S.totalSacado+=exc;S.banca=S.limite;}
+  sv();render();
 }
 
 function desfazer(){
-  if(!S.operacoes.length) return;
-  var last=S.operacoes.shift();
-  S.banca=last.prev; S.ops--;
-  if(last.cat==="W"){ S.wins=Math.max(0,S.wins-1); S.greensSeq=Math.max(0,S.greensSeq-1); }
-  else { S.losses=Math.max(0,S.losses-1); S.greensSeq=0; }
-  S.dayChart.pop(); S.travado=false; S.tipoTrava=null;
-  sv(); render(); toast("Desfeito");
+  if(!S.operacoes.length)return;
+  var last=S.operacoes.shift();S.banca=last.prev;S.ops--;
+  if(last.cat==='W'){S.wins=Math.max(0,S.wins-1);S.greensSeq=Math.max(0,S.greensSeq-1);}else{S.losses=Math.max(0,S.losses-1);S.greensSeq=0;}
+  S.dayChart.pop();S.travado=false;S.tipoTrava=null;sv();render();toast('Desfeito');
 }
-function confSaque(){ g("sqModal").classList.remove("show"); toast("Saque registrado!"); }
-function fechSaque(){ g("sqModal").classList.remove("show"); }
-function salvarDia(){
-  var t=g("diaInput").value.trim();
-  if(!t) return;
-  S.diario.unshift({texto:t,ts:new Date().toLocaleString("pt-BR")});
-  if(S.diario.length>50) S.diario.pop();
-  g("diaInput").value="";
-  sv(); render(); toast("Anotação salva");
-}
-function salvarCfg(){
-  S.stopWin=parseFloat(g("cfgSW").value)||10;
-  S.stopLoss=parseFloat(g("cfgSL").value)||33;
-  S.limite=parseFloat(g("cfgL").value)||10000;
-  S.odd=parseFloat(g("cfgOd").value)||1.44;
-  sv(); render(); toast("Configurações salvas!");
-}
-function reiniciarBanca(){
-  var nb=parseFloat(g("cfgB").value)||1000;
-  if(!confirm("Reiniciar com "+fR(nb)+"? Histórico preservado.")) return;
-  if(S.ops>0){
-    var res=((S.banca-S.bancaBase)/S.bancaBase*100);
-    S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});
-  }
-  S.bancaBase=nb; S.banca=nb; S.wins=0; S.losses=0; S.ops=0;
-  S.operacoes=[]; S.dayChart=[nb]; S.travado=false; S.tipoTrava=null; S._biConfirmada=false;
-  S.dataOperando=new Date().toDateString();
-  sv(); render(); toast("Novo ciclo: "+fR(nb));
+function confSq(){g('sqModal').classList.remove('v');toast('Saque registrado!');}
+function fechSq(){g('sqModal').classList.remove('v');}
+function salvarDia(){var t=g('diaInp').value.trim();if(!t)return;S.diario.unshift({texto:t,ts:new Date().toLocaleString('pt-BR')});if(S.diario.length>50)S.diario.pop();g('diaInp').value='';sv();render();toast('Anotação salva');}
+function salvarCfg(){S.stopWin=parseFloat(g('cfgSW').value)||10;S.stopLoss=parseFloat(g('cfgSL').value)||33;S.limite=parseFloat(g('cfgL').value)||10000;S.odd=parseFloat(g('cfgOd').value)||1.44;sv();render();toast('Configurações salvas!');}
+function reiniciar(){
+  var nb=parseFloat(g('cfgB').value)||1000;
+  if(!confirm('Reiniciar com '+fR(nb)+'? Histórico preservado.'))return;
+  if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+  S.bancaBase=nb;S.banca=nb;S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[nb];S.travado=false;S.tipoTrava=null;S._biOk=false;S.dataOperando=new Date().toDateString();sv();render();toast('Novo ciclo: '+fR(nb));
 }
 function regManual(){
-  var data=g("mfData").value, bi=parseFloat(g("mfBI").value), bf=parseFloat(g("mfBF").value);
-  if(!data||!bi||!bf){ toast("Preencha todos os campos"); return; }
-  var res=((bf-bi)/bi*100);
-  var dtBR=new Date(data+"T12:00:00").toLocaleDateString("pt-BR");
-  S.histDiario=S.histDiario.filter(function(h){ return h.data!==dtBR; });
+  var data=g('mfD').value,bi=parseFloat(g('mfBI').value),bf=parseFloat(g('mfBF').value);
+  if(!data||!bi||!bf){toast('Preencha todos os campos');return;}
+  var res=((bf-bi)/bi*100),dtBR=new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
+  S.histDiario=S.histDiario.filter(function(h){return h.data!==dtBR;});
   S.histDiario.push({data:dtBR,bancaInicial:bi,bancaFinal:bf,resultado:res,wins:0,losses:0,metaBatida:res>=(S.stopWin||10),perfil:S.perfil,manual:true});
-  S.histDiario.sort(function(a,b){
-    var da=new Date(a.data.split("/").reverse().join("-"));
-    var db2=new Date(b.data.split("/").reverse().join("-"));
-    return db2-da;
-  });
-  var r=g("mfResult");
-  r.textContent=dtBR+": "+fR(bi)+" → "+fR(bf)+" = "+fP(res);
-  r.style.display="block";
-  g("mfData").value=""; g("mfBI").value=""; g("mfBF").value="";
-  sv(); render(); toast("Dia registrado!");
+  S.histDiario.sort(function(a,b){return new Date(b.data.split('/').reverse().join('-'))-new Date(a.data.split('/').reverse().join('-'));});
+  var r=g('mfRes');r.textContent=dtBR+': '+fR(bi)+' → '+fR(bf)+' = '+fP(res);r.style.display='block';
+  g('mfD').value='';g('mfBI').value='';g('mfBF').value='';sv();render();toast('Dia registrado!');
 }
 
 // SIMULADOR
 function rodarSim(){
-  var bi=parseFloat(g("simB").value)||1000;
-  var p=g("simP").value;
-  var sq=Math.min(95,parseFloat(g("simSq").value)||50)/100;
-  var Pf=PR[p];
-  var b=bi, acum=0, rows=[], bancas=[bi];
-  for(var i=1;i<=8;i++){
-    for(var d=0;d<5;d++) b=b*(1+Pf.w);
-    var sq2=b*sq; acum+=sq2; b-=sq2;
-    rows.push({i:i,b:b,sq2:sq2,acum:acum}); bancas.push(b);
-  }
-  var tbody="";
-  rows.forEach(function(r){
-    tbody+="<tr><td>Sem "+r.i+"</td>"+
-      '<td style="color:var(--green);font-weight:600">'+fR(r.b)+"</td>"+
-      '<td style="color:var(--yel);font-weight:600">'+fR(r.sq2)+"</td>"+
-      '<td style="color:var(--oran);font-weight:600">'+fR(r.acum)+"</td></tr>";
-  });
-  g("simBody").innerHTML=tbody;
-  g("simTi").textContent="Projeção 8 sem · "+Pf.n+" · saque "+(sq*100).toFixed(0)+"%";
-  g("simSum").innerHTML="Banca inicial: <strong>"+fR(bi)+"</strong> → Semana 8: <strong>"+fR(rows[7].b)+"</strong> · Total sacado: <strong>"+fR(rows[7].acum)+"</strong>";
-  g("simRes").style.display="block";
-  if(window._sCI) window._sCI.destroy();
-  window._sCI=new Chart(g("simC"),{
-    type:"line",
-    data:{labels:["Início"].concat(rows.map(function(r){ return "S"+r.i; })),
-      datasets:[{data:bancas,borderColor:"#00a85a",backgroundColor:"rgba(0,168,90,.1)",borderWidth:2,pointRadius:3,fill:true,tension:.4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:"#8090b0",font:{size:9}},grid:{color:"#e8ebf0"}},
-        y:{ticks:{color:"#8090b0",font:{size:9},callback:function(v){ return "R$"+v.toFixed(0); }},grid:{color:"#e8ebf0"}}}}
-  });
+  var bi=parseFloat(g('simB').value)||1000,p=g('simP').value,sq=Math.min(95,parseFloat(g('simSq').value)||50)/100,Pf=PR[p],b=bi,acum=0,rows=[],bancas=[bi];
+  for(var i=1;i<=8;i++){for(var d=0;d<5;d++)b*=(1+Pf.w);var sq2=b*sq;acum+=sq2;b-=sq2;rows.push({i:i,b:b,sq2:sq2,acum:acum});bancas.push(b);}
+  var tb='';rows.forEach(function(r){tb+='<tr><td>Sem '+r.i+'</td><td style="color:#00a85a;font-weight:600">'+fR(r.b)+'</td><td style="color:#e67e00;font-weight:600">'+fR(r.sq2)+'</td><td style="color:#e65100;font-weight:600">'+fR(r.acum)+'</td></tr>';});
+  g('simBody').innerHTML=tb;g('simTit').textContent='Projeção 8 sem · '+Pf.n+' · saque '+(sq*100).toFixed(0)+'%';
+  g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> → Semana 8: <strong style="color:#00a85a">'+fR(rows[7].b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(rows[7].acum)+'</strong>';
+  g('simRes').style.display='block';
+  if(window._sCI)window._sCI.destroy();
+  window._sCI=new Chart(g('simC'),{type:'line',data:{labels:['Início'].concat(rows.map(function(r){return 'S'+r.i;})),datasets:[{data:bancas,borderColor:'#00a85a',backgroundColor:'rgba(0,168,90,.1)',borderWidth:2,pointRadius:3,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
 }
 
 // META
 function calcMeta(){
-  var alvo=parseFloat(g("metaAlvo").value)||150000;
-  var sq=Math.min(95,parseFloat(g("metaSq").value)||50)/100;
-  var Pf=PR[S.perfil];
-  var b=S.banca, acum=S.totalSacado||0, sem=0, pts=[{s:0,v:acum}];
-  while(acum<alvo && sem<1000){
-    sem++;
-    for(var d=0;d<5;d++) b=b*(1+Pf.w);
-    if(b>S.limite){ var e2=b-S.limite; acum+=e2; b=S.limite; }
-    var sq2=b*sq; acum+=sq2; b-=sq2;
-    if(sem<=40||sem%5===0) pts.push({s:sem,v:acum});
-  }
-  g("metaV").textContent=sem>=1000?"1000+":sem;
-  var pctF=Math.min(100,((S.totalSacado||0)/alvo*100));
-  g("metaPF").style.width=pctF+"%";
-  g("metaPT").textContent=pctF.toFixed(1)+"% · "+fR(S.totalSacado||0)+" de "+fR(alvo)+" sacado";
-  var marcosData=[[5000,"R$5k"],[10000,"R$10k"],[25000,"R$25k"],[50000,"R$50k"],[100000,"R$100k"],[150000,"R$150k"],[200000,"R$200k"]];
-  var marcosHtml="";
-  marcosData.filter(function(m){ return m[0]<=alvo*1.1; }).forEach(function(m){
-    var v=m[0], lbl=m[1];
-    var b2=S.banca, d2=0, ac2=S.totalSacado||0;
-    while(ac2<v && d2<500){
-      d2++;
-      for(var x=0;x<5;x++) b2=b2*(1+Pf.w);
-      if(b2>S.limite){ var ex=b2-S.limite; ac2+=ex; b2=S.limite; }
-      var s2=b2*sq; ac2+=s2; b2-=s2;
-    }
+  var alvo=parseFloat(g('metaAlvo').value)||150000,sq=Math.min(95,parseFloat(g('metaSq').value)||50)/100,Pf=PR[S.perfil],b=S.banca,acum=S.totalSacado||0,sem=0,pts=[{s:0,v:acum}];
+  while(acum<alvo&&sem<1000){sem++;for(var d=0;d<5;d++)b*=(1+Pf.w);if(b>S.limite){var e2=b-S.limite;acum+=e2;b=S.limite;}var sq2=b*sq;acum+=sq2;b-=sq2;if(sem<=40||sem%5===0)pts.push({s:sem,v:acum});}
+  g('metaV').textContent=sem>=1000?'1000+':sem;
+  var pctF=Math.min(100,((S.totalSacado||0)/alvo*100));g('metaPF').style.width=pctF+'%';g('metaPT').textContent=pctF.toFixed(1)+'% · '+fR(S.totalSacado||0)+' de '+fR(alvo)+' sacado';
+  var mHtml='';[[5000,'R$5k'],[10000,'R$10k'],[25000,'R$25k'],[50000,'R$50k'],[100000,'R$100k'],[150000,'R$150k'],[200000,'R$200k']].filter(function(m){return m[0]<=alvo*1.1;}).forEach(function(m){
+    var v=m[0],lbl=m[1],b2=S.banca,d2=0,ac2=S.totalSacado||0;
+    while(ac2<v&&d2<500){d2++;for(var x=0;x<5;x++)b2*=(1+Pf.w);if(b2>S.limite){var ex=b2-S.limite;ac2+=ex;b2=S.limite;}var s2=b2*sq;ac2+=s2;b2-=s2;}
     var ok=(S.totalSacado||0)>=v;
-    var cor=ok?"var(--green)":"var(--txt2)";
-    var fw=ok?"700":"400";
-    var vt=ok?"✓ Atingido":d2>=500?"500+ sem":d2+" semanas";
-    marcosHtml+='<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px">'+
-      '<span style="color:'+cor+';font-weight:'+fw+'">'+lbl+'</span>'+
-      '<span style="color:'+(ok?"var(--green)":"var(--txt3)")+'">'+vt+'</span></div>';
+    mHtml+='<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px"><span style="color:'+(ok?'#00a85a':'#4a5880')+';font-weight:'+(ok?'700':'400')+'">'+lbl+'</span><span style="color:'+(ok?'#00a85a':'#8090b0')+'">'+(ok?'✓ Atingido':d2>=500?'500+ sem':d2+' semanas')+'</span></div>';
   });
-  g("marcosDiv").innerHTML=marcosHtml;
-  if(window._mCI) window._mCI.destroy();
-  window._mCI=new Chart(g("metaC"),{
-    type:"line",
-    data:{labels:pts.map(function(p){ return "S"+p.s; }),
-      datasets:[{data:pts.map(function(p){ return p.v; }),borderColor:"#00a85a",backgroundColor:"rgba(0,168,90,.08)",borderWidth:2,pointRadius:0,fill:true,tension:.4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:"#8090b0",font:{size:9},maxTicksLimit:10},grid:{color:"#e8ebf0"}},
-        y:{ticks:{color:"#8090b0",font:{size:9},callback:function(v){ return "R$"+v.toFixed(0); }},grid:{color:"#e8ebf0"}}}}
-  });
+  g('marcosDiv').innerHTML=mHtml;
+  if(window._mCI)window._mCI.destroy();
+  window._mCI=new Chart(g('metaC'),{type:'line',data:{labels:pts.map(function(p){return 'S'+p.s;}),datasets:[{data:pts.map(function(p){return p.v;}),borderColor:'#00a85a',backgroundColor:'rgba(0,168,90,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:10},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
 }
 
 // CALENDÁRIO
-var calY=new Date().getFullYear(), calM=new Date().getMonth(), calSel=null;
-var MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-
+var calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel=null;
+var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 function renderCal(){
-  if(!S) return;
-  calSel=calSel||S.dataOperando||new Date().toDateString();
-  g("calTitle").textContent=MESES[calM]+" "+calY;
-  var hist={};
-  S.histDiario.forEach(function(h){ hist[h.data]=h; });
-  var first=new Date(calY,calM,1), last=new Date(calY,calM+1,0), today=new Date().toDateString();
-  var html=["D","S","T","Q","Q","S","S"].map(function(d){ return '<div class="caldw">'+d+'</div>'; }).join("");
-  for(var i=0;i<first.getDay();i++){
-    var dd=new Date(calY,calM,1-first.getDay()+i);
-    html+='<div class="cald other">'+dd.getDate()+"</div>";
+  if(!S)return;calSel=calSel||S.dataOperando||new Date().toDateString();
+  g('cTit').textContent=MESES[calM]+' '+calY;
+  var hist={};S.histDiario.forEach(function(h){hist[h.data]=h;});
+  var first=new Date(calY,calM,1),last=new Date(calY,calM+1,0),today=new Date().toDateString();
+  var html=['D','S','T','Q','Q','S','S'].map(function(d){return '<div class="cdw">'+d+'</div>';}).join('');
+  for(var i=0;i<first.getDay();i++){var dd=new Date(calY,calM,1-first.getDay()+i);html+='<div class="cd outro">'+dd.getDate()+'</div>';}
+  for(var day=1;day<=last.getDate();day++){
+    var dt=new Date(calY,calM,day),key=dt.toDateString(),dtBR=fmtBR(key),h=hist[dtBR];
+    var cls='cd';if(key===today)cls+=' hoje';if(key===calSel)cls+=' sel';
+    if(h){cls+=' hop';if(h.metaBatida)cls+=' hmeta';if(h.losses>0)cls+=' hloss';}
+    html+='<div class="'+cls+'" data-k="'+key+'" onclick="calClick(this.dataset.k)">'+day+'</div>';
   }
-  for(var d=1;d<=last.getDate();d++){
-    var dt=new Date(calY,calM,d);
-    var key=dt.toDateString();
-    var dtBR=fmtBR(key);
-    var h=hist[dtBR];
-    var cls="cald";
-    if(key===today) cls+=" today";
-    if(key===calSel) cls+=" csel";
-    if(h){ cls+=" hop"; if(h.metaBatida) cls+=" hmeta"; if(h.losses>0) cls+=" hloss"; }
-    html+='<div class="'+cls+'" onclick="calClick(this.dataset.k)" data-k="'+key+'">'+ d+'</div>';
-  }
-  g("calGrid").innerHTML=html;
-  renderCalDet();
+  g('calGrid').innerHTML=html;renderCalDet();
 }
-function calClick(el){ calSel=el.dataset?el.dataset.k:el; renderCal(); }
-function calNav(d){ calM+=d; if(calM>11){ calM=0; calY++; } if(calM<0){ calM=11; calY--; } renderCal(); }
+function calClick(key){calSel=key;renderCal();}
+function cNav(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
 function renderCalDet(){
-  if(!calSel) return;
-  var dtBR=fmtBR(calSel);
-  g("calDetTi").textContent=fmtLong(calSel);
-  var h=null;
-  for(var i=0;i<S.histDiario.length;i++){ if(S.histDiario[i].data===dtBR){ h=S.histDiario[i]; break; } }
-  var isOp=calSel===S.dataOperando, isHoje=calSel===new Date().toDateString();
-  var body="";
-  if(isOp) body+='<div style="padding:8px 12px;background:#e6f7ef;border-bottom:1px solid var(--border);font-size:11px;color:var(--green);font-weight:600">✓ Dia ativo de operação</div>';
-  if(h){
-    var cor=h.resultado>=0?"var(--green)":"var(--red)";
-    var res=(h.resultado>=0?"+":"")+h.resultado.toFixed(2)+"%";
-    body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">'+
-      '<div style="padding:10px 8px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:8px;color:var(--txt3)">INICIAL</div><div style="font-size:14px;font-weight:700">R$'+h.bancaInicial.toFixed(0)+'</div></div>'+
-      '<div style="padding:10px 8px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:8px;color:var(--txt3)">FINAL</div><div style="font-size:14px;font-weight:700;color:'+cor+'">R$'+h.bancaFinal.toFixed(0)+'</div></div>'+
-      '<div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:var(--txt3)">RESULTADO</div><div style="font-size:14px;font-weight:700;color:'+cor+'">'+res+'</div></div></div>'+
-      '<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:11px;color:var(--txt2)">'+
-      '<span>'+h.wins+'W · '+h.losses+'L</span>'+
-      '<span class="bdg '+(h.metaBatida?"bwg":"bwl")+'">'+(h.metaBatida?"Meta":"Sem meta")+'</span></div>';
-  } else if(isHoje&&isOp){
-    var pct2=S.bancaBase>0?((S.banca-S.bancaBase)/S.bancaBase*100):0;
-    var cor2=pct2>=0?"var(--green)":"var(--red)";
-    body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">'+
-      '<div style="padding:10px 8px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:8px;color:var(--txt3)">BANCA</div><div style="font-size:14px;font-weight:700;color:var(--green)">R$'+S.banca.toFixed(0)+'</div></div>'+
-      '<div style="padding:10px 8px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:8px;color:var(--txt3)">WINS</div><div style="font-size:14px;font-weight:700;color:var(--green)">'+S.wins+'</div></div>'+
-      '<div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:var(--txt3)">HOJE</div><div style="font-size:14px;font-weight:700;color:'+cor2+'">'+(pct2>=0?"+":"")+pct2.toFixed(1)+'%</div></div></div>'+
-      '<div style="padding:8px 12px;font-size:11px;color:var(--txt2)">Em andamento · '+S.ops+' ops</div>';
-  } else {
-    body+='<div class="empty">Sem operações neste dia</div>';
-  }
-  g("calDetBody").innerHTML=body;
+  if(!calSel)return;var dtBR=fmtBR(calSel);g('cDetTit').textContent=fmtL(calSel);
+  var h=null;for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){h=S.histDiario[i];break;}}
+  var isOp=calSel===S.dataOperando,isHoje=calSel===new Date().toDateString(),body='';
+  if(isOp)body+='<div style="padding:8px 12px;background:#e6f7ef;border-bottom:1px solid #d0d8e4;font-size:11px;color:#00a85a;font-weight:600">✓ Dia ativo de operação</div>';
+  if(h){var cor=h.resultado>=0?'#00a85a':'#e53935',res=(h.resultado>=0?'+':'')+h.resultado.toFixed(2)+'%';body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0"><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">INICIAL</div><div style="font-size:14px;font-weight:700">R$'+h.bancaInicial.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">FINAL</div><div style="font-size:14px;font-weight:700;color:'+cor+'">R$'+h.bancaFinal.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:#8090b0">RESULTADO</div><div style="font-size:14px;font-weight:700;color:'+cor+'">'+res+'</div></div></div><div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:11px;color:#4a5880"><span>'+h.wins+'W · '+h.losses+'L</span><span class="bdg '+(h.metaBatida?'bwg':'bwl')+'">'+(h.metaBatida?'Meta':'Sem meta')+'</span></div>';}
+  else if(isHoje&&isOp){var pct2=S.bancaBase>0?((S.banca-S.bancaBase)/S.bancaBase*100):0;body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0"><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">BANCA</div><div style="font-size:14px;font-weight:700;color:#00a85a">R$'+S.banca.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">WINS</div><div style="font-size:14px;font-weight:700;color:#00a85a">'+S.wins+'</div></div><div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:#8090b0">HOJE</div><div style="font-size:14px;font-weight:700;color:'+(pct2>=0?'#00a85a':'#e53935')+'">'+(pct2>=0?'+':'')+pct2.toFixed(1)+'%</div></div></div><div style="padding:8px 12px;font-size:11px;color:#4a5880">Em andamento · '+S.ops+' ops</div>';}
+  else body+='<div class="empty">Sem operações neste dia</div>';
+  g('cDetBody').innerHTML=body;
 }
 function usarDia(){
-  if(!calSel) return;
-  var ant=S.dataOperando;
+  if(!calSel)return;var ant=S.dataOperando;
   if(ant!==calSel){
-    if(S.ops>0){
-      var res=((S.banca-S.bancaBase)/S.bancaBase*100);
-      S.histDiario.unshift({data:fmtBR(ant),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});
-    }
-    S.dataOperando=calSel;
-    var dtBR=fmtBR(calSel);
-    for(var i=0;i<S.histDiario.length;i++){
-      if(S.histDiario[i].data===dtBR){ S.bancaBase=S.histDiario[i].bancaFinal; S.banca=S.histDiario[i].bancaFinal; break; }
-    }
-    S.wins=0; S.losses=0; S.ops=0; S.operacoes=[]; S.dayChart=[S.banca];
-    S.travado=false; S.tipoTrava=null; S._biConfirmada=false;
-    sv(); render(); toast("Operando em: "+fmtBR(calSel));
-  }
-  goP("exec");
+    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(ant),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+    S.dataOperando=calSel;var dtBR2=fmtBR(calSel);
+    for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR2){S.bancaBase=S.histDiario[i].bancaFinal;S.banca=S.histDiario[i].bancaFinal;break;}}
+    S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;sv();render();toast('Operando em: '+fmtBR(calSel));
+  }goP('exec');
 }
 
-// RENDER
+// ─── RENDER ─────────────────────────────────────
 var _dCI=null;
 function render(){
-  if(!S) return;
+  if(!S)return;
   checkDia();
-  var b=S.banca, base=S.bancaBase, Pf=PR[S.perfil]||PR.mod;
-  var lucro=b-base, pct=base>0?((b-base)/base*100):0;
-  var stopW=parseFloat(S.stopWin)||10;
-  var stopL=parseFloat(S.stopLoss)||33;
-
-  // data operando
-  var dOp=new Date(S.dataOperando);
-  var isHoje=S.dataOperando===new Date().toDateString();
-  var dStr=isHoje?"Hoje · "+dOp.toLocaleDateString("pt-BR"):dOp.toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
-  if(g("dbTxt")) g("dbTxt").textContent=dStr;
-  if(g("dbExec")) g("dbExec").textContent=dStr;
-
+  var b=S.banca,base=S.bancaBase,Pf=PR[S.perfil]||PR.mod;
+  var lucro=b-base,pct=base>0?((b-base)/base*100):0;
+  var stopW=parseFloat(S.stopWin)||10,stopL=parseFloat(S.stopLoss)||33,odd=parseFloat(S.odd)||1.44;
+  // data
+  var dOp=new Date(S.dataOperando),isHoje=S.dataOperando===new Date().toDateString();
+  var dStr=isHoje?'Hoje · '+dOp.toLocaleDateString('pt-BR'):dOp.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  if(g('dbD'))g('dbD').textContent=dStr;if(g('dbE'))g('dbE').textContent=dStr;
   // perfis
-  ["cons","mod","agr"].forEach(function(p){
-    var e=g("pc-"+p);
-    if(e) e.className="pc"+(S.perfil===p?" sel"+p[0]:"");
-  });
-  if(g("pBadge")) g("pBadge").textContent=Pf.n.toUpperCase()+" +"+Math.round(Pf.w*100)+"%";
-  if(g("ePerfil")) g("ePerfil").textContent=Pf.n;
-
+  ['cons','mod','agr'].forEach(function(p){var e=g('pc-'+p);if(e)e.className='pc'+(S.perfil===p?' s'+p[0]:'');});
+  if(g('pBadge'))g('pBadge').textContent=Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%';
+  if(g('ePerfil'))g('ePerfil').textContent=Pf.n;
   // stakes
-  var s0=fD(b*Pf.g0), s1=fD(b*Pf.g1), s2=fD(b*Pf.g2);
-  if(g("dOdd")) g("dOdd").textContent=(parseFloat(S.odd)||1.44).toFixed(2);
-  if(g("dsl0p")) g("dsl0p").textContent="G0·"+(Pf.g0*100)+"%";
-  if(g("dsl1p")) g("dsl1p").textContent="G1·"+(Pf.g1*100)+"%";
-  if(g("dsl2p")) g("dsl2p").textContent="G2·"+(Pf.g2*100)+"%";
-  if(g("dsl0l")) g("dsl0l").textContent="+"+Math.round(Pf.w*100)+"%";
-  if(g("dsl2l")) g("dsl2l").textContent="win≈-"+(Pf.g2*(2-(parseFloat(S.odd)||1.44))*100).toFixed(1)+"%";
-  if(g("dsl0")) g("dsl0").textContent=s0;
-  if(g("dsl1")) g("dsl1").textContent=s1;
-  if(g("dsl2")) g("dsl2").textContent=s2;
-  if(g("esl0p")) g("esl0p").textContent="G0·"+(Pf.g0*100)+"%";
-  if(g("esl1p")) g("esl1p").textContent="G1·"+(Pf.g1*100)+"%";
-  if(g("esl2p")) g("esl2p").textContent="G2·"+(Pf.g2*100)+"%";
-  if(g("esl0")) g("esl0").textContent=s0;
-  if(g("esl1")) g("esl1").textContent=s1;
-  if(g("esl2")) g("esl2").textContent=s2;
-  if(g("bs0")) g("bs0").textContent="+"+Math.round(Pf.w*100)+"% na banca";
-  if(g("bs2")) g("bs2").textContent="≈ -"+(Pf.g2*(2-(parseFloat(S.odd)||1.44))*100).toFixed(1)+"%";
-  if(g("bsl")) g("bsl").textContent="≈ -"+(Pf.g2*100).toFixed(0)+"% stake";
-
+  var s0=fD(b*Pf.g0),s1=fD(b*Pf.g1),s2=fD(b*Pf.g2);
+  if(g('dOdd'))g('dOdd').textContent=odd.toFixed(2);
+  if(g('ds0p'))g('ds0p').textContent='G0·'+(Pf.g0*100)+'%';if(g('ds1p'))g('ds1p').textContent='G1·'+(Pf.g1*100)+'%';if(g('ds2p'))g('ds2p').textContent='G2·'+(Pf.g2*100)+'%';
+  if(g('ds0l'))g('ds0l').textContent='+'+Math.round(Pf.w*100)+'%';if(g('ds2l'))g('ds2l').textContent='≈-'+(Pf.g2*(2-odd)*100).toFixed(1)+'%';
+  if(g('ds0'))g('ds0').textContent=s0;if(g('ds1'))g('ds1').textContent=s1;if(g('ds2'))g('ds2').textContent=s2;
+  if(g('es0p'))g('es0p').textContent='G0·'+(Pf.g0*100)+'%';if(g('es1p'))g('es1p').textContent='G1·'+(Pf.g1*100)+'%';if(g('es2p'))g('es2p').textContent='G2·'+(Pf.g2*100)+'%';
+  if(g('es0'))g('es0').textContent=s0;if(g('es1'))g('es1').textContent=s1;if(g('es2'))g('es2').textContent=s2;
+  if(g('bs0'))g('bs0').textContent='+'+Math.round(Pf.w*100)+'% na banca';
+  if(g('bs2'))g('bs2').textContent='≈ -'+(Pf.g2*(2-odd)*100).toFixed(1)+'%';
+  if(g('bsl'))g('bsl').textContent='≈ -'+(Pf.g2*100).toFixed(0)+'% stake';
   // métricas
-  var bEl=g("dBanca"); if(bEl){ bEl.textContent=fR(b); bEl.className="mv "+(lucro>=0?"cg":"cr"); }
-  if(g("dBSub")) g("dBSub").textContent="Base: "+fR(base);
-  var lEl=g("dLucro"); if(lEl){ lEl.textContent=(lucro>=0?"+":"-")+fR(lucro); lEl.className="mv "+(lucro>=0?"cg":"cr"); }
-  if(g("dLPct")) g("dLPct").textContent=fP(pct);
-  if(g("dGreens")) g("dGreens").textContent=S.greensSeq;
-  if(g("dWins")) g("dWins").textContent=S.wins;
-  if(g("dLosses")) g("dLosses").textContent=S.losses;
-  var mw=Math.ceil(stopW/Math.round(Pf.w*100));
-  if(g("dFaltam")) g("dFaltam").textContent=pct>=stopW?"Meta!":Math.max(0,mw-S.wins);
-  if(g("metaLbl")) g("metaLbl").textContent="Meta +"+stopW+"%";
-
-  // progresso
+  var bEl=g('dBanca');if(bEl){bEl.textContent=fR(b);bEl.className='mv '+(lucro>=0?'cg':'cr');}
+  if(g('dBSub'))g('dBSub').textContent='Base: '+fR(base);
+  var lEl=g('dLucro');if(lEl){lEl.textContent=(lucro>=0?'+':'-')+fR(lucro);lEl.className='mv '+(lucro>=0?'cg':'cr');}
+  if(g('dLPct'))g('dLPct').textContent=fP(pct);
+  if(g('dGreens'))g('dGreens').textContent=S.greensSeq;if(g('dWins'))g('dWins').textContent=S.wins;if(g('dLoss'))g('dLoss').textContent=S.losses;
+  var mw=Math.ceil(stopW/Math.round(Pf.w*100));if(g('dFalt'))g('dFalt').textContent=pct>=stopW?'Meta!':Math.max(0,mw-S.wins);
+  if(g('mLbl'))g('mLbl').textContent='Meta +'+stopW+'%';
   var pN=Math.min(1,Math.max(0,(pct+stopL)/(stopW+stopL)));
-  var pf=g("dProg"); if(pf){ pf.style.width=(pN*100)+"%"; pf.style.background=pct>=0?"var(--green)":"var(--red)"; }
-  if(g("dProgPct")) g("dProgPct").textContent=fP(pct);
-
-  // alertas e stop
-  var sp=g("sPill");
-  var alD=g("alD"), alE=g("alE"), emD=g("emoD"), emE=g("emoE");
-  ["bW0","bW1","bW2","bL"].forEach(function(id){ var el=g(id); if(el) el.disabled=S.travado; });
-  if(S.tipoTrava==="win"){
-    if(sp){ sp.textContent="◆ STOP WIN"; sp.className="spill ssw"; }
-    var msg="🎯 Você ganhou "+pct.toFixed(2)+"% hoje! Mantenha a gestão do Fábio.";
-    if(alD){ alD.textContent=msg; alD.className="al show alsw"; }
-    if(alE){ alE.textContent=msg; alE.className="al show alsw"; }
-    if(emD) emD.classList.remove("show");
-    if(emE) emE.classList.remove("show");
-  } else if(S.tipoTrava==="loss"||S.tipoTrava==="loss_emo"){
-    if(sp){ sp.textContent="✕ LOSS"; sp.className="spill ssl"; }
-    if(alD) alD.className="al";
-    if(alE) alE.className="al";
-    if(emD) emD.classList.add("show");
-    if(emE) emE.classList.add("show");
-  } else {
-    if(sp){ sp.textContent="● OPERANDO"; sp.className="spill sop"; }
-    if(alD) alD.className="al";
-    if(alE) alE.className="al";
-    if(emD) emD.classList.remove("show");
-    if(emE) emE.classList.remove("show");
+  var pf=g('dProg');if(pf){pf.style.width=(pN*100)+'%';pf.style.background=pct>=0?'#00a85a':'#e53935';}
+  if(g('dPPct'))g('dPPct').textContent=fP(pct);
+  // alertas
+  var sp=g('sPill'),alD=g('alD'),alE=g('alE'),emD=g('emoD'),emE=g('emoE');
+  ['bW0','bW1','bW2','bL'].forEach(function(id){var el=g(id);if(el)el.disabled=S.travado;});
+  if(S.tipoTrava==='win'){
+    if(sp){sp.textContent='◆ STOP WIN';sp.className='pill psw';}
+    var msg='🎯 Você ganhou '+pct.toFixed(2)+'% hoje! Mantenha a gestão do Fábio.';
+    if(alD){alD.textContent=msg;alD.className='al v asw';}if(alE){alE.textContent=msg;alE.className='al v asw';}
+    if(emD)emD.classList.remove('v');if(emE)emE.classList.remove('v');
+  }else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){
+    if(sp){sp.textContent='✕ LOSS';sp.className='pill psl';}
+    if(alD)alD.className='al';if(alE)alE.className='al';
+    if(emD)emD.classList.add('v');if(emE)emE.classList.add('v');
+  }else{
+    if(sp){sp.textContent='● OPERANDO';sp.className='pill pop';}
+    if(alD)alD.className='al';if(alE)alE.className='al';
+    if(emD)emD.classList.remove('v');if(emE)emE.classList.remove('v');
   }
-
   // saque modal
-  var sqM=g("sqModal");
-  if(sqM && S.saques.length && !sqM.dataset.shown && S.tipoTrava!=="loss_emo"){
-    if(g("sqVal")) g("sqVal").textContent=fD(S.saques[0].valor);
-    sqM.classList.add("show"); sqM.dataset.shown="1";
-  }
-
-  // OPERAÇÕES RECENTES — atualiza sempre independente da aba
-  var opsEl=g("recentOps");
-  if(opsEl){
+  var sqM=g('sqModal');if(sqM&&S.saques.length&&!sqM.dataset.shown&&S.tipoTrava!=='loss_emo'){if(g('sqVal'))g('sqVal').textContent=fD(S.saques[0].valor);sqM.classList.add('v');sqM.dataset.shown='1';}
+  // OPERAÇÕES RECENTES
+  var ro=g('recentOps');
+  if(ro){
     if(S.operacoes.length){
-      var opsHtml="";
+      var oh='';
       S.operacoes.slice(0,8).forEach(function(op){
-        opsHtml+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px">'+
-          '<div style="display:flex;align-items:center;gap:7px">'+
-          '<span class="bdg '+(op.cat==="W"?"bwg":"bwl")+'">'+(op.cat==="W"?"WIN":"LOSS")+'</span>'+
-          '<span style="color:var(--txt2)">'+op.tipo+'</span></div>'+
-          '<div style="text-align:right">'+
-          '<div style="color:'+(op.delta>=0?"var(--green)":"var(--red)")+';font-weight:600">'+(op.delta>=0?"+":"-")+fD(op.delta)+'</div>'+
-          '<div style="font-size:9px;color:var(--txt3)">'+op.ts+'</div></div></div>';
+        oh+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px">'+
+          '<div style="display:flex;align-items:center;gap:7px"><span class="bdg '+(op.cat==='W'?'bwg':'bwl')+'">'+(op.cat==='W'?'WIN':'LOSS')+'</span>'+
+          '<span style="color:#4a5880">'+op.tipo+'</span></div>'+
+          '<div style="text-align:right"><div style="color:'+(op.delta>=0?'#00a85a':'#e53935')+';font-weight:600">'+(op.delta>=0?'+':'-')+fD(op.delta)+'</div>'+
+          '<div style="font-size:9px;color:#8090b0">'+op.ts+'</div></div></div>';
       });
-      opsEl.innerHTML=opsHtml;
-    } else {
-      opsEl.innerHTML='<div class="empty">Nenhuma operação ainda</div>';
-    }
+      ro.innerHTML=oh;
+    }else ro.innerHTML='<div class="empty">Nenhuma operação ainda</div>';
   }
-
   // diário
-  var dEl=g("diaEntries");
-  if(dEl){
-    var dHtml="";
-    S.diario.slice(0,5).forEach(function(d){
-      dHtml+='<div style="padding:8px 12px;border-top:1px solid var(--border)">'+
-        '<div style="color:var(--txt2);font-size:11px">'+d.texto+'</div>'+
-        '<div style="font-size:9px;color:var(--txt3);margin-top:2px">'+d.ts+'</div></div>';
-    });
-    dEl.innerHTML=dHtml;
-  }
-
-  // evolução banca
-  var evoEl=g("evoLista");
-  if(g("totalDias")) g("totalDias").textContent=S.histDiario.length+" dias";
-  if(evoEl){
-    if(S.histDiario.length){
-      var mx=0;
-      S.histDiario.forEach(function(d){ if(Math.abs(d.resultado)>mx) mx=Math.abs(d.resultado); });
-      var evHtml="";
-      S.histDiario.slice(0,30).forEach(function(d){
-        var cor=d.resultado>=0?"var(--green)":"var(--red)";
-        var bw=Math.min(100,(Math.abs(d.resultado)/Math.max(mx,1))*100);
-        var bc=d.resultado>=0?"#00a85a":"#e53935";
-        var res=(d.resultado>=0?"+":"")+d.resultado.toFixed(2)+"%";
-        evHtml+='<div class="evrow">'+
-          '<div style="color:var(--txt3);width:70px;flex-shrink:0;font-size:10px">'+d.data+(d.manual?" ✎":"")+'</div>'+
-          '<div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">'+
-          '<div style="height:100%;border-radius:3px;width:'+bw+'%;background:'+bc+'"></div></div>'+
-          '<div style="font-weight:700;width:52px;text-align:right;flex-shrink:0;font-size:11px;color:'+cor+'">'+res+'</div>'+
-          '<div style="font-size:9px;color:var(--txt3);width:90px;text-align:right;flex-shrink:0">R$'+d.bancaInicial.toFixed(0)+'→R$'+d.bancaFinal.toFixed(0)+'</div></div>';
-      });
-      evoEl.innerHTML=evHtml;
-    } else {
-      evoEl.innerHTML='<div class="empty">Sem histórico</div>';
-    }
-  }
-
-  // histórico tabela
-  var hbEl=g("histBody");
-  if(hbEl){
-    if(S.histDiario.length){
-      var hHtml="";
-      S.histDiario.slice(0,30).forEach(function(d){
-        var corF=d.bancaFinal>=d.bancaInicial?"var(--green)":"var(--red)";
-        var corR=d.resultado>=0?"var(--green)":"var(--red)";
-        hHtml+="<tr><td>"+d.data+"</td>"+
-          "<td>R$"+d.bancaInicial.toFixed(0)+"</td>"+
-          '<td style="color:'+corF+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+"</td>"+
-          '<td style="color:'+corR+';font-weight:600">'+fP(d.resultado)+"</td>"+
-          "<td>"+d.wins+"W/"+d.losses+"L</td>"+
-          '<td><span class="bdg '+(d.metaBatida?"bwg":"bwl")+'">'+(d.metaBatida?"SIM":"NÃO")+"</span></td></tr>";
-      });
-      hbEl.innerHTML=hHtml;
-    } else {
-      hbEl.innerHTML='<tr><td colspan="6" class="empty">Sem histórico</td></tr>';
-    }
-  }
-
+  var de=g('diaList');if(de){var dh='';S.diario.slice(0,5).forEach(function(d){dh+='<div style="padding:8px 12px;border-top:1px solid #d0d8e4"><div style="color:#4a5880;font-size:11px">'+d.texto+'</div><div style="font-size:9px;color:#8090b0;margin-top:2px">'+d.ts+'</div></div>';});de.innerHTML=dh;}
+  // evolução
+  var evoEl=g('evoLista');if(g('totDias'))g('totDias').textContent=S.histDiario.length+' dias';
+  if(evoEl){if(S.histDiario.length){var mx=0;S.histDiario.forEach(function(d){if(Math.abs(d.resultado)>mx)mx=Math.abs(d.resultado);});var evH='';S.histDiario.slice(0,30).forEach(function(d){var cor=d.resultado>=0?'#00a85a':'#e53935',bw=Math.min(100,(Math.abs(d.resultado)/Math.max(mx,1))*100),res=(d.resultado>=0?'+':'')+d.resultado.toFixed(2)+'%';evH+='<div class="evrow"><div style="color:#8090b0;width:70px;flex-shrink:0;font-size:10px">'+d.data+(d.manual?' ✎':'')+'</div><div style="flex:1;height:6px;background:#e8ebf0;border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;width:'+bw+'%;background:'+(d.resultado>=0?'#00a85a':'#e53935')+'"></div></div><div style="font-weight:700;width:52px;text-align:right;flex-shrink:0;font-size:11px;color:'+cor+'">'+res+'</div><div style="font-size:9px;color:#8090b0;width:90px;text-align:right;flex-shrink:0">R$'+d.bancaInicial.toFixed(0)+'→R$'+d.bancaFinal.toFixed(0)+'</div></div>';});evoEl.innerHTML=evH;}else evoEl.innerHTML='<div class="empty">Sem histórico</div>';}
+  // hist tabela
+  var hbEl=g('histBody');if(hbEl){if(S.histDiario.length){var hH='';S.histDiario.slice(0,30).forEach(function(d){hH+='<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td style="color:'+(d.bancaFinal>=d.bancaInicial?'#00a85a':'#e53935')+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+'</td><td style="color:'+(d.resultado>=0?'#00a85a':'#e53935')+';font-weight:600">'+fP(d.resultado)+'</td><td>'+d.wins+'W/'+d.losses+'L</td><td><span class="bdg '+(d.metaBatida?'bwg':'bwl')+'">'+(d.metaBatida?'SIM':'NÃO')+'</span></td></tr>';});hbEl.innerHTML=hH;}else hbEl.innerHTML='<tr><td colspan="6" class="empty">Sem histórico</td></tr>';}
   // saques
-  if(g("totalSq")) g("totalSq").textContent="Total: "+fR(S.totalSacado||0);
-  var sqEl=g("saqLista");
-  if(sqEl){
-    if(S.saques.length){
-      var sqHtml="";
-      S.saques.forEach(function(s,i){
-        sqHtml+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border);font-size:11px">'+
-          '<div><div style="color:var(--green);font-weight:700;font-size:13px">+'+fR(s.valor)+'</div>'+
-          '<div style="font-size:9px;color:var(--txt3)">'+s.data+" "+(s.ts||"")+'</div></div>'+
-          '<span style="padding:2px 8px;border-radius:10px;font-size:9px;background:#e6f7ef;color:var(--green);font-weight:600">Saque #'+(S.saques.length-i)+'</span></div>';
-      });
-      sqEl.innerHTML=sqHtml;
-    } else {
-      sqEl.innerHTML='<div class="empty">Nenhum saque</div>';
-    }
-  }
-
-  // resumo semanal
-  var rsEl=g("resumoSem");
-  if(rsEl && S.histDiario.length){
-    var sem=S.histDiario.slice(0,5);
-    var tw=0, tl=0, mt=0;
-    sem.forEach(function(d){ tw+=d.wins; tl+=d.losses; if(d.metaBatida) mt++; });
-    var bi2=sem[sem.length-1].bancaInicial, bf2=sem[0].bancaFinal;
-    var res2=bi2>0?((bf2-bi2)/bi2*100):0;
-    var msg=tl===0?"Semana perfeita — zero losses":tl===1?"Atenção: 1 loss":"Atenção: "+tl+" losses";
-    var corRes=res2>=0?"var(--green)":"var(--red)";
-    rsEl.innerHTML='<div style="background:#e6f7ef;border:1px solid var(--gbd);border-radius:8px;padding:12px;margin:10px">'+
-      '<div style="font-size:9px;color:var(--green);font-weight:700;text-transform:uppercase;margin-bottom:8px">Últimos '+sem.length+' dias</div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px">'+
-      '<div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid var(--border)"><div style="font-size:15px;font-weight:700;color:var(--green)">'+tw+'</div><div style="font-size:8px;color:var(--txt3)">Wins</div></div>'+
-      '<div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid var(--border)"><div style="font-size:15px;font-weight:700;color:var(--red)">'+tl+'</div><div style="font-size:8px;color:var(--txt3)">Losses</div></div>'+
-      '<div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid var(--border)"><div style="font-size:15px;font-weight:700;color:var(--yel)">'+mt+'</div><div style="font-size:8px;color:var(--txt3)">Metas</div></div></div>'+
-      '<div style="font-size:11px;color:var(--txt2);padding-top:9px;border-top:1px solid var(--border)">'+msg+'<br>Resultado: <strong style="color:'+corRes+'">'+fP(res2)+'</strong></div></div>';
-  }
-
+  if(g('totSq'))g('totSq').textContent='Total: '+fR(S.totalSacado||0);
+  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">+'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+'</div></div><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:#e6f7ef;color:#00a85a;font-weight:600">Saque #'+(S.saques.length-i)+'</span></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
+  // resumo
+  var rsEl=g('resSem');if(rsEl&&S.histDiario.length){var sem=S.histDiario.slice(0,5),tw=0,tl=0,mt=0;sem.forEach(function(d){tw+=d.wins;tl+=d.losses;if(d.metaBatida)mt++;});var bi2=sem[sem.length-1].bancaInicial,bf2=sem[0].bancaFinal,res3=bi2>0?((bf2-bi2)/bi2*100):0,msg2=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss':'Atenção: '+tl+' losses';rsEl.innerHTML='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;margin:10px"><div style="font-size:9px;color:#00a85a;font-weight:700;text-transform:uppercase;margin-bottom:8px">Últimos '+sem.length+' dias</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px"><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#00a85a">'+tw+'</div><div style="font-size:8px;color:#8090b0">Wins</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e53935">'+tl+'</div><div style="font-size:8px;color:#8090b0">Losses</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e67e00">'+mt+'</div><div style="font-size:8px;color:#8090b0">Metas</div></div></div><div style="font-size:11px;color:#4a5880;padding-top:9px;border-top:1px solid #d0d8e4">'+msg2+'<br>Resultado: <strong style="color:'+(res3>=0?'#00a85a':'#e53935')+'">'+fP(res3)+'</strong></div></div>';}
   // config
-  if(g("cfgSW")) g("cfgSW").value=S.stopWin||10;
-  if(g("cfgSL")) g("cfgSL").value=S.stopLoss||33;
-  if(g("cfgL"))  g("cfgL").value=S.limite||10000;
-  if(g("cfgOd")) g("cfgOd").value=S.odd||1.44;
-  if(g("cfgB"))  g("cfgB").value=S.bancaBase||1000;
-
-  // gráfico — só quando dayC está visível
-  try {
-    var ctx=g("dayC");
-    if(ctx && ctx.offsetParent!==null){
-      var data=S.dayChart.length?S.dayChart:[S.bancaBase];
-      var labels=data.map(function(_,i){ return i===0?"Início":"Op "+i; });
-      var corG=S.banca>=S.bancaBase?"#00a85a":"#e53935";
-      if(_dCI){ _dCI.destroy(); _dCI=null; }
-      _dCI=new Chart(ctx,{
-        type:"line",
-        data:{labels:labels,datasets:[{data:data,borderColor:corG,backgroundColor:corG+"18",borderWidth:2,pointRadius:2,fill:true,tension:.3}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:"#8090b0",font:{size:9}},grid:{color:"#e8ebf0"}},
-            y:{ticks:{color:"#8090b0",font:{size:9},callback:function(v){ return "R$"+v.toFixed(0); }},grid:{color:"#e8ebf0"}}}}
-      });
-    }
-  } catch(e){ console.warn("Chart:",e.message); }
-
-  // calendário se aberto
-  var cg=g("calGrid");
-  if(cg && cg.innerHTML) renderCal();
+  if(g('cfgSW'))g('cfgSW').value=S.stopWin||10;if(g('cfgSL'))g('cfgSL').value=S.stopLoss||33;
+  if(g('cfgL'))g('cfgL').value=S.limite||10000;if(g('cfgOd'))g('cfgOd').value=S.odd||1.44;if(g('cfgB'))g('cfgB').value=S.bancaBase||1000;
+  // gráfico — só quando visível
+  var ctx=g('dayC');
+  if(ctx&&ctx.offsetParent!==null){
+    var data=S.dayChart.length?S.dayChart:[S.bancaBase],labels=data.map(function(_,i){return i===0?'Início':'Op '+i;}),cor=S.banca>=S.bancaBase?'#00a85a':'#e53935';
+    if(_dCI){_dCI.destroy();_dCI=null;}
+    _dCI=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{data:data,borderColor:cor,backgroundColor:cor+'18',borderWidth:2,pointRadius:2,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
+  }
+  // cal
+  if(g('calGrid')&&g('calGrid').innerHTML)renderCal();
 }
 
 function goP(id){
-  document.querySelectorAll(".pg").forEach(function(p){ p.classList.remove("act"); });
-  document.querySelectorAll(".nb").forEach(function(b){ b.classList.remove("act"); });
-  var pg=g("p-"+id); if(pg) pg.classList.add("act");
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
+  var pg=g('p-'+id);if(pg)pg.classList.add('a');
   var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6};
-  var nbs=document.querySelectorAll(".nb"); if(nbs[map[id]]) nbs[map[id]].classList.add("act");
-  setTimeout(function(){ render(); }, 50);
-  if(id==="cal"){
-    calSel=S?S.dataOperando:new Date().toDateString();
-    var d=new Date(calSel); calY=d.getFullYear(); calM=d.getMonth();
-    renderCal();
-  }
+  var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
+  setTimeout(function(){render();},50);
+  if(id==='cal'){calSel=S?S.dataOperando:new Date().toDateString();var d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();renderCal();}
 }
 
-var hjEl=g("mfData");
-if(hjEl) hjEl.value=new Date().toISOString().split("T")[0];
+var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
