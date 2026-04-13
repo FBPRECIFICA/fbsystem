@@ -205,6 +205,77 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="background:#e53935;color:#fff;border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700">ADMIN</span><button onclick="doLogout()" style="background:none;border:none;color:#7A9BB5;font-size:10px;cursor:pointer">Sair</button></div></div>
 <div class="adst"><div class="adsc"><div id="stTot" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Total</div></div><div class="adsc"><div id="stPend" style="font-size:20px;font-weight:700;color:#e67e00">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Pendentes</div></div><div class="adsc"><div id="stAtiv" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Ativos</div></div></div>
 <div id="admFin" style="margin-bottom:14px"></div>
+<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:14px;margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#4a5880;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">📡 Publicar Sinal</div>
+  <div style="margin-bottom:8px">
+    <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Campeonato</div>
+    <input id="adSigCamp" type="text" placeholder="ex: COPA, EURO, PREMIER..." style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+  </div>
+  <div style="margin-bottom:8px">
+    <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Estratégia</div>
+    <input id="adSigEstr" type="text" placeholder="ex: OVER 1.5 NORMAL, BLINDADO 1..." style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+  </div>
+  <div style="margin-bottom:8px">
+    <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Entradas (uma por linha: 12:46 Over 1.5)</div>
+    <textarea id="adSigEntradas" placeholder="12:46 Over 1.5&#10;12:49 Over 1.5&#10;12:52 Over 1.5" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none;resize:none;height:80px;font-family:inherit"></textarea>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    <div>
+      <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Odd</div>
+      <input id="adSigOdd" type="text" placeholder="1.45" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+    </div>
+    <div>
+      <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Partida</div>
+      <input id="adSigJogo" type="text" placeholder="EUA x Inglaterra" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+    <div>
+      <div style="font-size:10px;color:#8090b0;margin-bottom:4px">SG</div>
+      <input id="adSigSG" type="number" placeholder="7" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+    </div>
+    <div>
+      <div style="font-size:10px;color:#8090b0;margin-bottom:4px">G1</div>
+      <input id="adSigG1" type="number" placeholder="1" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+    </div>
+    <div>
+      <div style="font-size:10px;color:#8090b0;margin-bottom:4px">G2</div>
+      <input id="adSigG2" type="number" placeholder="0" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+    </div>
+  </div>
+  <button onclick="pubSinal()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer">📡 Publicar Sinal</button>
+  
+  <div style="margin-top:12px;padding-top:12px;border-top:1px solid #d0d8e4">
+    <div style="font-size:11px;font-weight:700;color:#4a5880;margin-bottom:8px">✏️ Atualizar Resultado do Sinal Ativo</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Resultado</div>
+        <select id="adResultado" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+          <option value="">Selecione...</option>
+          <option value="green">✅ Green</option>
+          <option value="red">❌ Red</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Horário que bateu</div>
+        <input id="adResHora" type="text" placeholder="13:05" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Greens seguidos (novo total)</div>
+        <input id="adResGS" type="number" placeholder="ex: 8" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">% Assertividade</div>
+        <input id="adResAss" type="text" placeholder="ex: 100.0" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+      </div>
+    </div>
+    <button onclick="atualizarSinal()" style="width:100%;background:#1565c0;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">✏️ Atualizar Resultado</button>
+    <button onclick="limparSinal()" style="width:100%;background:#fff;color:#e53935;border:1.5px solid rgba(229,57,53,.3);border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">🗑️ Limpar Sinal Ativo</button>
+  </div>
+</div>
+
 <div style="font-size:11px;font-weight:600;color:#4a5880;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos</div>
 <div id="admLista"><div class="empty">Carregando...</div></div>
 </div></div>
@@ -222,6 +293,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <button class="nb" onclick="goP('meta')">Meta</button>
   <button class="nb" onclick="goP('hist')">Histórico</button>
   <button class="nb" onclick="goP('cfg')">Config</button>
+  <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
+  <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
 </div>
 
 <div id="p-dash" class="pg a">
@@ -352,6 +425,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 </div></div>
 </div>
 
+<div id="p-sinal" class="pg">
+<div id="sinalCard" class="sec" style="margin-bottom:10px">
+  <div class="sh" id="sinalSh">📡 Aguardando sinal...</div>
+  <div id="sinalBody"><div class="empty">Nenhum sinal publicado ainda</div></div>
+</div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh">Histórico de Sinais</div>
+  <div id="sinalHist"><div class="empty">Sem histórico</div></div>
+</div>
+</div>
+
 <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v4.0 · Todos os direitos reservados</div>
 </div>
 </div>
@@ -437,6 +521,7 @@ auth.onAuthStateChanged(function(user){
         show('app');
         checkDia();
         render();
+        ouvirSinal();
         setTimeout(function(){if(!S._biOk&&S.ops===0){g('pBIv').value='';g('popBI').classList.add('v');}},600);
       });
     }
@@ -775,11 +860,120 @@ function render(){
   if(g('calGrid')&&g('calGrid').innerHTML)renderCal();
 }
 
+// ─── SINAIS ──────────────────────────────────────────────────────────────────
+function pubSinal(){
+  var camp=g('adSigCamp').value.trim(),estr=g('adSigEstr').value.trim(),ent=g('adSigEntradas').value.trim();
+  var odd=g('adSigOdd').value.trim(),jogo=g('adSigJogo').value.trim();
+  var sg=g('adSigSG').value,g1v=g('adSigG1').value,g2v=g('adSigG2').value;
+  if(!camp||!estr||!ent){toast('Preencha campeonato, estratégia e entradas');return;}
+  var entradas=ent.split('\n').filter(function(l){return l.trim();}).map(function(l){return l.trim();});
+  var total=parseInt(sg||0)+parseInt(g1v||0)+parseInt(g2v||0);
+  var ass=total>0?((parseInt(sg||0)+parseInt(g1v||0)+parseInt(g2v||0)-parseInt(g2v||0))/total*100).toFixed(2):null;
+  var sinal={campeonato:camp,estrategia:estr,entradas:entradas,odd:odd,jogo:jogo,sg:parseInt(sg||0),g1:parseInt(g1v||0),g2:parseInt(g2v||0),assertividade:ass,greenseguidos:parseInt(sg||0),publicadoEm:new Date().toISOString(),resultado:null,resHora:null,resAss:null,status:'ativo'};
+  db.ref('sinal_ativo').set(sinal).then(function(){
+    // archive to history
+    db.ref('sinais_hist').push(sinal);
+    toast('Sinal publicado!');
+    g('adSigCamp').value='';g('adSigEstr').value='';g('adSigEntradas').value='';
+    g('adSigOdd').value='';g('adSigJogo').value='';g('adSigSG').value='';g('adSigG1').value='';g('adSigG2').value='';
+  });
+}
+function atualizarSinal(){
+  var res=g('adResResultado')||g('adResultado');
+  var resultado=res?res.value:'';
+  var hora=g('adResHora').value.trim(),gs=g('adResGS').value,ass=g('adResAss').value.trim();
+  if(!resultado){toast('Selecione o resultado');return;}
+  db.ref('sinal_ativo').once('value').then(function(snap){
+    if(!snap.val()){toast('Nenhum sinal ativo');return;}
+    var upd={resultado:resultado,resHora:hora,greenseguidos:gs?parseInt(gs):snap.val().greenseguidos,resAss:ass||snap.val().assertividade,status:resultado==='green'?'green':'red',atualizadoEm:new Date().toISOString()};
+    db.ref('sinal_ativo').update(upd).then(function(){
+      // update hist entry too
+      db.ref('sinais_hist').orderByChild('publicadoEm').equalTo(snap.val().publicadoEm).once('value').then(function(hs){hs.forEach(function(c){c.ref.update(upd);});});
+      toast('Resultado atualizado!');
+      g('adResHora').value='';g('adResGS').value='';g('adResAss').value='';
+    });
+  });
+}
+function limparSinal(){
+  if(!confirm('Limpar sinal ativo?'))return;
+  db.ref('sinal_ativo').remove().then(function(){toast('Sinal removido');});
+}
+function ouvirSinal(){
+  db.ref('sinal_ativo').on('value',function(snap){
+    var s=snap.val();
+    var badge=g('nbSinal');
+    if(!s){
+      if(badge)badge.textContent='📡 Sinal';
+      if(g('sinalSh'))g('sinalSh').textContent='📡 Aguardando sinal...';
+      if(g('sinalBody'))g('sinalBody').innerHTML='<div class="empty">Nenhum sinal publicado ainda</div>';
+      return;
+    }
+    // badge piscando se ativo
+    if(badge){badge.textContent=s.status==='ativo'?'📡 Sinal 🔴':s.status==='green'?'📡 Sinal ✅':'📡 Sinal ❌';}
+    renderSinalCard(s);
+  });
+  db.ref('sinais_hist').limitToLast(5).on('value',function(snap){
+    var hist=[];snap.forEach(function(c){hist.unshift(c.val());});
+    if(!g('sinalHist'))return;
+    if(!hist.length){g('sinalHist').innerHTML='<div class="empty">Sem histórico</div>';return;}
+    g('sinalHist').innerHTML=hist.map(function(s){
+      var cor=s.status==='green'?'#00a85a':s.status==='red'?'#e53935':'#8090b0';
+      var icone=s.status==='green'?'✅':s.status==='red'?'❌':'⏳';
+      var dt=new Date(s.publicadoEm).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return '<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4;display:flex;justify-content:space-between;align-items:center;font-size:11px"><div><div style="font-weight:600;color:#1a2540">'+icone+' '+s.estrategia+' · '+s.campeonato+'</div><div style="color:#8090b0;margin-top:2px">'+dt+(s.resAss?' · '+s.resAss+'% acerto':'')+'</div></div><span style="font-weight:700;color:'+cor+'">'+s.status.toUpperCase()+'</span></div>';
+    }).join('');
+  });
+}
+function renderSinalCard(s){
+  if(!g('sinalSh')||!g('sinalBody'))return;
+  var cor=s.status==='green'?'#00a85a':s.status==='red'?'#e53935':'#1565c0';
+  var icone=s.status==='green'?'✅':s.status==='red'?'❌':'📡';
+  g('sinalSh').textContent=icone+' '+s.estrategia+' · '+s.campeonato;
+  g('sinalSh').style.color=cor;
+  var html='';
+  // jogo e odd
+  if(s.jogo||s.odd){html+='<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4;display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:600;color:#1a2540">'+(s.jogo||'')+'</div>'+(s.odd?'<div style="background:#e8f0fc;border:1px solid rgba(21,101,192,.3);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;color:#1565c0">Odd '+s.odd+'</div>':'')+'</div>';}
+  // entradas
+  if(s.entradas&&s.entradas.length){
+    html+='<div style="padding:8px 12px 4px"><div style="font-size:10px;font-weight:700;color:#8090b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✔ Entradas</div>';
+    s.entradas.forEach(function(e,i){
+      var iconeE=s.status==='green'?'✅':s.status==='red'&&i===s.entradas.length-1?'❌':'⏳';
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f2f5;font-size:13px"><span>'+iconeE+'</span><span style="color:#1a2540;font-weight:500">'+e+'</span></div>';
+    });
+    html+='</div>';
+  }
+  // resultado
+  if(s.resultado){
+    var resCor=s.resultado==='green'?'#e6f7ef':'#feecec';
+    var resBrd=s.resultado==='green'?'rgba(0,168,90,.3)':'rgba(229,57,53,.3)';
+    var resTxt=s.resultado==='green'?'#00a85a':'#e53935';
+    html+='<div style="margin:10px 12px;background:'+resCor+';border:1.5px solid '+resBrd+';border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:18px;font-weight:800;color:'+resTxt+'">'+(s.resultado==='green'?'✅ GREEN':'❌ RED')+'</div>'+(s.resHora?'<div style="font-size:11px;color:'+resTxt+';margin-top:2px">Bateu às '+s.resHora+'</div>':'')+'</div>';
+  }
+  // stats
+  var total=parseInt(s.sg||0)+parseInt(s.g1||0)+parseInt(s.g2||0);
+  if(total>0){
+    var ass=s.resAss||s.assertividade;
+    html+='<div style="padding:10px 12px;border-top:1px solid #d0d8e4"><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;text-align:center">';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#1a2540">'+total+'</div><div style="font-size:9px;color:#8090b0">Total</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#00a85a">'+s.sg+'</div><div style="font-size:9px;color:#8090b0">SG</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#1565c0">'+s.g1+'</div><div style="font-size:9px;color:#8090b0">G1</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#e67e00">'+s.g2+'</div><div style="font-size:9px;color:#8090b0">G2</div></div>';
+    html+='</div>';
+    if(ass)html+='<div style="margin-top:8px;text-align:center;font-size:13px;font-weight:700;color:#1a2540">🎯 '+ass+'% de Acerto</div>';
+    if(s.greenseguidos)html+='<div style="text-align:center;font-size:11px;color:#00a85a;font-weight:600;margin-top:2px">'+s.greenseguidos+' Greens Seguidos! 🚀</div>';
+    html+='</div>';
+  }
+  // ts
+  var dt=new Date(s.publicadoEm).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  html+='<div style="padding:8px 12px;font-size:9px;color:#8090b0;border-top:1px solid #d0d8e4">Publicado às '+dt+'</div>';
+  g('sinalBody').innerHTML=html;
+}
+
 function goP(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
   var pg=g('p-'+id);if(pg)pg.classList.add('a');
-  var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6};
+  var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6,sinal:7};
   var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
   setTimeout(function(){render();},50);
   if(id==='cal'){calSel=S?S.dataOperando:new Date().toDateString();var d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();renderCal();}
