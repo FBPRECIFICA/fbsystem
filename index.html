@@ -517,9 +517,12 @@ function checkDia(){
   var hoje=new Date().toDateString();
   if(!S.dataAtual)S.dataAtual=hoje;
   if(!S.dataOperando)S.dataOperando=hoje;
-  if(S.dataAtual!==hoje&&S.dataOperando===hoje){
-    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataAtual),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
-    S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;S.dataAtual=hoje;S.dataOperando=hoje;sv();
+  if(S.dataAtual!==hoje){
+    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+    S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;
+    S.operacoes=[];S.dayChart=[S.banca];
+    S.travado=false;S.tipoTrava=null;S._biOk=false;
+    S.dataAtual=hoje;S.dataOperando=hoje;sv();
   }
 }
 function resetDia(){
