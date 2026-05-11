@@ -393,7 +393,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 <div id="mfRes" style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:7px;padding:8px 12px;font-size:11px;color:#00a85a;font-weight:600;text-align:center;display:none;margin-bottom:8px"></div>
 <button onclick="regManual()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%">Calcular e Registrar</button>
 </div></div>
-<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Evolução da Banca</span><span id="totDias" style="color:#8090b0">0 dias</span></div><div id="evoLista"><div class="empty">Sem histórico</div></div></div>
+<!-- STREAK + META SEMANAL -->
+<div class="g3" style="margin-bottom:10px">
+  <div class="mc"><div class="ml">🔥 Streak</div><div id="streakV" class="mv cg">0</div><div class="ms">dias seguidos</div></div>
+  <div class="mc"><div class="ml">📅 Esta semana</div><div id="semAtualV" class="mv ct">0%</div><div class="ms" id="semAtualS">0W · 0L</div></div>
+  <div class="mc"><div class="ml">📅 Semana ant.</div><div id="semAntV" class="mv ct">0%</div><div class="ms" id="semAntS">0W · 0L</div></div>
+</div>
+
+<!-- META SEMANAL VISUAL -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Meta Semanal</span><span id="metaSmLbl" style="color:#00a85a;font-weight:700">0/5 dias</span></div>
+  <div style="padding:10px 12px">
+    <div style="display:flex;gap:6px;margin-bottom:8px" id="metaSmDias"></div>
+    <div class="pl"><span>0%</span><span id="metaSmPct" style="font-weight:600;color:#00a85a">0%</span><span>Meta +50%</span></div>
+    <div class="pb"><div id="metaSmBar" class="pf" style="width:0%;background:#00a85a"></div></div>
+    <div id="metaSmMsg" style="font-size:11px;color:#8090b0;text-align:center;margin-top:4px"></div>
+  </div>
+</div>
+
+<!-- COMPARATIVO SEMANAL -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh">Comparativo Semanal</div>
+  <div id="compSem" style="padding:10px 12px"><div class="empty">Sem dados suficientes</div></div>
+</div>
+
+<!-- GRÁFICO EVOLUÇÃO BANCA -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Evolução da Banca</span><span id="totDias" style="color:#8090b0">0 dias</span></div>
+  <div style="height:160px;padding:10px 12px 0"><canvas id="evolC"></canvas></div>
+  <div id="evoLista" style="max-height:200px;overflow-y:auto"></div>
+</div>
 <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Resumo Semanal</span><button onclick="resetDia()" style="background:#e8ebf0;border:1px solid rgba(229,57,53,.3);color:#e53935;border-radius:5px;padding:3px 9px;font-size:9px;cursor:pointer;font-weight:600">Reset Dia</button></div><div id="resSem"><div class="empty">Sem histórico</div></div></div>
 <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Saques</span><span id="totSq" style="color:#00a85a;font-weight:700">R$0</span></div><div id="saqLista"><div class="empty">Nenhum saque</div></div></div>
 <div class="sec"><div class="sh">Histórico Completo</div><div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead><tbody id="histBody"><tr><td colspan="6" class="empty">Sem histórico</td></tr></tbody></table></div></div>
@@ -1415,6 +1444,172 @@ function gerarRelatorio(){
   w.document.close();
 }
 
+// ─── DADOS / GRÁFICOS ────────────────────────────────────────────────────────
+var _evolCI=null;
+
+function calcStreak(){
+  if(!S||!S.histDiario||!S.histDiario.length)return 0;
+  var hist=S.histDiario.slice().sort(function(a,b){
+    return new Date(b.data.split('/').reverse().join('-'))-new Date(a.data.split('/').reverse().join('-'));
+  });
+  var streak=0;
+  for(var i=0;i<hist.length;i++){
+    if(hist[i].metaBatida)streak++;
+    else break;
+  }
+  return streak;
+}
+
+function getSemana(offset){
+  // offset=0 = semana atual, offset=1 = semana anterior
+  var hoje=new Date();
+  var diaSem=hoje.getDay(); // 0=dom
+  var inicioSem=new Date(hoje);
+  inicioSem.setDate(hoje.getDate()-diaSem-(offset*7));
+  inicioSem.setHours(0,0,0,0);
+  var fimSem=new Date(inicioSem);
+  fimSem.setDate(inicioSem.getDate()+6);
+  fimSem.setHours(23,59,59,999);
+  return {ini:inicioSem,fim:fimSem};
+}
+
+function filtrarHistSemana(sem){
+  if(!S||!S.histDiario)return[];
+  return S.histDiario.filter(function(d){
+    var parts=d.data.split('/');
+    var dt=new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+    return dt>=sem.ini&&dt<=sem.fim;
+  });
+}
+
+function renderDados(){
+  if(!S)return;
+  var hist=S.histDiario||[];
+
+  // ── STREAK ──
+  var streak=calcStreak();
+  if(g('streakV')){
+    g('streakV').textContent=streak;
+    g('streakV').className='mv '+(streak>=3?'cg':streak>=1?'cy':'cr');
+  }
+
+  // ── SEMANAS ──
+  var semAtual=filtrarHistSemana(getSemana(0));
+  var semAnt=filtrarHistSemana(getSemana(1));
+
+  function calcResSem(dias){
+    var tw=0,tl=0,res=0;
+    dias.forEach(function(d){tw+=d.wins||0;tl+=d.losses||0;res+=d.resultado||0;});
+    return{tw:tw,tl:tl,res:dias.length?res:null};
+  }
+  var rA=calcResSem(semAtual),rAnt=calcResSem(semAnt);
+
+  if(g('semAtualV')){
+    g('semAtualV').textContent=rA.res!==null?(rA.res>=0?'+':'')+rA.res.toFixed(1)+'%':'—';
+    g('semAtualV').className='mv '+(rA.res===null?'ct':rA.res>=0?'cg':'cr');
+    g('semAtualS').textContent=rA.tw+'W · '+rA.tl+'L';
+  }
+  if(g('semAntV')){
+    g('semAntV').textContent=rAnt.res!==null?(rAnt.res>=0?'+':'')+rAnt.res.toFixed(1)+'%':'—';
+    g('semAntV').className='mv '+(rAnt.res===null?'ct':rAnt.res>=0?'cg':'cr');
+    g('semAntS').textContent=rAnt.tw+'W · '+rAnt.tl+'L';
+  }
+
+  // ── META SEMANAL ──
+  var diasSemAtual=semAtual.length;
+  var metasDias=semAtual.filter(function(d){return d.metaBatida;}).length;
+  var pctSem=semAtual.length?semAtual.reduce(function(a,b){return a+(b.resultado||0);},0):0;
+  var metaAlvo=50; // 50% na semana = 5 dias x 10%
+  var pctBar=Math.min(100,Math.max(0,(pctSem/metaAlvo)*100));
+
+  if(g('metaSmLbl'))g('metaSmLbl').textContent=diasSemAtual+'/5 dias';
+  if(g('metaSmPct'))g('metaSmPct').textContent=(pctSem>=0?'+':'')+pctSem.toFixed(1)+'%';
+  if(g('metaSmBar'))g('metaSmBar').style.width=pctBar+'%';
+
+  // 5 dias da semana como bolinhas
+  if(g('metaSmDias')){
+    var semR=getSemana(0);
+    var html='';
+    for(var i=1;i<=5;i++){
+      var dt=new Date(semR.ini);dt.setDate(semR.ini.getDate()+i);
+      var dtBR=dt.toLocaleDateString('pt-BR');
+      var diaHist=hist.find?hist.find(function(d){return d.data===dtBR;}):null;
+      if(!diaHist)for(var k=0;k<hist.length;k++){if(hist[k].data===dtBR){diaHist=hist[k];break;}}
+      var cor=!diaHist?'#e8ebf0':diaHist.metaBatida?'#00a85a':'#e53935';
+      var txtCor=!diaHist?'#8090b0':'#fff';
+      var dias=['S','T','Q','Q','S'];
+      html+='<div style="flex:1;height:36px;border-radius:8px;background:'+cor+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+txtCor+'">'+dias[i-1]+'</div>';
+    }
+    g('metaSmDias').innerHTML=html;
+  }
+
+  var msg='';
+  if(pctSem>=metaAlvo)msg='🏆 Meta semanal batida!';
+  else if(diasSemAtual===0)msg='Nenhum dia operado esta semana';
+  else msg='Faltam '+(metaAlvo-pctSem).toFixed(1)+'% para a meta semanal';
+  if(g('metaSmMsg'))g('metaSmMsg').textContent=msg;
+
+  // ── COMPARATIVO SEMANAL ──
+  if(g('compSem')){
+    if(rA.res===null&&rAnt.res===null){
+      g('compSem').innerHTML='<div class="empty">Sem dados suficientes</div>';
+    } else {
+      var diff=rA.res!==null&&rAnt.res!==null?rA.res-rAnt.res:null;
+      var compHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+      compHtml+='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;text-align:center">';
+      compHtml+='<div style="font-size:10px;color:#00a85a;font-weight:700;margin-bottom:4px">ESTA SEMANA</div>';
+      compHtml+='<div style="font-size:22px;font-weight:800;color:'+(rA.res>=0?'#00a85a':'#e53935')+'">'+(rA.res!==null?(rA.res>=0?'+':'')+rA.res.toFixed(1)+'%':'—')+'</div>';
+      compHtml+='<div style="font-size:10px;color:#8090b0;margin-top:3px">'+rA.tw+'W · '+rA.tl+'L · '+diasSemAtual+' dias</div></div>';
+      compHtml+='<div style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:8px;padding:12px;text-align:center">';
+      compHtml+='<div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:4px">SEMANA ANT.</div>';
+      compHtml+='<div style="font-size:22px;font-weight:800;color:'+(rAnt.res>=0?'#00a85a':'#e53935')+'">'+(rAnt.res!==null?(rAnt.res>=0?'+':'')+rAnt.res.toFixed(1)+'%':'—')+'</div>';
+      compHtml+='<div style="font-size:10px;color:#8090b0;margin-top:3px">'+rAnt.tw+'W · '+rAnt.tl+'L · '+semAnt.length+' dias</div></div></div>';
+      if(diff!==null){
+        var diffCor=diff>=0?'#00a85a':'#e53935';
+        var diffMsg=diff>=0?'📈 '+diff.toFixed(1)+'% melhor que a semana anterior':'📉 '+Math.abs(diff).toFixed(1)+'% pior que a semana anterior';
+        compHtml+='<div style="background:'+(diff>=0?'rgba(0,168,90,.08)':'rgba(229,57,53,.07)')+';border:1px solid '+(diff>=0?'rgba(0,168,90,.3)':'rgba(229,57,53,.3)')+';border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:'+diffCor+'">'+diffMsg+'</div>';
+      }
+      g('compSem').innerHTML=compHtml;
+    }
+  }
+
+  // ── GRÁFICO EVOLUÇÃO ──
+  var ctx=g('evolC');
+  if(ctx&&ctx.offsetParent!==null&&hist.length){
+    var sorted=hist.slice().sort(function(a,b){
+      return new Date(a.data.split('/').reverse().join('-'))-new Date(b.data.split('/').reverse().join('-'));
+    });
+    var labels=sorted.map(function(d){return d.data.substring(0,5);});
+    var bancas=[];var b=sorted[0].bancaInicial;
+    sorted.forEach(function(d){bancas.push(d.bancaFinal);});
+    var corLinha=sorted[sorted.length-1].bancaFinal>=sorted[0].bancaInicial?'#00a85a':'#e53935';
+    if(_evolCI){_evolCI.destroy();_evolCI=null;}
+    _evolCI=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[{
+          data:bancas,
+          borderColor:corLinha,
+          backgroundColor:corLinha+'20',
+          borderWidth:2,
+          pointRadius:sorted.length>20?0:3,
+          fill:true,
+          tension:.3
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:8},grid:{color:'#e8ebf0'}},
+          y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}
+        }
+      }
+    });
+  }
+}
+
 function goP(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
@@ -1424,6 +1619,7 @@ function goP(id){
   setTimeout(function(){render();},50);
   if(id==='cal'){calSel=S?S.dataOperando:new Date().toDateString();var d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();renderCal();}
   if(id==='rel'){renderRel();}
+  if(id==='hist'){setTimeout(function(){renderDados();},80);}
 }
 
 var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];
