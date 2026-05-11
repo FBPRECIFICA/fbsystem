@@ -422,8 +422,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
 <div id="p-rel" class="pg">
 <div class="sec" style="margin-bottom:10px">
-  <div class="sh">Relatório da Banca</div>
-  <div id="relConteudo"><div class="empty">Selecione uma banca para ver o relatório</div></div>
+  <div class="sh">Selecionar Banca</div>
+  <div id="relBancaSel" style="padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px"></div>
+</div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh" id="relTitulo">Relatório</div>
+  <div id="relConteudo"><div class="empty">Selecione uma banca acima</div></div>
 </div>
 <div style="display:flex;gap:8px;margin-bottom:10px">
   <button onclick="gerarRelPDF()" style="flex:1;background:#1a2540;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:700;font-size:13px;cursor:pointer">📄 Exportar PDF</button>
@@ -927,21 +931,30 @@ function render(){
 function renderBancaSel(){
   var el=g('bancaSel');if(!el||!MS)return;
   var ids=Object.keys(MS.bancas||{});
-  var html='';
+  el.innerHTML='';
   ids.forEach(function(id){
     var b=MS.bancas[id];
     var ativo=id===MS.bancaAtiva;
-    html+='<div class="bpill'+(ativo?' ba':'')+'" onclick="trocarBanca(\"'+id+'\")">'+
-      (b.nome||'Banca')+'<span style="font-size:9px;opacity:.7;margin-left:4px">'+
-      (b.estrategia||'Over 1.5')+'</span></div>';
+    var div=document.createElement('div');
+    div.className='bpill'+(ativo?' ba':'');
+    div.innerHTML=(b.nome||'Banca')+'<span style="font-size:9px;opacity:.7;margin-left:4px">'+(b.estrategia||'Over 1.5')+'</span>';
+    div.addEventListener('click',function(bid){return function(){trocarBanca(bid);};}(id));
+    el.appendChild(div);
   });
   if(ids.length<5){
-    html+='<div class="bpill badd" onclick="abrirModalBanca()">+ Nova</div>';
+    var addBtn=document.createElement('div');
+    addBtn.className='bpill badd';
+    addBtn.textContent='+ Nova';
+    addBtn.addEventListener('click',abrirModalBanca);
+    el.appendChild(addBtn);
   }
   if(ids.length>1){
-    html+='<div class="bpill bdel" onclick="excluirBanca()">🗑</div>';
+    var delBtn=document.createElement('div');
+    delBtn.className='bpill bdel';
+    delBtn.textContent='🗑 Excluir';
+    delBtn.addEventListener('click',excluirBanca);
+    el.appendChild(delBtn);
   }
-  el.innerHTML=html;
 }
 
 function trocarBanca(id){
@@ -994,10 +1007,30 @@ function excluirBanca(){
 }
 
 // ─── RELATÓRIO ───────────────────────────────────────────────────────────────
+function renderRelBancaSel(){
+  var el=g('relBancaSel');if(!el||!MS)return;
+  var ids=Object.keys(MS.bancas||{});
+  el.innerHTML='';
+  ids.forEach(function(id){
+    var b=MS.bancas[id];
+    var ativo=id===_relBancaId;
+    var div=document.createElement('div');
+    div.className='bpill'+(ativo?' ba':'');
+    div.innerHTML=(b.nome||'Banca')+'<span style="font-size:9px;opacity:.7;margin-left:4px">'+(b.estrategia||'Over 1.5')+'</span>';
+    div.addEventListener('click',function(bid){return function(){_relBancaId=bid;renderRelBancaSel();renderRel();};}(id));
+    el.appendChild(div);
+  });
+}
+var _relBancaId=null;
 function renderRel(){
-  if(!S||!g('relConteudo'))return;
-  var hist=S.histDiario||[];
-  var nome=S.nome||'Principal',estr=S.estrategia||'Over 1.5';
+  if(!MS||!g('relConteudo'))return;
+  if(!_relBancaId||!MS.bancas[_relBancaId])_relBancaId=MS.bancaAtiva;
+  renderRelBancaSel();
+  var SR=MS.bancas[_relBancaId];
+  if(!SR){g('relConteudo').innerHTML='<div class="empty">Banca não encontrada</div>';return;}
+  if(g('relTitulo'))g('relTitulo').textContent='Relatório · '+(SR.nome||'Principal');
+  var hist=SR.histDiario||[];
+  var nome=SR.nome||'Principal',estr=SR.estrategia||'Over 1.5';
   var criadaEm=S.criadaEm?new Date(S.criadaEm).toLocaleDateString('pt-BR'):'—';
   var totalDias=hist.length;
   var totalWins=0,totalLoss=0,totalMetas=0,somaRes=0;
@@ -1006,7 +1039,7 @@ function renderRel(){
   var melhorDia=hist.length?hist.reduce(function(a,b){return a.resultado>b.resultado?a:b;}):null;
   var piorDia=hist.length?hist.reduce(function(a,b){return a.resultado<b.resultado?a:b;}):null;
   // simulação
-  var b=S.banca,bOrig=S.banca,taxa=0.10,sq=0.5,simRows=[];
+  var b=SR.banca,bOrig=SR.banca,taxa=0.10,sq=0.5,simRows=[];
   for(var i=1;i<=8;i++){
     var fim=b;for(var d=0;d<5;d++)fim*=(1+taxa);
     var lucro=fim-bOrig,saque=lucro*sq;b=fim-saque;
@@ -1060,98 +1093,64 @@ function renderRel(){
 }
 
 function gerarRelPDF(){
-  var nome=S?S.nome||'Principal':'Principal';
-  var w=window.open('','_blank');
-  var hist=S.histDiario||[];
+  var SR2=MS&&_relBancaId?MS.bancas[_relBancaId]:S;
+  if(!SR2){toast('Selecione uma banca no relatório');return;}
+  var nome=SR2.nome||'Principal';
+  var hist=SR2.histDiario||[];
   var totalDias=hist.length,totalWins=0,totalLoss=0,totalMetas=0,somaRes=0;
   hist.forEach(function(d){totalWins+=d.wins||0;totalLoss+=d.losses||0;if(d.metaBatida)totalMetas++;somaRes+=d.resultado||0;});
   var mediaRes=totalDias>0?(somaRes/totalDias).toFixed(2):0;
-  var criadaEm=S.criadaEm?new Date(S.criadaEm).toLocaleDateString('pt-BR'):'—';
+  var criadaEm=SR2.criadaEm?new Date(SR2.criadaEm).toLocaleDateString('pt-BR'):'—';
   var histRows=hist.slice(0,50).map(function(d){
-    return '<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td>R$'+d.bancaFinal.toFixed(0)+'</td><td style="color:'+(d.resultado>=0?'green':'red')+'">'+(d.resultado>=0?'+':'')+d.resultado.toFixed(2)+'%</td><td>'+d.wins+'W/'+d.losses+'L</td><td>'+(d.metaBatida?'✓':'—')+'</td></tr>';
+    return ['<tr><td>',d.data,'</td><td>R$',d.bancaInicial.toFixed(0),'</td><td>R$',d.bancaFinal.toFixed(0),
+    '</td><td style="color:',(d.resultado>=0?'green':'red'),'">',(d.resultado>=0?'+':''),d.resultado.toFixed(2),
+    '%</td><td>',d.wins,'W/',d.losses,'L</td><td>',(d.metaBatida?'✓':'—'),'</td></tr>'].join('');
   }).join('');
-  // sim
-  var b=S.banca,bOrig=S.banca,simR='';
-  for(var i=1;i<=8;i++){var fim=b;for(var d=0;d<5;d++)fim*=(1.10);var lucro=fim-bOrig,sq2=lucro*0.5;b=fim-sq2;simR+='<tr><td>'+i+'</td><td>R$'+b.toFixed(2)+'</td><td>R$'+sq2.toFixed(2)+'</td></tr>';}
-  var pdfCSS='body{font-family:Arial,sans-serif;font-size:12px;color:#1a2540;margin:20px}h1{font-size:18px;color:#1a2540;margin-bottom:4px}h2{font-size:13px;color:#4a5880;margin:16px 0 8px;border-bottom:1px solid #d0d8e4;padding-bottom:4px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}.card{background:#f0f2f5;border-radius:6px;padding:10px;text-align:center}.cv{font-size:20px;font-weight:700}.cl{font-size:9px;color:#8090b0;text-transform:uppercase;margin-top:2px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1a2540;color:#fff;padding:6px 8px;text-align:left}td{padding:5px 8px;border-bottom:1px solid #d0d8e4}.footer{margin-top:20px;font-size:9px;color:#8090b0;text-align:center;border-top:1px solid #d0d8e4;padding-top:10px}@media print{body{margin:10px}button{display:none}}';
-  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatorio '+nome+'</title><style>'+pdfCSS+'</style></head><body>');
-  w.document.write('<h1>FB Sistemas · Relatório de Banca</h1>');
-  w.document.write('<p style="color:#8090b0;font-size:11px">'+nome+' · '+( S.estrategia||'Over 1.5')+' · Iniciada em '+criadaEm+' · Gerado em '+new Date().toLocaleDateString('pt-BR')+'</p>');
-  w.document.write('<div class="grid"><div class="card"><div class="cv" style="color:#00a85a">R$'+S.banca.toFixed(0)+'</div><div class="cl">Banca atual</div></div><div class="card"><div class="cv" style="color:#1565c0">'+totalDias+'</div><div class="cl">Dias operados</div></div><div class="card"><div class="cv" style="color:#e67e00">'+totalWins+'W/'+totalLoss+'L</div><div class="cl">Wins/Losses</div></div><div class="card"><div class="cv" style="color:#e65100">R$'+( S.totalSacado||0).toFixed(0)+'</div><div class="cl">Total sacado</div></div></div>');
-  w.document.write('<div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="card"><div class="cv">'+totalMetas+'</div><div class="cl">Metas batidas</div></div><div class="card"><div class="cv" style="color:'+(mediaRes>=0?'green':'red')+'">'+mediaRes+'%</div><div class="cl">Média/dia</div></div><div class="card"><div class="cv" style="color:#e65100">R$'+(S.totalSacado||0).toFixed(0)+'</div><div class="cl">Sacado</div></div></div>');
-  if(hist.length){w.document.write('<h2>Histórico de Operações</h2><table><thead><tr><th>Data</th><th>Inicial</th><th>Final</th><th>Resultado</th><th>W/L</th><th>Meta</th></tr></thead><tbody>'+histRows+'</tbody></table>');}
-  w.document.write('<h2>Projeção 8 Semanas (10%/dia · Saque 50%)</h2><p style="font-size:10px;color:#8090b0">Banca atual como base para projeção</p><table><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th></tr></thead><tbody>'+simR+'</tbody></table>');
-  w.document.write('<div class="footer">FB Sistemas · Estratégia Exclusiva de Fábio Marques · Relatório gerado automaticamente</div>');
-  w.document.write('<br><button onclick="window.print()" style="background:#1a2540;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px">🖨️ Imprimir / Salvar PDF</button>');
-  w.document.write('</body></html>');
+  var b=SR2.banca,bOrig=SR2.banca,simR='';
+  for(var i=1;i<=8;i++){
+    var fim=b;for(var d=0;d<5;d++)fim*=1.10;
+    var lucro=fim-bOrig,sq2=lucro*0.5;b=fim-sq2;
+    simR+='<tr><td>'+i+'</td><td>R$'+b.toFixed(2)+'</td><td>R$'+sq2.toFixed(2)+'</td></tr>';
+  }
+  var css='body{font-family:Arial,sans-serif;font-size:12px;color:#1a2540;margin:20px}'+
+    'h1{font-size:18px;color:#1a2540;margin-bottom:4px}'+
+    'h2{font-size:13px;color:#4a5880;margin:16px 0 8px;border-bottom:1px solid #d0d8e4;padding-bottom:4px}'+
+    '.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}'+
+    '.card{background:#f0f2f5;border-radius:6px;padding:10px;text-align:center}'+
+    '.cv{font-size:20px;font-weight:700}.cl{font-size:9px;color:#8090b0;text-transform:uppercase;margin-top:2px}'+
+    'table{width:100%;border-collapse:collapse;font-size:11px}'+
+    'th{background:#1a2540;color:#fff;padding:6px 8px;text-align:left}'+
+    'td{padding:5px 8px;border-bottom:1px solid #d0d8e4}'+
+    '.footer{margin-top:20px;font-size:9px;color:#8090b0;text-align:center;border-top:1px solid #d0d8e4;padding-top:10px}'+
+    '@media print{button{display:none}}';
+  var html=[
+    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatorio ',nome,'</title>',
+    '<style>',css,'</style></head><body>',
+    '<h1>FB Sistemas · Relatório de Banca</h1>',
+    '<p style="color:#8090b0;font-size:11px">',nome,' · ',(SR2.estrategia||'Over 1.5'),' · Iniciada em ',criadaEm,' · Gerado em ',new Date().toLocaleDateString('pt-BR'),'</p>',
+    '<div class="grid">',
+    '<div class="card"><div class="cv" style="color:#00a85a">R$',SR2.banca.toFixed(0),'</div><div class="cl">Banca atual</div></div>',
+    '<div class="card"><div class="cv" style="color:#1565c0">',totalDias,'</div><div class="cl">Dias operados</div></div>',
+    '<div class="card"><div class="cv" style="color:#e67e00">',totalWins,'W ',totalLoss,'L</div><div class="cl">Wins/Losses</div></div>',
+    '<div class="card"><div class="cv" style="color:#e65100">R$',(SR2.totalSacado||0).toFixed(0),'</div><div class="cl">Total sacado</div></div>',
+    '</div>',
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr)">',
+    '<div class="card"><div class="cv">',totalMetas,'</div><div class="cl">Metas batidas</div></div>',
+    '<div class="card"><div class="cv" style="color:',(mediaRes>=0?'green':'red'),'">',mediaRes,'%</div><div class="cl">Media/dia</div></div>',
+    '<div class="card"><div class="cv" style="color:#e65100">',totalDias,'</div><div class="cl">Dias</div></div>',
+    '</div>',
+    (hist.length?'<h2>Historico</h2><table><thead><tr><th>Data</th><th>Inicial</th><th>Final</th><th>Resultado</th><th>W/L</th><th>Meta</th></tr></thead><tbody>'+histRows+'</tbody></table>':''),
+    '<h2>Projecao 8 Semanas (10%/dia · Saque 50%)</h2>',
+    '<table><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th></tr></thead><tbody>',simR,'</tbody></table>',
+    '<div class="footer">FB Sistemas · Estrategia Exclusiva de Fabio Marques</div>',
+    '<br><button onclick="window.print()" style="background:#1a2540;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px">Imprimir / Salvar PDF</button>',
+    '</body></html>'
+  ].join('');
+  var w=window.open('','_blank');
+  w.document.write(html);
   w.document.close();
 }
 
-// ─── SINAIS ──────────────────────────────────────────────────────────────────
-function parseSinalTelegram(txt){
-  var lines=txt.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
-  var s={estrategia:'',campeonato:'',entradas:[],odd:null,jogo:null,sg:0,g1:0,g2:0,assertividade:null,greenseguidos:null,textoOriginal:txt};
-  lines.forEach(function(l){
-    // Estrategia (ex: OVER 1.5 NORMAL, BLINDADO 1)
-    if(/OVER|BLINDADO|UNDER/i.test(l)&&!l.match(/\d{1,2}:\d{2}/)){s.estrategia=l.replace(/[^\w\s.,]/g,'').trim();}
-    // Campeonato (ex: COPA, EURO, PREMIER, SUPER)
-    if(/COPA|EURO|PREMIER|SUPER|LIGA|BUNDESLIGA|SERIE|LIGUE|MLS/i.test(l)){s.campeonato=l.replace(/[^\w\s]/g,'').trim();}
-    // Entradas (ex: 12:46 Over 1.5)
-    var mEnt=l.match(/(\d{1,2}:\d{2})\s+(.+)/);
-    if(mEnt){s.entradas.push(mEnt[1]+' '+mEnt[2].replace(/[^\w\s.,]/g,'').trim());}
-    // Odd (ex: @1.45, @1,45)
-    var mOdd=l.match(/@([\d.,]+)/);
-    if(mOdd){s.odd=mOdd[1].replace(',','.');}
-    // Jogo (ex: EUA x Inglaterra, Team A x Team B)
-    var mJogo=l.match(/(.+)\s+[xX]\s+(.+)/);
-    if(mJogo&&!l.match(/\d{1,2}:\d{2}/)&&l.length<50){s.jogo=l.replace(/[^\w\s.x-]/g,'').trim();}
-    // SG/G1/G2 (ex: SG: 7 G1: 1 G2: 0)
-    var mSG=l.match(/SG[:\s]+(\d+)/i);if(mSG)s.sg=parseInt(mSG[1]);
-    var mG1=l.match(/G1[:\s—-]+(\d+)/i);if(mG1)s.g1=parseInt(mG1[1]);
-    var mG2=l.match(/G2[:\s—-]+(\d+)/i);if(mG2)s.g2=parseInt(mG2[1]);
-    // Assertividade (ex: 96.77% de Acerto, 100.0% de Acerto)
-    var mAss=l.match(/([\d.]+)%\s+de\s+Acerto/i);if(mAss)s.assertividade=mAss[1];
-    // Greens seguidos (ex: 13 Greens Seguidos!, 8 Greens Seguidos!)
-    var mGS=l.match(/(\d+)\s+Greens?\s+Seguidos/i);if(mGS)s.greenseguidos=parseInt(mGS[1]);
-  });
-  if(!s.estrategia&&lines.length>0)s.estrategia=lines[0].replace(/[^\w\s]/g,'').trim().substring(0,40);
-  return s;
-}
-function pubSinal(){
-  var txt=g('adSigTexto').value.trim();
-  var link=g('adSigLink')?g('adSigLink').value.trim():'';
-  if(!txt){toast('Cole o sinal do Telegram');return;}
-  var s=parseSinalTelegram(txt);
-  s.link=link;
-  s.publicadoEm=new Date().toISOString();
-  s.resultado=null;s.resHora=null;s.resAss=null;s.status='ativo';
-  db.ref('sinal_ativo').set(s).then(function(){
-    db.ref('sinais_hist').push(s);
-    toast('Sinal publicado!');
-    g('adSigTexto').value='';
-    if(g('adSigLink'))g('adSigLink').value='';
-  });
-}
-function atualizarSinal(){
-  var res=g('adResResultado')||g('adResultado');
-  var resultado=res?res.value:'';
-  var hora=g('adResHora').value.trim(),gs=g('adResGS').value,ass=g('adResAss').value.trim();
-  if(!resultado){toast('Selecione o resultado');return;}
-  db.ref('sinal_ativo').once('value').then(function(snap){
-    if(!snap.val()){toast('Nenhum sinal ativo');return;}
-    var upd={resultado:resultado,resHora:hora,greenseguidos:gs?parseInt(gs):snap.val().greenseguidos,resAss:ass||snap.val().assertividade,status:resultado==='green'?'green':'red',atualizadoEm:new Date().toISOString()};
-    db.ref('sinal_ativo').update(upd).then(function(){
-      // update hist entry too
-      db.ref('sinais_hist').orderByChild('publicadoEm').equalTo(snap.val().publicadoEm).once('value').then(function(hs){hs.forEach(function(c){c.ref.update(upd);});});
-      toast('Resultado atualizado!');
-      g('adResHora').value='';g('adResGS').value='';g('adResAss').value='';
-    });
-  });
-}
-function limparSinal(){
-  if(!confirm('Limpar sinal ativo?'))return;
-  db.ref('sinal_ativo').remove().then(function(){toast('Sinal removido');});
-}
 function ouvirSinal(){
   db.ref('sinal_ativo').on('value',function(snap){
     var s=snap.val();
