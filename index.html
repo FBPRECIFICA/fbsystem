@@ -282,7 +282,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
 </div>
 
-<div class="bsel" id="bancaSel"></div>
+<div style="background:#fff;border-bottom:2px solid #d0d8e4;padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:10px;color:#8090b0;font-weight:600">BANCA:</span>
+    <div id="bancaNomeAtivo" style="background:#1a2540;color:#fff;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer" onclick="abrirGerenciarBancas()">Principal <span style="opacity:.6;font-size:10px">Over 1.5</span></div>
+  </div>
+  <button onclick="abrirGerenciarBancas()" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;color:#4a5880;cursor:pointer">⚙️ Gerenciar</button>
+</div>
 
 <div id="p-dash" class="pg a">
 <div id="alD" class="al"></div>
@@ -471,6 +477,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
 <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v4.0 · Todos os direitos reservados</div>
 </div>
+</div>
+
+<!-- MODAL GERENCIAR BANCAS -->
+<div id="modalGerenciar" class="bmodal">
+  <div class="bmodalc" style="max-height:85vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:16px;font-weight:700">Gerenciar Bancas</div>
+      <button onclick="fecharGerenciarBancas()" style="background:#e8ebf0;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px">✕</button>
+    </div>
+    <div id="listaBancas" style="margin-bottom:16px"></div>
+    <button onclick="fecharGerenciarBancas();abrirModalBanca()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer">+ Nova Banca</button>
+  </div>
 </div>
 
 <!-- MODAL NOVA BANCA -->
@@ -952,76 +970,130 @@ function render(){
 }
 
 // ─── MULTI-BANCA ─────────────────────────────────────────────────────────────
-var _bancaIds=[];
+// ─── MULTI-BANCA ─────────────────────────────────────────────────────────────
 function renderBancaSel(){
-  var el=g('bancaSel');if(!el||!MS)return;
-  _bancaIds=Object.keys(MS.bancas||{});
-  var html='<span style="font-size:10px;color:#8090b0;font-weight:600;flex-shrink:0;margin-right:4px">BANCA:</span>';
-  _bancaIds.forEach(function(id,i){
-    var b=MS.bancas[id];
-    var ativo=(id===MS.bancaAtiva);
-    html+='<div class="bpill'+(ativo?' ba':'')+'" onclick="trocarBanca('+i+')" style="cursor:pointer">';
-    html+=(b.nome||'Banca');
-    html+='<span style="font-size:9px;opacity:.7;margin-left:4px">'+(b.estrategia||'Over 1.5')+'</span>';
-    html+='</div>';
-  });
-  if(_bancaIds.length<5){
-    html+='<div class="bpill badd" onclick="abrirModalBanca()" style="cursor:pointer">+ Nova</div>';
+  if(!MS||!S)return;
+  var el=g('bancaNomeAtivo');
+  if(el){
+    el.innerHTML=(S.nome||'Principal')+' <span style="opacity:.6;font-size:10px">'+(S.estrategia||'Over 1.5')+'</span>';
   }
-  if(_bancaIds.length>1){
-    html+='<div class="bpill bdel" onclick="excluirBanca()" style="cursor:pointer">🗑 Excluir</div>';
-  }
-  el.innerHTML=html;
 }
 
-function trocarBanca(idx){
-  var id=_bancaIds[idx];
-  if(!MS||!id||!MS.bancas[id])return;
+function abrirGerenciarBancas(){
+  if(!MS)return;
+  var lista=g('listaBancas');
+  if(!lista)return;
+  var ids=Object.keys(MS.bancas||{});
+  var html='';
+  ids.forEach(function(id,i){
+    var b=MS.bancas[id];
+    var ativo=(id===MS.bancaAtiva);
+    html+='<div style="border:1.5px solid '+(ativo?'#1a2540':'#d0d8e4')+';border-radius:10px;padding:12px;margin-bottom:8px;background:'+(ativo?'#f0f2f5':'#fff')+'">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:#1a2540">'+(b.nome||'Banca')+(ativo?' <span style="background:#1a2540;color:#fff;border-radius:10px;padding:1px 8px;font-size:9px">ATIVA</span>':'')+'</div>';
+    html+='<div style="font-size:10px;color:#8090b0;margin-top:1px">'+(b.estrategia||'Over 1.5')+' · R$'+(b.banca||0).toFixed(0)+'</div></div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:6px">';
+    if(!ativo){
+      html+='<button onclick="selecionarBanca('+i+')" style="flex:1;background:#00a85a;color:#fff;border:none;border-radius:7px;padding:9px;font-size:12px;font-weight:700;cursor:pointer">✓ Selecionar</button>';
+    }
+    if(ids.length>1){
+      html+='<button onclick="excluirBancaById('+i+')" style="background:#feecec;color:#e53935;border:1px solid rgba(229,57,53,.3);border-radius:7px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer">🗑</button>';
+    }
+    html+='</div></div>';
+  });
+  lista.innerHTML=html;
+  g('modalGerenciar').classList.add('v');
+}
+
+function fecharGerenciarBancas(){
+  var m=g('modalGerenciar');
+  if(m)m.classList.remove('v');
+}
+
+function selecionarBanca(idx){
+  var ids=Object.keys(MS.bancas||{});
+  var id=ids[idx];
+  if(!id||!MS.bancas[id])return;
   if(S&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   MS.bancaAtiva=id;
   S=MS.bancas[id];
   if(!S.dataAtual)S.dataAtual=new Date().toDateString();
   if(!S.dataOperando)S.dataOperando=new Date().toDateString();
-  if(!S.operacoes)S.operacoes=[];if(!S.histDiario)S.histDiario=[];
-  if(!S.saques)S.saques=[];if(!S.dayChart||!S.dayChart.length)S.dayChart=[S.banca||1000];
+  if(!S.operacoes)S.operacoes=[];
+  if(!S.histDiario)S.histDiario=[];
+  if(!S.saques)S.saques=[];
+  if(!S.dayChart||!S.dayChart.length)S.dayChart=[S.banca||1000];
   if(!S.diario)S.diario=[];
-  sv();renderBancaSel();checkDia();render();
+  sv();
+  fecharGerenciarBancas();
+  renderBancaSel();
+  checkDia();
+  render();
   toast('Banca: '+(S.nome||'Principal'));
+}
+
+function excluirBancaById(idx){
+  var ids=Object.keys(MS.bancas||{});
+  var id=ids[idx];
+  if(!id)return;
+  var b=MS.bancas[id];
+  if(!confirm('Excluir banca "'+(b.nome||'esta banca')+'"? Os dados serão perdidos.'))return;
+  delete MS.bancas[id];
+  var newIds=Object.keys(MS.bancas);
+  if(newIds.length===0){
+    var nid='b_'+Date.now();
+    MS.bancas[nid]=defS('Principal','Over 1.5',1000);
+    newIds=[nid];
+  }
+  MS.bancaAtiva=newIds[0];
+  S=MS.bancas[MS.bancaAtiva];
+  sv();
+  fecharGerenciarBancas();
+  renderBancaSel();
+  checkDia();
+  render();
+  toast('Banca excluída');
 }
 
 function abrirModalBanca(){
   var ids=Object.keys(MS.bancas||{});
   if(ids.length>=5){toast('Máximo 5 bancas');return;}
-  g('mbNome').value='';g('mbVal').value='';
+  g('mbNome').value='';g('mbVal').value='1000';
   g('modalBanca').classList.add('v');
   setTimeout(function(){g('mbNome').focus();},200);
 }
 function fecharModalBanca(){g('modalBanca').classList.remove('v');}
 
 function criarBanca(){
-  var nome=g('mbNome').value.trim(),estr=g('mbEstr').value,val=parseFloat(g('mbVal').value)||1000;
-  if(!nome){toast('Digite um nome');return;}
+  var nome=g('mbNome').value.trim();
+  var estr=g('mbEstr').value;
+  var val=parseFloat(g('mbVal').value)||1000;
+  if(!nome){toast('Digite um nome para a banca');return;}
   var ids=Object.keys(MS.bancas||{});
   if(ids.length>=5){toast('Máximo 5 bancas');return;}
   var id='b_'+Date.now();
   MS.bancas[id]=defS(nome,estr,val);
   fecharModalBanca();
-  trocarBanca(id);
+  // auto-select new banca
+  if(S&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  MS.bancaAtiva=id;
+  S=MS.bancas[id];
+  sv();
+  renderBancaSel();
+  checkDia();
+  render();
   toast('Banca "'+nome+'" criada!');
 }
 
+// Keep old trocarBanca for compatibility
+function trocarBanca(idx){selecionarBanca(idx);}
 function excluirBanca(){
   var ids=Object.keys(MS.bancas||{});
-  if(ids.length<=1){toast('Não pode excluir a única banca');return;}
-  if(!confirm('Excluir esta banca? Histórico será perdido.'))return;
-  var id=MS.bancaAtiva;
-  delete MS.bancas[id];
-  var newIds=Object.keys(MS.bancas);
-  MS.bancaAtiva=newIds[0];
-  S=MS.bancas[MS.bancaAtiva];
-  sv();renderBancaSel();checkDia();render();
-  toast('Banca excluída');
+  var idx=ids.indexOf(MS.bancaAtiva);
+  if(idx>=0)excluirBancaById(idx);
 }
+
 
 // ─── RELATÓRIO ───────────────────────────────────────────────────────────────
 function renderRelBancaSel(){
