@@ -986,12 +986,37 @@ function render(){
   // config
   if(g('cfgSW'))g('cfgSW').value=S.stopWin||10;if(g('cfgSL'))g('cfgSL').value=S.stopLoss||33;
   if(g('cfgL'))g('cfgL').value=S.limite||10000;if(g('cfgOd'))g('cfgOd').value=S.odd||1.44;if(g('cfgB'))g('cfgB').value=S.bancaBase||1000;
-  // gráfico — só quando visível
+  // gráfico evolução — histórico completo + dia atual
   var ctx=g('dayC');
   if(ctx&&ctx.offsetParent!==null){
-    var data=S.dayChart.length?S.dayChart:[S.bancaBase],labels=data.map(function(_,i){return i===0?'Início':'Op '+i;}),cor=S.banca>=S.bancaBase?'#00a85a':'#e53935';
+    // Monta dados: histDiario ordenado + ponto atual do dia
+    var sorted=(S.histDiario||[]).slice().sort(function(a,b){
+      return new Date(a.data.split('/').reverse().join('-'))-new Date(b.data.split('/').reverse().join('-'));
+    });
+    var chartLabels=[],chartData=[];
+    if(sorted.length){
+      // Ponto inicial da banca
+      chartLabels.push('Início');
+      chartData.push(sorted[0].bancaInicial);
+      sorted.forEach(function(d){
+        chartLabels.push(d.data.substring(0,5));
+        chartData.push(d.bancaFinal);
+      });
+    } else {
+      // Sem histórico — mostra só dayChart do dia
+      var dc=S.dayChart.length?S.dayChart:[S.bancaBase];
+      dc.forEach(function(v,i){chartLabels.push(i===0?'Início':'Op '+i);chartData.push(v);});
+    }
+    // Adiciona ponto do dia atual se ainda não fechado
+    var todayBR=new Date().toLocaleDateString('pt-BR');
+    var ultimoHist=sorted.length?sorted[sorted.length-1]:null;
+    if(S.ops>0&&(!ultimoHist||ultimoHist.data!==todayBR)){
+      chartLabels.push('Hoje');
+      chartData.push(S.banca);
+    }
+    var cor=chartData[chartData.length-1]>=chartData[0]?'#00a85a':'#e53935';
     if(_dCI){_dCI.destroy();_dCI=null;}
-    _dCI=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{data:data,borderColor:cor,backgroundColor:cor+'18',borderWidth:2,pointRadius:2,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
+    _dCI=new Chart(ctx,{type:'line',data:{labels:chartLabels,datasets:[{data:chartData,borderColor:cor,backgroundColor:cor+'18',borderWidth:2,pointRadius:chartData.length>20?1:3,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'R$'+c.raw.toFixed(0);}}}},scales:{x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:8},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
   }
   // cal
   if(g('calGrid')&&g('calGrid').innerHTML)renderCal();
