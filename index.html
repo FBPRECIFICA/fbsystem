@@ -389,7 +389,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 <div class="sec" style="margin-bottom:10px"><div class="sh">Registrar Dia Manualmente</div>
 <div style="padding:10px 12px">
 <div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Data</span><input type="date" id="mfD" class="mfinp" style="width:160px"></div>
-<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca inicial</span><input type="number" id="mfBI" class="mfinp" placeholder="R$" inputmode="decimal"></div>
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca inicial <span style="color:#8090b0;font-size:9px">(auto se já existe)</span></span><input type="number" id="mfBI" class="mfinp" placeholder="Opcional" inputmode="decimal"></div>
 <div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca final</span><input type="number" id="mfBF" class="mfinp" placeholder="R$" inputmode="decimal"></div>
 <div id="mfRes" style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:7px;padding:8px 12px;font-size:11px;color:#00a85a;font-weight:600;text-align:center;display:none;margin-bottom:8px"></div>
 <button onclick="regManual()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%">Calcular e Registrar</button>
@@ -765,14 +765,42 @@ function reiniciar(){
   S.bancaBase=nb;S.banca=nb;S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[nb];S.travado=false;S.tipoTrava=null;S._biOk=false;S.dataOperando=new Date().toDateString();sv();render();toast('Novo ciclo: '+fR(nb));
 }
 function regManual(){
-  var data=g('mfD').value,bi=parseFloat(g('mfBI').value),bf=parseFloat(g('mfBF').value);
-  if(!data||!bi||!bf){toast('Preencha todos os campos');return;}
-  var res=((bf-bi)/bi*100),dtBR=new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
+  var data=g('mfD').value,bf=parseFloat(g('mfBF').value);
+  if(!data||!bf){toast('Preencha a data e banca final');return;}
+  var dtBR=new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
+  // Find existing entry for this date
+  var existing=null;
+  for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){existing=S.histDiario[i];break;}}
+  var bi;
+  if(existing){
+    // Keep original bancaInicial, just update bancaFinal
+    bi=existing.bancaInicial;
+  } else {
+    // New entry - use input or current banca as initial
+    bi=parseFloat(g('mfBI').value)||S.banca;
+  }
+  var res=((bf-bi)/bi*100);
+  var newEntry={data:dtBR,bancaInicial:bi,bancaFinal:bf,resultado:res,
+    wins:existing?existing.wins:0,losses:existing?existing.losses:0,
+    metaBatida:res>=(S.stopWin||10),perfil:S.perfil,manual:true};
+  // Remove old entry for this date and add updated one
   S.histDiario=S.histDiario.filter(function(h){return h.data!==dtBR;});
-  S.histDiario.push({data:dtBR,bancaInicial:bi,bancaFinal:bf,resultado:res,wins:0,losses:0,metaBatida:res>=(S.stopWin||10),perfil:S.perfil,manual:true});
+  S.histDiario.push(newEntry);
   S.histDiario.sort(function(a,b){return new Date(b.data.split('/').reverse().join('-'))-new Date(a.data.split('/').reverse().join('-'));});
-  var r=g('mfRes');r.textContent=dtBR+': '+fR(bi)+' → '+fR(bf)+' = '+fP(res);r.style.display='block';
-  g('mfD').value='';g('mfBI').value='';g('mfBF').value='';sv();render();toast('Dia registrado!');
+  // Update current banca to match (if this is today or most recent)
+  var todayBR=new Date().toLocaleDateString('pt-BR');
+  if(dtBR===todayBR||S.histDiario[0].data===dtBR){
+    S.banca=bf;
+    S.bancaBase=bi;
+    if(!S.dayChart||!S.dayChart.length)S.dayChart=[bi];
+    S.dayChart[S.dayChart.length-1]=bf;
+  }
+  var r=g('mfRes');
+  r.textContent=(existing?'Atualizado: ':'Registrado: ')+dtBR+': '+fR(bi)+' → '+fR(bf)+' = '+fP(res);
+  r.style.display='block';
+  g('mfD').value='';g('mfBI').value='';g('mfBF').value='';
+  sv();render();renderBancaSel();
+  toast(existing?'Dia atualizado!':'Dia registrado!');
 }
 
 // SIMULADOR
