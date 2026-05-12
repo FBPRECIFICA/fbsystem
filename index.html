@@ -425,7 +425,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <div id="evoLista" style="max-height:200px;overflow-y:auto"></div>
 </div>
 <div class="sec" style="margin-bottom:10px"><div class="sh"><span>Resumo Semanal</span><button onclick="resetDia()" style="background:#e8ebf0;border:1px solid rgba(229,57,53,.3);color:#e53935;border-radius:5px;padding:3px 9px;font-size:9px;cursor:pointer;font-weight:600">Reset Dia</button></div><div id="resSem"><div class="empty">Sem histórico</div></div></div>
-<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Saques</span><span id="totSq" style="color:#00a85a;font-weight:700">R$0</span></div><div id="saqLista"><div class="empty">Nenhum saque</div></div></div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Saques</span><span id="totSq" style="color:#00a85a;font-weight:700">R$0</span></div>
+  <div style="padding:10px 12px;border-bottom:1px solid #d0d8e4">
+    <div style="font-size:10px;font-weight:700;color:#4a5880;margin-bottom:8px">💰 Registrar Saque Manual</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input type="number" id="sqManVal" inputmode="decimal" placeholder="Valor sacado R$" style="flex:1;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:9px 10px;font-size:14px;font-weight:700;color:#1a2540;outline:none">
+      <input type="date" id="sqManData" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:9px 10px;font-size:12px;color:#1a2540;outline:none">
+    </div>
+    <input type="text" id="sqManObs" placeholder="Observação (opcional)" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px 10px;font-size:12px;color:#1a2540;outline:none;margin-bottom:7px">
+    <button onclick="regSaqueManual()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:7px;padding:11px;font-weight:800;font-size:13px;cursor:pointer">💰 Confirmar Saque</button>
+  </div>
+  <div id="saqLista"><div class="empty">Nenhum saque</div></div>
+</div>
 <div class="sec"><div class="sh">Histórico Completo</div><div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead><tbody id="histBody"><tr><td colspan="6" class="empty">Sem histórico</td></tr></tbody></table></div></div>
 </div>
 
@@ -806,18 +818,15 @@ function regManual(){
 // SIMULADOR
 function rodarSim(){
   var bi=parseFloat(g('simB').value)||1000;
-  var sq=Math.min(95,parseFloat(g('simSq').value)||50)/100;
+  var sqRaw=parseFloat(g('simSq').value);var sq=Math.min(95,isNaN(sqRaw)?50:sqRaw)/100;
   var meta=parseFloat(g('simMeta').value)||10;
   var taxa=meta/100;
   var b=bi,acum=0,rows=[],bancas=[bi];
-  var bOrig=bi; // banca original — referência fixa de lucro
   for(var i=1;i<=8;i++){
-    var fim=b;
-    for(var d=0;d<5;d++)fim*=(1+taxa);
-    var lucro=fim-bOrig;   // lucro = tudo acima da banca original
-    var sq2=lucro*sq;
+    for(var d=0;d<7;d++)b*=(1+taxa); // 7 dias na semana
+    var sq2=b*sq;  // saque = % da banca total
     acum+=sq2;
-    b=fim-sq2;             // banca segue = fim - saque
+    b=b-sq2;       // banca segue = banca_fim * (1-sq)
     rows.push({i:i,b:b,sq2:sq2,acum:acum});bancas.push(b);
   }
   var tb='';rows.forEach(function(r){tb+='<tr><td>Sem '+r.i+'</td><td style="color:#00a85a;font-weight:600">'+fR(r.b)+'</td><td style="color:#e67e00;font-weight:600">'+fR(r.sq2)+'</td><td style="color:#e65100;font-weight:600">'+fR(r.acum)+'</td></tr>';});
@@ -831,26 +840,23 @@ function rodarSim(){
 // META
 function calcMeta(){
   var alvo=parseFloat(g('metaAlvo').value)||150000;
-  var sq=Math.min(95,parseFloat(g('metaSq').value)||50)/100;
+  var sqRaw2=parseFloat(g('metaSq').value);var sq=Math.min(95,isNaN(sqRaw2)?50:sqRaw2)/100;
   var taxa=0.10;
   var b=S.banca,acum=S.totalSacado||0,sem=0,pts=[{s:0,v:acum}];
-  var bOrig=S.banca; // banca original — referência fixa de lucro
   while(acum<alvo&&sem<1000){
     sem++;
-    var fim=b;
-    for(var d=0;d<5;d++)fim*=(1+taxa);
-    if(fim>S.limite){var e2=fim-S.limite;acum+=e2;fim=S.limite;bOrig=S.limite;}
-    var lucro=fim-bOrig;   // lucro = tudo acima da banca original
-    var sq2=Math.max(0,lucro)*sq;
+    for(var d=0;d<7;d++)b*=(1+taxa);
+    if(b>S.limite){var e2=b-S.limite;acum+=e2;b=S.limite;}
+    var sq2=b*sq;
     acum+=sq2;
-    b=fim-sq2;
+    b=b-sq2;
     if(sem<=40||sem%5===0)pts.push({s:sem,v:acum});
   }
   g('metaV').textContent=sem>=1000?'1000+':sem;
   var pctF=Math.min(100,((S.totalSacado||0)/alvo*100));g('metaPF').style.width=pctF+'%';g('metaPT').textContent=pctF.toFixed(1)+'% · '+fR(S.totalSacado||0)+' de '+fR(alvo)+' sacado';
   var mHtml='';[[5000,'R$5k'],[10000,'R$10k'],[25000,'R$25k'],[50000,'R$50k'],[100000,'R$100k'],[150000,'R$150k'],[200000,'R$200k']].filter(function(m){return m[0]<=alvo*1.1;}).forEach(function(m){
-    var v=m[0],lbl=m[1],b2=S.banca,bOr2=S.banca,d2=0,ac2=S.totalSacado||0;
-    while(ac2<v&&d2<500){d2++;var f2=b2;for(var x=0;x<5;x++)f2*=(1+taxa);if(f2>S.limite){var ex=f2-S.limite;ac2+=ex;f2=S.limite;bOr2=S.limite;}var l2=f2-bOr2,s2=Math.max(0,l2)*sq;ac2+=s2;b2=f2-s2;}
+    var v=m[0],lbl=m[1],b2=S.banca,d2=0,ac2=S.totalSacado||0;
+    while(ac2<v&&d2<500){d2++;for(var x=0;x<7;x++)b2*=(1+taxa);if(b2>S.limite){var ex=b2-S.limite;ac2+=ex;b2=S.limite;}var s2=b2*sq;ac2+=s2;b2=b2-s2;}
     var ok=(S.totalSacado||0)>=v;
     mHtml+='<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px"><span style="color:'+(ok?'#00a85a':'#4a5880')+';font-weight:'+(ok?'700':'400')+'">'+lbl+'</span><span style="color:'+(ok?'#00a85a':'#8090b0')+'">'+(ok?'✓ Atingido':d2>=500?'500+ sem':d2+' semanas')+'</span></div>';
   });
@@ -980,7 +986,7 @@ function render(){
   var hbEl=g('histBody');if(hbEl){if(S.histDiario.length){var hH='';S.histDiario.slice(0,30).forEach(function(d){hH+='<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td style="color:'+(d.bancaFinal>=d.bancaInicial?'#00a85a':'#e53935')+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+'</td><td style="color:'+(d.resultado>=0?'#00a85a':'#e53935')+';font-weight:600">'+fP(d.resultado)+'</td><td>'+d.wins+'W/'+d.losses+'L</td><td><span class="bdg '+(d.metaBatida?'bwg':'bwl')+'">'+(d.metaBatida?'SIM':'NÃO')+'</span></td></tr>';});hbEl.innerHTML=hH;}else hbEl.innerHTML='<tr><td colspan="6" class="empty">Sem histórico</td></tr>';}
   // saques
   if(g('totSq'))g('totSq').textContent='Total: '+fR(S.totalSacado||0);
-  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">+'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+'</div></div><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:#e6f7ef;color:#00a85a;font-weight:600">Saque #'+(S.saques.length-i)+'</span></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
+  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">+'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+(s.obs?' · '+s.obs:'')+'</div></div><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:'+(s.manual?'#e8f0fc':'#e6f7ef')+';color:'+(s.manual?'#1565c0':'#00a85a')+';font-weight:600">'+(s.manual?'Manual':'Auto')+'</span></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
   // resumo
   var rsEl=g('resSem');if(rsEl&&S.histDiario.length){var sem=S.histDiario.slice(0,5),tw=0,tl=0,mt=0;sem.forEach(function(d){tw+=d.wins;tl+=d.losses;if(d.metaBatida)mt++;});var bi2=sem[sem.length-1].bancaInicial,bf2=sem[0].bancaFinal,res3=bi2>0?((bf2-bi2)/bi2*100):0,msg2=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss':'Atenção: '+tl+' losses';rsEl.innerHTML='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;margin:10px"><div style="font-size:9px;color:#00a85a;font-weight:700;text-transform:uppercase;margin-bottom:8px">Últimos '+sem.length+' dias</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px"><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#00a85a">'+tw+'</div><div style="font-size:8px;color:#8090b0">Wins</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e53935">'+tl+'</div><div style="font-size:8px;color:#8090b0">Losses</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e67e00">'+mt+'</div><div style="font-size:8px;color:#8090b0">Metas</div></div></div><div style="font-size:11px;color:#4a5880;padding-top:9px;border-top:1px solid #d0d8e4">'+msg2+'<br>Resultado: <strong style="color:'+(res3>=0?'#00a85a':'#e53935')+'">'+fP(res3)+'</strong></div></div>';}
   // config
@@ -1723,6 +1729,23 @@ function renderDados(){
   }
 }
 
+function regSaqueManual(){
+  var val=parseFloat(g('sqManVal').value);
+  var data=g('sqManData').value;
+  var obs=g('sqManObs').value.trim();
+  if(!val||isNaN(val)||val<=0){toast('Digite o valor do saque');return;}
+  if(val>S.banca){toast('Saque maior que a banca!');return;}
+  var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+  var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  S.banca=S.banca-val;
+  S.totalSacado=(S.totalSacado||0)+val;
+  if(!S.saques)S.saques=[];
+  S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
+  g('sqManVal').value='';g('sqManObs').value='';g('sqManData').value='';
+  sv();render();
+  toast('Saque de '+fR(val)+' registrado!');
+}
+
 function goP(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
@@ -1735,7 +1758,7 @@ function goP(id){
   if(id==='hist'){setTimeout(function(){renderDados();},80);}
 }
 
-var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];
+var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];var sqDEl=g('sqManData');if(sqDEl)sqDEl.value=new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
