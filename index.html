@@ -1740,19 +1740,30 @@ function regSaqueManual(){
   // Atualiza banca e total sacado
   S.banca=Math.max(0, S.banca-val);
   S.totalSacado=(S.totalSacado||0)+val;
+  // Atualiza bancaBase para refletir nova banca após saque
+  S.bancaBase=S.banca;
+  // Atualiza dayChart com o novo valor de banca
+  if(!S.dayChart)S.dayChart=[];
+  S.dayChart.push(S.banca);
   // Garante array de saques
   if(!S.saques)S.saques=[];
   S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
-  // Sincroniza S de volta ao MS antes de salvar
-  if(MS&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  // Registra no histDiario se houver operações no dia
+  if(!S.histDiario)S.histDiario=[];
+  // Sincroniza S de volta ao MS ANTES de qualquer operação assíncrona
+  MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  var snapMS=JSON.parse(JSON.stringify(MS));
+  var bancaFinal=S.banca;
   // Limpa campos
   g('sqManVal').value='';
   if(g('sqManObs'))g('sqManObs').value='';
   if(g('sqManData'))g('sqManData').value=new Date().toISOString().split('T')[0];
-  // Salva e renderiza
-  db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS))).then(function(){
+  // Salva snapshot no Firebase e renderiza
+  db.ref('users/'+_uid+'/state').set(snapMS).then(function(){
+    // Re-aponta S para o objeto salvo (evita dessincronização)
+    S=MS.bancas[MS.bancaAtiva];
     render();
-    toast('Saque de '+fR(val)+' registrado! Banca: '+fR(S.banca));
+    toast('Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
   }).catch(function(e){
     toast('Erro ao salvar: '+e.message);
   });
