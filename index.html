@@ -736,7 +736,7 @@ function resetDia(){
   S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;sv();render();toast('Dia resetado');
 }
 function setPerfil(p){S.perfil=p;sv();render();toast('Perfil: '+PR[p].n);}
-function ajustar(){var val=parseFloat(g('ajV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor real');return;}S.banca=val;S.dayChart.push(val);sv();render();g('ajV').value='';toast('Banca ajustada: '+fR(val));}
+function ajustar(){var val=parseFloat(g('ajV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor real');return;}S.banca=val;S.bancaBase=val;S.dayChart.push(val);sv();render();g('ajV').value='';toast('Banca ajustada: '+fR(val));}
 
 function reg(tipo){
   if(S.travado)return;
@@ -1737,20 +1737,34 @@ function regSaqueManual(){
   if(val>S.banca){toast('Saque maior que a banca! Banca atual: '+fR(S.banca));return;}
   var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  // Atualiza banca e total sacado
-  S.banca=Math.max(0, S.banca-val);
+  var bancaAntes=S.banca;
+  // Desconta da banca
+  S.banca=Math.max(0,S.banca-val);
   S.totalSacado=(S.totalSacado||0)+val;
-  // Atualiza bancaBase para refletir nova banca após saque
+  // bancaBase = nova banca (base do próximo dia)
   S.bancaBase=S.banca;
-  // Atualiza dayChart com o novo valor de banca
-  if(!S.dayChart)S.dayChart=[];
+  // Atualiza dayChart
+  if(!S.dayChart)S.dayChart=[S.banca];
   S.dayChart.push(S.banca);
-  // Garante array de saques
+  // Registra no histDiario como entrada de saque
+  if(!S.histDiario)S.histDiario=[];
+  // Atualiza entrada do dia se já existir, senão insere nova
+  var entDia=null;
+  for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){entDia=i;break;}}
+  var entSaque={data:dtBR,bancaInicial:bancaAntes,bancaFinal:S.banca,resultado:((S.banca-bancaAntes)/bancaAntes*100),wins:0,losses:0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val,obs:obs};
+  if(entDia!==null){
+    // Atualiza bancaFinal e resultado do dia existente
+    S.histDiario[entDia].bancaFinal=S.banca;
+    S.histDiario[entDia].resultado=((S.banca-S.histDiario[entDia].bancaInicial)/S.histDiario[entDia].bancaInicial*100);
+    S.histDiario[entDia].saque=true;
+    S.histDiario[entDia].valorSaque=val;
+  } else {
+    S.histDiario.unshift(entSaque);
+  }
+  // Registra no array de saques
   if(!S.saques)S.saques=[];
   S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
-  // Registra no histDiario se houver operações no dia
-  if(!S.histDiario)S.histDiario=[];
-  // Sincroniza S de volta ao MS ANTES de qualquer operação assíncrona
+  // Sincroniza S→MS
   MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   var snapMS=JSON.parse(JSON.stringify(MS));
   var bancaFinal=S.banca;
@@ -1758,12 +1772,11 @@ function regSaqueManual(){
   g('sqManVal').value='';
   if(g('sqManObs'))g('sqManObs').value='';
   if(g('sqManData'))g('sqManData').value=new Date().toISOString().split('T')[0];
-  // Salva snapshot no Firebase e renderiza
+  // Salva no Firebase
   db.ref('users/'+_uid+'/state').set(snapMS).then(function(){
-    // Re-aponta S para o objeto salvo (evita dessincronização)
     S=MS.bancas[MS.bancaAtiva];
     render();
-    toast('Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
+    toast('💰 Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
   }).catch(function(e){
     toast('Erro ao salvar: '+e.message);
   });
