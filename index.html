@@ -1732,18 +1732,30 @@ function renderDados(){
 function regSaqueManual(){
   var val=parseFloat(g('sqManVal').value);
   var data=g('sqManData').value;
-  var obs=g('sqManObs').value.trim();
-  if(!val||isNaN(val)||val<=0){toast('Digite o valor do saque');return;}
-  if(val>S.banca){toast('Saque maior que a banca!');return;}
+  var obs=(g('sqManObs').value||'').trim();
+  if(isNaN(val)||val<=0){toast('Digite o valor do saque');return;}
+  if(val>S.banca){toast('Saque maior que a banca! Banca atual: '+fR(S.banca));return;}
   var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  S.banca=S.banca-val;
+  // Atualiza banca e total sacado
+  S.banca=Math.max(0, S.banca-val);
   S.totalSacado=(S.totalSacado||0)+val;
+  // Garante array de saques
   if(!S.saques)S.saques=[];
   S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
-  g('sqManVal').value='';g('sqManObs').value='';g('sqManData').value='';
-  sv();render();
-  toast('Saque de '+fR(val)+' registrado!');
+  // Sincroniza S de volta ao MS antes de salvar
+  if(MS&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  // Limpa campos
+  g('sqManVal').value='';
+  if(g('sqManObs'))g('sqManObs').value='';
+  if(g('sqManData'))g('sqManData').value=new Date().toISOString().split('T')[0];
+  // Salva e renderiza
+  db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS))).then(function(){
+    render();
+    toast('Saque de '+fR(val)+' registrado! Banca: '+fR(S.banca));
+  }).catch(function(e){
+    toast('Erro ao salvar: '+e.message);
+  });
 }
 
 function goP(id){
