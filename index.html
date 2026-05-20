@@ -1737,7 +1737,7 @@ function regSaqueManual(){
   if(val>S.banca){toast('Saque maior que a banca! Banca atual: '+fR(S.banca));return;}
   var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  // Desconta da banca — NÃO mexe no histDiario (resultado do dia não muda)
+  var bancaAntes=S.banca;
   S.banca=Math.max(0,S.banca-val);
   S.totalSacado=(S.totalSacado||0)+val;
   S.bancaBase=S.banca;
@@ -1745,7 +1745,19 @@ function regSaqueManual(){
   S.dayChart.push(S.banca);
   if(!S.saques)S.saques=[];
   S.saques.unshift({id:'sq_'+Date.now(),valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
-  // Sincroniza S->MS e salva snapshot
+  // Grava no histDiario: atualiza entrada do dia ou insere nova com marca de saque
+  if(!S.histDiario)S.histDiario=[];
+  var idxHist=-1;
+  for(var hi=0;hi<S.histDiario.length;hi++){if(S.histDiario[hi].data===dtBR){idxHist=hi;break;}}
+  if(idxHist>=0){
+    // Dia já existe: atualiza só o bancaFinal para refletir saque (resultado do dia fica igual)
+    S.histDiario[idxHist].bancaFinal=S.banca;
+    S.histDiario[idxHist].saque=true;
+    S.histDiario[idxHist].valorSaque=(S.histDiario[idxHist].valorSaque||0)+val;
+  } else {
+    // Dia não existe ainda: insere entrada de saque
+    S.histDiario.unshift({data:dtBR,bancaInicial:bancaAntes,bancaFinal:S.banca,resultado:0,wins:S.wins||0,losses:S.losses||0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val});
+  }
   MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   var snapMS=JSON.parse(JSON.stringify(MS));
   var bancaFinal=S.banca;
@@ -1755,12 +1767,12 @@ function regSaqueManual(){
   db.ref('users/'+_uid+'/state').set(snapMS).then(function(){
     S=MS.bancas[MS.bancaAtiva];
     render();
-    toast('\u2705 Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
+    toast('✅ Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
   }).catch(function(e){toast('Erro ao salvar: '+e.message);});
 }
 function excluirSaque(idx){
   if(!confirm('Excluir este saque e estornar o valor para a banca?'))return;
-  if(!S.saques||!S.saques[idx])return;
+  if(!S.saques||idx<0||idx>=S.saques.length)return;
   var val=S.saques[idx].valor||0;
   S.banca+=val;
   S.bancaBase=S.banca;
@@ -1769,7 +1781,7 @@ function excluirSaque(idx){
   S.saques.splice(idx,1);
   MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS))).then(function(){
-    S=MS.bancas[MS.bancaAtiva];render();toast('Saque exclu\u00eddo. Banca: '+fR(S.banca));
+    S=MS.bancas[MS.bancaAtiva];render();toast('Saque excluído. Banca: '+fR(S.banca));
   }).catch(function(e){toast('Erro: '+e.message);});
 }
 
