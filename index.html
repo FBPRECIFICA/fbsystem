@@ -986,7 +986,7 @@ function render(){
   var hbEl=g('histBody');if(hbEl){if(S.histDiario.length){var hH='';S.histDiario.slice(0,30).forEach(function(d){hH+='<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td style="color:'+(d.bancaFinal>=d.bancaInicial?'#00a85a':'#e53935')+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+'</td><td style="color:'+(d.resultado>=0?'#00a85a':'#e53935')+';font-weight:600">'+fP(d.resultado)+'</td><td>'+d.wins+'W/'+d.losses+'L</td><td><span class="bdg '+(d.metaBatida?'bwg':'bwl')+'">'+(d.metaBatida?'SIM':'NÃO')+'</span></td></tr>';});hbEl.innerHTML=hH;}else hbEl.innerHTML='<tr><td colspan="6" class="empty">Sem histórico</td></tr>';}
   // saques
   if(g('totSq'))g('totSq').textContent='Total: '+fR(S.totalSacado||0);
-  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">+'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+(s.obs?' · '+s.obs:'')+'</div></div><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:'+(s.manual?'#e8f0fc':'#e6f7ef')+';color:'+(s.manual?'#1565c0':'#00a85a')+';font-weight:600">'+(s.manual?'Manual':'Auto')+'</span></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
+  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+(s.obs?' · '+s.obs:'')+'</div></div><div style="display:flex;align-items:center;gap:6px"><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:'+(s.manual?'#e8f0fc':'#e6f7ef')+';color:'+(s.manual?'#1565c0':'#00a85a')+';font-weight:600">'+(s.manual?'Manual':'Auto')+'</span><button onclick="excluirSaque('+i+')" style="background:#fde8e8;border:none;border-radius:5px;color:#e53935;font-size:9px;font-weight:700;padding:3px 7px;cursor:pointer">✕</button></div></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
   // resumo
   var rsEl=g('resSem');if(rsEl&&S.histDiario.length){var sem=S.histDiario.slice(0,5),tw=0,tl=0,mt=0;sem.forEach(function(d){tw+=d.wins;tl+=d.losses;if(d.metaBatida)mt++;});var bi2=sem[sem.length-1].bancaInicial,bf2=sem[0].bancaFinal,res3=bi2>0?((bf2-bi2)/bi2*100):0,msg2=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss':'Atenção: '+tl+' losses';rsEl.innerHTML='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;margin:10px"><div style="font-size:9px;color:#00a85a;font-weight:700;text-transform:uppercase;margin-bottom:8px">Últimos '+sem.length+' dias</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px"><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#00a85a">'+tw+'</div><div style="font-size:8px;color:#8090b0">Wins</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e53935">'+tl+'</div><div style="font-size:8px;color:#8090b0">Losses</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e67e00">'+mt+'</div><div style="font-size:8px;color:#8090b0">Metas</div></div></div><div style="font-size:11px;color:#4a5880;padding-top:9px;border-top:1px solid #d0d8e4">'+msg2+'<br>Resultado: <strong style="color:'+(res3>=0?'#00a85a':'#e53935')+'">'+fP(res3)+'</strong></div></div>';}
   // config
@@ -1737,49 +1737,40 @@ function regSaqueManual(){
   if(val>S.banca){toast('Saque maior que a banca! Banca atual: '+fR(S.banca));return;}
   var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  var bancaAntes=S.banca;
-  // Desconta da banca
+  // Desconta da banca — NÃO mexe no histDiario (resultado do dia não muda)
   S.banca=Math.max(0,S.banca-val);
   S.totalSacado=(S.totalSacado||0)+val;
-  // bancaBase = nova banca (base do próximo dia)
   S.bancaBase=S.banca;
-  // Atualiza dayChart
   if(!S.dayChart)S.dayChart=[S.banca];
   S.dayChart.push(S.banca);
-  // Registra no histDiario como entrada de saque
-  if(!S.histDiario)S.histDiario=[];
-  // Atualiza entrada do dia se já existir, senão insere nova
-  var entDia=null;
-  for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){entDia=i;break;}}
-  var entSaque={data:dtBR,bancaInicial:bancaAntes,bancaFinal:S.banca,resultado:((S.banca-bancaAntes)/bancaAntes*100),wins:0,losses:0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val,obs:obs};
-  if(entDia!==null){
-    // Atualiza bancaFinal e resultado do dia existente
-    S.histDiario[entDia].bancaFinal=S.banca;
-    S.histDiario[entDia].resultado=((S.banca-S.histDiario[entDia].bancaInicial)/S.histDiario[entDia].bancaInicial*100);
-    S.histDiario[entDia].saque=true;
-    S.histDiario[entDia].valorSaque=val;
-  } else {
-    S.histDiario.unshift(entSaque);
-  }
-  // Registra no array de saques
   if(!S.saques)S.saques=[];
-  S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
-  // Sincroniza S→MS
+  S.saques.unshift({id:'sq_'+Date.now(),valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
+  // Sincroniza S->MS e salva snapshot
   MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   var snapMS=JSON.parse(JSON.stringify(MS));
   var bancaFinal=S.banca;
-  // Limpa campos
   g('sqManVal').value='';
   if(g('sqManObs'))g('sqManObs').value='';
   if(g('sqManData'))g('sqManData').value=new Date().toISOString().split('T')[0];
-  // Salva no Firebase
   db.ref('users/'+_uid+'/state').set(snapMS).then(function(){
     S=MS.bancas[MS.bancaAtiva];
     render();
-    toast('💰 Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
-  }).catch(function(e){
-    toast('Erro ao salvar: '+e.message);
-  });
+    toast('\u2705 Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
+  }).catch(function(e){toast('Erro ao salvar: '+e.message);});
+}
+function excluirSaque(idx){
+  if(!confirm('Excluir este saque e estornar o valor para a banca?'))return;
+  if(!S.saques||!S.saques[idx])return;
+  var val=S.saques[idx].valor||0;
+  S.banca+=val;
+  S.bancaBase=S.banca;
+  S.totalSacado=Math.max(0,(S.totalSacado||0)-val);
+  S.dayChart.push(S.banca);
+  S.saques.splice(idx,1);
+  MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS))).then(function(){
+    S=MS.bancas[MS.bancaAtiva];render();toast('Saque exclu\u00eddo. Banca: '+fR(S.banca));
+  }).catch(function(e){toast('Erro: '+e.message);});
 }
 
 function goP(id){
