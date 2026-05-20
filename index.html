@@ -1,783 +1,1800 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>FB Sistemas</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#060a0f;--bg2:#0c1219;--bg3:#111920;--bg4:#1a2535;
-  --border:#1e2e3d;--border2:#2a3f52;
-  --green:#00e676;--green2:#00c853;--green-bg:rgba(0,230,118,.07);--green-bd:rgba(0,230,118,.2);
-  --red:#ff5252;--red-bg:rgba(255,82,82,.08);--red-bd:rgba(255,82,82,.25);
-  --yellow:#ffd600;--yellow-bg:rgba(255,214,0,.07);--yellow-bd:rgba(255,214,0,.2);
-  --blue:#448aff;--blue-bg:rgba(68,138,255,.07);--blue-bd:rgba(68,138,255,.2);
-  --orange:#ff9100;--orange-bg:rgba(255,145,0,.07);
-  --text:#e8f0f7;--text2:#7a9bb5;--text3:#3d5a72;
-}
-.app{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:700px}
-/* HEADER */
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:#f0f2f5;color:#1a2540;min-height:100vh}
+/* TELAS */
+.tela{display:none!important}
+.tela.on{display:flex!important;flex-direction:column;min-height:100vh}
+#app.on{display:flex!important;flex-direction:column}
+/* LOADING */
+#tLoad{align-items:center;justify-content:center;gap:12px;background:#f0f2f5}
+.spin{width:36px;height:36px;border:3px solid #d0d8e4;border-top-color:#00a85a;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* AUTH */
+.awr{align-items:center;justify-content:center;padding:20px;background:#f0f2f5}
+.alo{width:52px;height:52px;background:#00a85a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;margin-bottom:10px}
+.ati{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.asu{font-size:12px;color:#8090b0;margin-bottom:22px;text-align:center}
+.acard{background:#fff;border:1px solid #d0d8e4;border-radius:14px;padding:20px;width:100%;max-width:400px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.acard h3{font-size:12px;font-weight:700;color:#4a5880;margin-bottom:16px;text-align:center;text-transform:uppercase;letter-spacing:.5px}
+.campo label{display:block;font-size:11px;font-weight:600;color:#4a5880;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.campo{margin-bottom:13px}
+.campo input,.campo select{width:100%;background:#f0f2f5;border:1px solid #d0d8e4;color:#1a2540;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none}
+.campo input:focus,.campo select:focus{border-color:#00a85a}
+.bv{width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.bb{width:100%;background:#fff;color:#4a5880;border:1.5px solid #d0d8e4;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+.alink{text-align:center;margin-top:14px;font-size:12px;color:#8090b0}
+.alink a{color:#00a85a;font-weight:600;cursor:pointer}
+.merr{background:#feecec;border:1px solid rgba(229,57,53,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#e53935;margin-bottom:12px;display:none}
+.merr.v{display:block}
+.mok{background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#00a85a;margin-bottom:12px;display:none}
+.mok.v{display:block}
+/* PENDENTE */
+#tPend{align-items:center;justify-content:center;padding:24px;text-align:center;background:#f0f2f5}
+/* ADMIN */
+#tAdm{background:#f0f2f5;overflow-y:auto}
+.adw{max-width:480px;margin:0 auto;padding:12px 14px}
+.adhdr{background:#1a2540;border-radius:10px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+/* APP */
+#app{max-width:480px;margin:0 auto;background:#f0f2f5}
+.hdr{background:#fff;border-bottom:1px solid #d0d8e4;padding:10px 14px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-icon{width:30px;height:30px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#060a0f}
-.logo-name{font-size:15px;font-weight:700;color:var(--green);letter-spacing:.5px}
-.logo-sub{font-size:9px;color:var(--text3);letter-spacing:.3px}
-.author-line{font-size:9px;color:var(--text3);text-align:right;line-height:1.5}
-.status-pill{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px}
-.pill-op{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
-.pill-sw{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd)}
-.pill-sl{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
-.pill-loss{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
-/* NAV */
-.nav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;overflow-x:auto}
-.nb{background:none;border:none;color:var(--text3);padding:8px 11px;cursor:pointer;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s;letter-spacing:.3px}
-.nb.active{color:var(--green);border-bottom-color:var(--green)}
-.nb:hover:not(.active){color:var(--text);background:var(--bg3)}
-/* PAGES */
-.page{display:none;padding:11px 13px}
-.page.active{display:block}
-/* CARDS */
-.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:9px}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:9px}
-.mcard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
-.mlabel{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
-.mval{font-size:19px;font-weight:700;line-height:1}
-.msub{font-size:9px;color:var(--text2);margin-top:2px}
-.c-green{color:var(--green)}.c-red{color:var(--red)}.c-yellow{color:var(--yellow)}.c-blue{color:var(--blue)}.c-orange{color:var(--orange)}.c-text{color:var(--text)}
-/* SECTION */
-.sec{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:9px;overflow:hidden}
-.sec-head{padding:7px 11px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;display:flex;align-items:center;justify-content:space-between}
-/* PROGRESS */
-.prog-labels{display:flex;justify-content:space-between;padding:0 11px;margin-bottom:3px;font-size:9px;color:var(--text3)}
-.prog-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:0 11px 9px}
-.prog-fill{height:100%;border-radius:3px;transition:width .4s}
-/* STAKES */
-.stakes-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
-.si{padding:9px 11px;border-right:1px solid var(--border);text-align:center}
+.li{width:30px;height:30px;background:#00a85a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+.ln{font-size:15px;font-weight:700;color:#00a85a}
+.ls{font-size:9px;color:#8090b0}
+.pill{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pop{background:rgba(0,168,90,.08);color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.psw{background:rgba(21,101,192,.07);color:#1565c0;border:1px solid rgba(21,101,192,.3)}
+.psl{background:rgba(229,57,53,.07);color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.hbot{display:flex;align-items:center;justify-content:space-between}
+.uinf{font-size:9px;color:#8090b0}
+.bsair{background:none;border:1px solid #d0d8e4;border-radius:5px;padding:2px 8px;font-size:9px;color:#8090b0;cursor:pointer}
+.nav{background:#fff;border-bottom:2px solid #d0d8e4;display:flex;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nb{background:none;border:none;color:#8090b0;padding:9px 11px;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;margin-bottom:-2px;cursor:pointer}
+.nb.a{color:#00a85a;border-bottom-color:#00a85a}
+.pg{display:none;padding:12px 14px}
+.pg.a{display:block}
+/* cards */
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.mc{background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:10px 12px}
+.ml{font-size:9px;color:#8090b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.mv{font-size:20px;font-weight:700;line-height:1}
+.ms{font-size:9px;color:#8090b0;margin-top:2px}
+.cg{color:#00a85a}.cr{color:#e53935}.cy{color:#e67e00}.cb{color:#1565c0}.co{color:#e65100}.ct{color:#1a2540}
+.sec{background:#fff;border:1px solid #d0d8e4;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sh{padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:10px;font-weight:700;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;background:#e8ebf0}
+.pl{display:flex;justify-content:space-between;padding:0 12px;margin-bottom:4px;font-size:9px;color:#8090b0}
+.pb{height:6px;background:#e8ebf0;border-radius:3px;overflow:hidden;margin:0 12px 10px}
+.pf{height:100%;border-radius:3px;transition:width .4s}
+.sr{display:grid;grid-template-columns:1fr 1fr 1fr}
+.si{padding:10px 8px;border-right:1px solid #d0d8e4;text-align:center}
 .si:last-child{border-right:none}
-.si-pct{font-size:9px;color:var(--text3);margin-bottom:2px}
-.si-val{font-size:14px;font-weight:700;color:var(--orange)}
-.si-lbl{font-size:9px;color:var(--text2);margin-top:1px}
-/* BUTTONS */
-.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px}
-.ebtn{border:none;border-radius:7px;padding:13px 7px;cursor:pointer;font-weight:800;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.1s;line-height:1.2}
-.ebtn:active{transform:scale(.97)}
-.ebtn:disabled{opacity:.3;cursor:not-allowed}
-.ebtn-sub{font-size:9px;font-weight:400;opacity:.7}
-.btn-w0{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
-.btn-w1{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd)}
-.btn-w2{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-bd)}
-.btn-loss{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
-/* ALERT */
-.alert{padding:9px 13px;font-size:11px;font-weight:600;text-align:center;margin-bottom:9px;border-radius:8px;display:none;line-height:1.6}
-.alert-show{display:block}
-.alert-sw{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd)}
-.alert-sl{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
-.alert-saque{background:rgba(0,230,118,.06);color:var(--green);border:1px solid var(--green-bd)}
-/* EMOCIONAL BLOCK */
-.emocional-block{background:var(--red-bg);border:2px solid var(--red-bd);border-radius:10px;padding:18px;text-align:center;margin-bottom:9px;display:none}
-.emocional-block.show{display:block}
-.emocional-icon{font-size:32px;margin-bottom:8px}
-.emocional-title{font-size:16px;font-weight:800;color:var(--red);margin-bottom:8px;line-height:1.3}
-.emocional-msg{font-size:12px;color:var(--text2);line-height:1.8}
-/* PERFIL SELECTOR */
-.perfil-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:10px}
-.perfil-card{border-radius:7px;padding:11px 8px;text-align:center;cursor:pointer;border:1px solid var(--border);background:var(--bg3);transition:.2s}
-.perfil-card.selected{border-width:2px}
-.perfil-card.cons.selected{border-color:var(--blue);background:var(--blue-bg)}
-.perfil-card.mod.selected{border-color:var(--green);background:var(--green-bg)}
-.perfil-card.agr.selected{border-color:var(--orange);background:var(--orange-bg)}
-.perfil-num{font-size:22px;font-weight:800;margin-bottom:3px}
-.perfil-name{font-size:11px;font-weight:700;margin-bottom:2px}
-.perfil-desc{font-size:9px;color:var(--text3);line-height:1.5}
-/* HIST TABLE */
-.htable{width:100%;border-collapse:collapse;font-size:10px;table-layout:fixed}
-.htable th{padding:5px 8px;text-align:left;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border)}
-.htable td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text2);overflow:hidden;text-overflow:ellipsis}
-.htable tr:last-child td{border-bottom:none}
-.badge{padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700}
-.bw{background:var(--green-bg);color:var(--green)}
-.bl{background:var(--red-bg);color:var(--red)}
-/* CONFIG */
-.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-bottom:1px solid var(--border)}
-.cfg-row:last-child{border-bottom:none}
-.cfg-label{font-size:11px;color:var(--text2)}
-.cfg-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:4px 7px;font-size:12px;width:100px;text-align:right}
-.cfg-input:focus{outline:none;border-color:var(--green)}
-.savebtn{background:var(--green);color:#060a0f;border:none;border-radius:6px;padding:8px 18px;font-weight:800;font-size:12px;cursor:pointer;width:100%;margin-top:8px}
-/* DIARIO */
-.diario-form{padding:10px}
-.diario-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px;font-size:11px;resize:none;height:60px;font-family:inherit}
-.diario-textarea:focus{outline:none;border-color:var(--green)}
-.diario-btn{background:var(--bg4);border:1px solid var(--border2);color:var(--text2);border-radius:5px;padding:5px 12px;font-size:10px;cursor:pointer;margin-top:5px;font-weight:600}
-.diario-entry{padding:7px 11px;border-bottom:1px solid var(--border);font-size:10px}
-.diario-entry:last-child{border-bottom:none}
-/* RESUMO SEMANAL */
-.resumo-card{background:var(--bg3);border:1px solid var(--green-bd);border-radius:8px;padding:13px;text-align:center;margin:9px}
-.resumo-title{font-size:10px;color:var(--green);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
-.resumo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.resumo-stat{background:var(--bg2);border-radius:5px;padding:7px 4px}
-.resumo-val{font-size:14px;font-weight:700;color:var(--text)}
-.resumo-lbl{font-size:8px;color:var(--text3);margin-top:1px}
-.resumo-msg{margin-top:9px;font-size:11px;color:var(--text2);line-height:1.6;padding-top:9px;border-top:1px solid var(--border)}
-/* SIMULADOR */
-.sim-row{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border-bottom:1px solid var(--border)}
-.sim-label{font-size:11px;color:var(--text2)}
-.sim-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:4px 7px;font-size:12px;width:110px;text-align:right}
-.sim-btn{background:var(--green);color:#060a0f;border:none;border-radius:6px;padding:8px 18px;font-weight:800;font-size:12px;cursor:pointer;width:calc(100% - 22px);margin:9px 11px 3px}
-.sim-table{width:100%;border-collapse:collapse;font-size:10px;table-layout:fixed;margin-top:4px}
-.sim-table th{padding:5px 8px;text-align:center;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border);font-size:9px}
-.sim-table td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text2);text-align:center}
-.sim-table tr:last-child td{border-bottom:none}
-/* META LONGO PRAZO */
-.meta-box{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:8px;padding:12px;margin:9px;text-align:center}
-.meta-val{font-size:28px;font-weight:800;color:var(--green);margin-bottom:2px}
-.meta-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px}
-.meta-prog{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:10px 0 5px}
-.meta-prog-fill{height:100%;background:var(--green);border-radius:4px;transition:width .6s}
-.chart-wrap{padding:9px 11px;position:relative;height:160px}
-/* SAQUE */
-.saque-item{padding:7px 11px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border);font-size:11px}
-.saque-item:last-child{border-bottom:none}
-/* UNDO */
-.undo-btn{background:var(--bg4);border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:2px 7px;font-size:9px;cursor:pointer}
-.undo-btn:hover{color:var(--red);border-color:var(--red-bd)}
-/* OPS RECENTES */
-.op-item{display:flex;justify-content:space-between;align-items:center;padding:6px 11px;border-bottom:1px solid var(--border);font-size:11px}
-.op-item:last-child{border-bottom:none}
-/* FOOTER AUTOR */
-.footer-autor{text-align:center;padding:10px;font-size:8px;color:var(--text3);border-top:1px solid var(--border);line-height:1.7;background:var(--bg2)}
-/* SAQUE MODAL */
-.saque-modal{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:10px;padding:14px;margin-bottom:9px;text-align:center;display:none}
-.saque-modal.show{display:block}
-.saque-modal-title{font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px}
-.saque-modal-val{font-size:26px;font-weight:800;color:var(--green);margin-bottom:8px}
-.saque-btns{display:flex;gap:6px;justify-content:center}
-.sbtn{border:none;border-radius:5px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer}
-.sbtn-sim{background:var(--green);color:#060a0f}
-.sbtn-nao{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
-/* TOAST */
-.toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--green-bd);color:var(--green);padding:6px 18px;border-radius:16px;font-size:11px;font-weight:700;z-index:200;pointer-events:none;white-space:nowrap;display:none}
-/* GREENS COUNTER */
-.greens-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--green);font-weight:700}
+.sip{font-size:9px;color:#8090b0;margin-bottom:2px}
+.siv{font-size:15px;font-weight:700;color:#e65100}
+.sil{font-size:8px;color:#8090b0;margin-top:2px}
+.bgr{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.eb{border:none;border-radius:8px;padding:14px 8px;cursor:pointer;font-weight:800;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;touch-action:manipulation;transition:.1s}
+.eb:active{transform:scale(.96)}
+.eb:disabled{opacity:.3;cursor:not-allowed}
+.es{font-size:9px;font-weight:500;opacity:.8}
+.ew0{background:#e6f7ef;color:#00a85a;border:1.5px solid rgba(0,168,90,.3)}
+.ew1{background:#e8f0fc;color:#1565c0;border:1.5px solid rgba(21,101,192,.3)}
+.ew2{background:#fff3e0;color:#e67e00;border:1.5px solid rgba(230,126,0,.3)}
+.el{background:#feecec;color:#e53935;border:1.5px solid rgba(229,57,53,.3)}
+.al{padding:10px 14px;font-size:12px;font-weight:600;text-align:center;margin-bottom:10px;border-radius:10px;display:none;line-height:1.7}
+.al.v{display:block}
+.asw{background:rgba(21,101,192,.07);color:#1565c0;border:1px solid rgba(21,101,192,.3)}
+.emo{background:#feecec;border:2px solid rgba(229,57,53,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;display:none}
+.emo.v{display:block}
+.pgr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:10px}
+.pc{border-radius:8px;padding:10px 7px;text-align:center;cursor:pointer;border:1.5px solid #d0d8e4;background:#e8ebf0;transition:.15s}
+.pc.sc{border-color:#1565c0;background:#e8f0fc}
+.pc.sm{border-color:#00a85a;background:#e6f7ef}
+.pc.sa{border-color:#e65100;background:#fff3e0}
+.sqm{background:#e6f7ef;border:1.5px solid rgba(0,168,90,.3);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center;display:none}
+.sqm.v{display:block}
+.dbanner{background:rgba(0,168,90,.08);border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.ajbox{background:rgba(230,126,0,.08);border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px 12px;margin:0 0 10px}
+/* sim */
+.simr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #d0d8e4}
+.simi{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:6px 8px;font-size:12px;width:115px;text-align:right;font-weight:600;outline:none}
+.simbtn{background:#00a85a;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:13px;cursor:pointer;width:calc(100% - 24px);margin:10px 12px 4px}
+.stt{width:100%;border-collapse:collapse;font-size:11px}
+.stt th{padding:6px 8px;text-align:center;color:#8090b0;font-weight:600;border-bottom:1px solid #d0d8e4;background:#e8ebf0;font-size:10px}
+.stt td{padding:7px 8px;border-bottom:1px solid #d0d8e4;color:#4a5880;text-align:center}
+/* hist */
+.ht{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.ht th{padding:6px 8px;text-align:left;color:#8090b0;font-weight:600;border-bottom:1px solid #d0d8e4;background:#e8ebf0;font-size:10px}
+.ht td{padding:6px 8px;border-bottom:1px solid #d0d8e4;color:#4a5880}
+.bdg{padding:2px 7px;border-radius:8px;font-size:9px;font-weight:700}
+.bwg{background:#e6f7ef;color:#00a85a}.bwl{background:#feecec;color:#e53935}
+/* cfg */
+.crow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #d0d8e4}
+.crow:last-child{border-bottom:none}
+.cinp{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:6px 8px;font-size:13px;width:105px;text-align:right;font-weight:600;outline:none}
+.savebtn{background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:8px}
+.rstbtn{background:#fff;color:#e53935;border:1.5px solid rgba(229,57,53,.3);border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:6px}
+/* cal */
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cdw{font-size:9px;font-weight:700;color:#8090b0;text-align:center;padding:2px 0 5px}
+.cd{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#4a5880;cursor:pointer;border:1.5px solid transparent;position:relative}
+.cd.outro{color:#d0d8e4}
+.cd.hoje{border-color:#00a85a;color:#00a85a;font-weight:700}
+.cd.sel{background:#00a85a;color:#fff;font-weight:700}
+.cd.hop::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#1565c0}
+.cd.sel::after{background:#fff!important}
+.cd.hmeta::after{background:#00a85a}
+.cd.hloss::after{background:#e53935}
+.cw{padding:10px 12px;position:relative;height:160px}
+.evrow{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid #d0d8e4;gap:8px;font-size:11px}
+.evrow:last-child{border-bottom:none}
+.mfrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.mfinp{background:#e8ebf0;border:1px solid #b8c4d4;color:#1a2540;border-radius:6px;padding:7px 8px;font-size:12px;font-weight:600;flex:1;text-align:right;outline:none}
+/* pop */
+.popw{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:900;align-items:center;justify-content:center;padding:20px}
+.popw.v{display:flex}
+.popc{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px;text-align:center}
+.pinp{width:100%;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:12px;font-size:20px;font-weight:700;text-align:center;color:#1a2540;margin-bottom:12px;outline:none}
+.pinp:focus{border-color:#00a85a}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a2540;color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:999;display:none;pointer-events:none;white-space:nowrap}
+.empty{padding:16px;text-align:center;color:#8090b0;font-size:11px}
+.bsel{background:#fff;border-bottom:2px solid #d0d8e4;padding:8px 14px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+.bsel::-webkit-scrollbar{display:none}
+.bbt{background:#e8ebf0;border:1.5px solid #d0d8e4;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;color:#4a5880;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.bbt.ab{background:#1a2540;border-color:#1a2540;color:#fff}
+.bbt.badd{background:#e6f7ef;border-color:rgba(0,168,90,.4);color:#00a85a}
+.bsel{background:#fff;border-bottom:2px solid #d0d8e4;padding:7px 14px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+.bsel::-webkit-scrollbar{display:none}
+.bpill{background:#e8ebf0;border:1.5px solid #d0d8e4;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#4a5880;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:.15s}
+.bpill.ba{background:#1a2540;border-color:#1a2540;color:#fff}
+.bpill.badd{background:#e6f7ef;border-color:rgba(0,168,90,.3);color:#00a85a}
+.bpill.bdel{background:#feecec;border-color:rgba(229,57,53,.3);color:#e53935;font-size:10px;padding:5px 10px}
+.bmodal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:800;align-items:center;justify-content:center;padding:20px}
+.bmodal.v{display:flex}
+.bmodalc{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:340px}
+.footer{text-align:center;padding:10px;font-size:8px;color:#8090b0;border-top:1px solid #d0d8e4;background:#fff;line-height:1.7}
+/* adm */
+.adst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.adsc{background:#fff;border:1px solid #d0d8e4;border-radius:8px;padding:10px;text-align:center}
+.astag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.stp{background:rgba(230,126,0,.08);color:#e67e00;border:1px solid rgba(230,126,0,.3)}
+.sta{background:rgba(0,168,90,.08);color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.stb{background:rgba(229,57,53,.07);color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.abtns{display:flex;gap:6px;margin-top:8px}
+.abtn{flex:1;border:none;border-radius:7px;padding:8px;font-size:11px;font-weight:700;cursor:pointer}
+.aapr{background:#e6f7ef;color:#00a85a;border:1px solid rgba(0,168,90,.3)}
+.ablk{background:#feecec;color:#e53935;border:1px solid rgba(229,57,53,.3)}
+.dta{width:100%;background:#e8ebf0;border:1px solid #d0d8e4;color:#1a2540;border-radius:8px;padding:9px;font-size:12px;resize:none;height:60px;font-family:inherit;outline:none}
+.dbt{background:#e8ebf0;border:1.5px solid #b8c4d4;color:#4a5880;border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;margin-top:6px;font-weight:600}
 </style>
+</head>
+<body>
 
-<div class="app" id="appRoot" style="position:relative">
+<div id="tLoad" class="tela on"><div class="spin"></div><div style="font-size:12px;color:#8090b0">Carregando...</div></div>
 
-<div class="header">
-  <div class="header-top">
-    <div class="logo">
-      <div class="logo-icon">FB</div>
+<div id="tLogin" class="tela awr"><div class="alo">FB</div><div class="ati">FB Sistemas</div><div class="asu">Estratégia Exclusiva · Fábio Marques</div>
+<div class="acard"><h3>Entrar na conta</h3><div id="eLogin" class="merr"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iEmail" placeholder="seu@email.com" inputmode="email"></div>
+<div class="campo"><label>Senha</label><input type="password" id="iSenha" placeholder="Sua senha"></div>
+<button class="bv" onclick="doLogin()">Entrar</button>
+<button class="bb" onclick="show('tRec')">Esqueci minha senha</button>
+<div class="alink">Não tem conta? <a onclick="show('tCad')">Cadastrar</a></div>
+</div></div>
+
+<div id="tCad" class="tela awr"><div class="alo">FB</div><div class="ati">Criar conta</div><div class="asu">Preencha os dados abaixo</div>
+<div class="acard"><h3>Novo cadastro</h3><div id="eCad" class="merr"></div><div id="okCad" class="mok"></div>
+<div class="campo"><label>Nome completo</label><input type="text" id="iNome" placeholder="Seu nome"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iCEmail" placeholder="seu@email.com" inputmode="email"></div>
+<div class="campo"><label>Senha</label><input type="password" id="iCSenha" placeholder="Mínimo 6 caracteres"></div>
+<div class="campo"><label>Confirmar senha</label><input type="password" id="iCSenha2" placeholder="Repita a senha"></div>
+<div class="campo"><label>Gênero</label><select id="iGenero"><option value="">Selecione...</option><option value="Homem">Homem</option><option value="Mulher">Mulher</option><option value="Indeciso">Indeciso</option><option value="Prefere não dizer">Prefere não dizer</option></select></div>
+<button class="bv" onclick="doCad()">Criar conta</button>
+<div class="alink">Já tem conta? <a onclick="show('tLogin')">Entrar</a></div>
+</div></div>
+
+<div id="tRec" class="tela awr"><div class="alo">FB</div><div class="ati">Recuperar senha</div><div class="asu">Enviaremos um link para seu e-mail</div>
+<div class="acard"><h3>Redefinir senha</h3><div id="eRec" class="merr"></div><div id="okRec" class="mok"></div>
+<div class="campo"><label>E-mail</label><input type="email" id="iREmail" placeholder="seu@email.com" inputmode="email"></div>
+<button class="bv" onclick="doRec()">Enviar link</button>
+<button class="bb" onclick="show('tLogin')">Voltar ao login</button>
+</div></div>
+
+<div id="tPend" class="tela"><div style="font-size:52px;margin-bottom:16px">⏳</div>
+<div id="pendBadge" style="background:rgba(230,126,0,.08);border:1px solid rgba(230,126,0,.3);border-radius:20px;padding:6px 18px;font-size:12px;font-weight:700;color:#e67e00;margin-bottom:12px">AGUARDANDO APROVAÇÃO</div>
+<div id="pendTit" style="font-size:20px;font-weight:700;margin-bottom:8px;text-align:center">Cadastro realizado!</div>
+<div style="font-size:13px;color:#8090b0;margin-bottom:20px;text-align:center;line-height:1.8">Aguarde a aprovação do gestor.</div>
+<button class="bb" style="max-width:280px" onclick="checkStatus()">Verificar aprovação</button>
+<button class="bb" style="max-width:280px;margin-top:8px;color:#e53935;border-color:rgba(229,57,53,.3)" onclick="doLogout()">Sair</button>
+</div>
+
+<div id="tAdm" class="tela"><div class="adw">
+<div class="adhdr"><div style="display:flex;align-items:center;gap:10px"><div class="li">FB</div><div><div style="color:#fff;font-size:14px;font-weight:700">Painel Admin</div><div style="color:#7A9BB5;font-size:9px">FB Sistemas</div></div></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="background:#e53935;color:#fff;border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700">ADMIN</span><button onclick="doLogout()" style="background:none;border:none;color:#7A9BB5;font-size:10px;cursor:pointer">Sair</button></div></div>
+<div class="adst"><div class="adsc"><div id="stTot" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Total</div></div><div class="adsc"><div id="stPend" style="font-size:20px;font-weight:700;color:#e67e00">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Pendentes</div></div><div class="adsc"><div id="stAtiv" style="font-size:20px;font-weight:700;color:#00a85a">0</div><div style="font-size:9px;color:#8090b0;margin-top:2px;text-transform:uppercase">Ativos</div></div></div>
+<div id="admFin" style="margin-bottom:14px"></div>
+<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:14px;margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#4a5880;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">📡 Publicar Sinal</div>
+  <div style="font-size:10px;color:#8090b0;margin-bottom:8px">Cole o texto do Telegram direto aqui:</div>
+  <textarea id="adSigTexto" placeholder="Cole aqui o sinal do Telegram..." style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:10px;font-size:12px;color:#1a2540;outline:none;resize:none;height:130px;font-family:inherit;line-height:1.6"></textarea>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <input id="adSigLink" type="url" placeholder="Link (opcional)" style="flex:1;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:12px;color:#1a2540;outline:none">
+  </div>
+  <button onclick="pubSinal()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;margin-top:8px">📡 Publicar Agora</button>
+  
+  <div style="margin-top:12px;padding-top:12px;border-top:1px solid #d0d8e4">
+    <div style="font-size:11px;font-weight:700;color:#4a5880;margin-bottom:8px">✏️ Atualizar Resultado do Sinal Ativo</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
       <div>
-        <div class="logo-name">Over 1.5 FB</div>
-        <div class="logo-sub">Estratégia Personalizada e Exclusiva</div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Resultado</div>
+        <select id="adResultado" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+          <option value="">Selecione...</option>
+          <option value="green">✅ Green</option>
+          <option value="red">❌ Red</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Horário que bateu</div>
+        <input id="adResHora" type="text" placeholder="13:05" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
       </div>
     </div>
-    <div id="statusPill" class="status-pill pill-op">● OPERANDO</div>
-  </div>
-  <div class="author-line">
-    Estratégia criada por <strong style="color:var(--text2)">Fábio Marques</strong> &nbsp;·&nbsp; Sistema e Programação <strong style="color:var(--text2)">Fábio Marques</strong>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">Greens seguidos (novo total)</div>
+        <input id="adResGS" type="number" placeholder="ex: 8" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8090b0;margin-bottom:4px">% Assertividade</div>
+        <input id="adResAss" type="text" placeholder="ex: 100.0" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:6px;padding:8px 10px;font-size:13px;color:#1a2540;outline:none">
+      </div>
+    </div>
+    <button onclick="atualizarSinal()" style="width:100%;background:#1565c0;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">✏️ Atualizar Resultado</button>
+    <button onclick="limparSinal()" style="width:100%;background:#fff;color:#e53935;border:1.5px solid rgba(229,57,53,.3);border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;margin-top:6px">🗑️ Limpar Sinal Ativo</button>
   </div>
 </div>
 
+<div style="font-size:11px;font-weight:600;color:#4a5880;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Alunos</div>
+<div id="admLista"><div class="empty">Carregando...</div></div>
+</div></div>
+
+<div id="app" class="tela">
+<div class="hdr">
+  <div class="htop"><div class="logo"><div class="li">FB</div><div><div class="ln">FB Sistemas</div><div class="ls">Estratégia Exclusiva · Fábio Marques</div></div></div><div id="sPill" class="pill pop">● OPERANDO</div></div>
+  <div class="hbot"><div class="uinf" id="uInfo">—</div><button class="bsair" onclick="doLogout()">Sair</button></div>
+</div>
 <div class="nav">
-  <button class="nb active" onclick="goPage('dash')">Dashboard</button>
-  <button class="nb" onclick="goPage('exec')">Execução</button>
-  <button class="nb" onclick="goPage('sim')">Simulador</button>
-  <button class="nb" onclick="goPage('meta')">Meta</button>
-  <button class="nb" onclick="goPage('hist')">Histórico</button>
-  <button class="nb" onclick="goPage('cfg')">Config</button>
+  <button class="nb a" onclick="goP('dash')">Dashboard</button>
+  <button class="nb" onclick="goP('exec')">Execução</button>
+  <button class="nb" onclick="goP('cal')">Calendário</button>
+  <button class="nb" onclick="goP('sim')">Simulador</button>
+  <button class="nb" onclick="goP('meta')">Meta</button>
+  <button class="nb" onclick="goP('hist')">Histórico</button>
+  <button class="nb" onclick="goP('cfg')">Config</button>
+  <button class="nb" onclick="goP('rel')">📊 Relatório</button>
+  <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
+  <button class="nb" onclick="goP('rel')">📊 Relatório</button>
+  <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
 </div>
 
-<!-- DASHBOARD -->
-<div id="page-dash" class="page active">
-  <div id="alertSW" class="alert"></div>
-  <div id="alertSaque" class="alert"></div>
-  <div id="emocionalBlock" class="emocional-block">
-    <div class="emocional-icon">🛑</div>
-    <div class="emocional-title">NÃO CONTINUE.</div>
-    <div class="emocional-msg">Vá beber uma água, ver televisão ou fazer outra coisa.<br><strong style="color:var(--red)">Volte só amanhã.</strong></div>
+<div style="background:#fff;border-bottom:2px solid #d0d8e4;padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:10px;color:#8090b0;font-weight:600">BANCA:</span>
+    <div id="bancaNomeAtivo" style="background:#1a2540;color:#fff;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer" onclick="abrirGerenciarBancas()">Principal <span style="opacity:.6;font-size:10px">Over 1.5</span></div>
   </div>
-  <div id="saqueModal" class="saque-modal">
-    <div class="saque-modal-title">💰 SAQUE DISPONÍVEL</div>
-    <div id="saqueModalVal" class="saque-modal-val">R$0</div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Banca travada em R$10.000</div>
-    <div class="saque-btns">
-      <button class="sbtn sbtn-sim" onclick="confirmarSaque()">Confirmar Saque</button>
-      <button class="sbtn sbtn-nao" onclick="fecharSaque()">Depois</button>
-    </div>
-  </div>
-
-  <!-- PERFIL ATIVO -->
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head">
-      <span>Perfil Operacional</span>
-      <span id="perfilBadge" class="greens-badge">MODERADO +3%</span>
-    </div>
-    <div class="perfil-grid" id="perfilGrid">
-      <div class="perfil-card cons" onclick="setPerfil('cons')" id="pc-cons">
-        <div class="perfil-num c-blue">+2%</div>
-        <div class="perfil-name" style="color:var(--blue)">Conservador</div>
-        <div class="perfil-desc">Stake 5%<br>5 wins = +10%</div>
-      </div>
-      <div class="perfil-card mod selected" onclick="setPerfil('mod')" id="pc-mod">
-        <div class="perfil-num c-green">+3%</div>
-        <div class="perfil-name" style="color:var(--green)">Moderado</div>
-        <div class="perfil-desc">Stake 7,5%<br>5 wins = +15%</div>
-      </div>
-      <div class="perfil-card agr" onclick="setPerfil('agr')" id="pc-agr">
-        <div class="perfil-num c-orange">+4%</div>
-        <div class="perfil-name" style="color:var(--orange)">Agressivo</div>
-        <div class="perfil-desc">Stake 10%<br>5 wins = +20%</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid3">
-    <div class="mcard">
-      <div class="mlabel">Banca Atual</div>
-      <div id="d-banca" class="mval c-text">R$0</div>
-      <div id="d-bancasub" class="msub">Base: R$0</div>
-    </div>
-    <div class="mcard">
-      <div class="mlabel">Lucro do Dia</div>
-      <div id="d-lucro" class="mval c-green">+R$0</div>
-      <div id="d-lucropct" class="msub">0.00%</div>
-    </div>
-    <div class="mcard">
-      <div class="mlabel">Greens Seguidos</div>
-      <div id="d-greens" class="mval c-green">0</div>
-      <div class="msub">sequência atual</div>
-    </div>
-  </div>
-
-  <div class="grid3">
-    <div class="mcard">
-      <div class="mlabel">Wins</div>
-      <div id="d-wins" class="mval c-green">0</div>
-    </div>
-    <div class="mcard">
-      <div class="mlabel">Losses</div>
-      <div id="d-losses" class="mval c-red">0</div>
-    </div>
-    <div class="mcard">
-      <div class="mlabel">Faltam</div>
-      <div id="d-faltam" class="mval c-yellow">5</div>
-      <div class="msub" style="font-size:8px">wins p/ meta</div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head">
-      <span>Progresso da Meta</span>
-      <span id="d-progpct" style="color:var(--text)">0%</span>
-    </div>
-    <div class="prog-labels">
-      <span>Stop Loss</span><span>0%</span><span id="metaLabel">Meta +10%</span>
-    </div>
-    <div class="prog-bar"><div id="d-prog" class="prog-fill" style="width:50%;background:var(--green)"></div></div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head">Stakes — Odd <span id="d-oddshow">1.44</span></div>
-    <div class="stakes-row">
-      <div class="si"><div class="si-pct" id="sl-g0pct">G0 · 7,5%</div><div id="sl-g0" class="si-val">R$0</div><div class="si-lbl" id="sl-g0lbl">+3%</div></div>
-      <div class="si"><div class="si-pct" id="sl-g1pct">G1 · 18,75%</div><div id="sl-g1" class="si-val">R$0</div><div class="si-lbl">Empate</div></div>
-      <div class="si"><div class="si-pct" id="sl-g2pct">G2 · 22,5%</div><div id="sl-g2" class="si-val">R$0</div><div class="si-lbl" id="sl-g2lbl">win≈-1,5%/loss</div></div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head">Evolução do Dia</div>
-    <div class="chart-wrap"><canvas id="dayChart" role="img" aria-label="Evolução banca dia">Evolução da banca.</canvas></div>
-  </div>
+  <button onclick="abrirGerenciarBancas()" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;color:#4a5880;cursor:pointer">⚙️ Gerenciar</button>
 </div>
 
-<!-- EXECUÇÃO -->
-<div id="page-exec" class="page">
-  <div id="alertExec" class="alert"></div>
-  <div id="emocionalExec" class="emocional-block">
-    <div class="emocional-icon">🛑</div>
-    <div class="emocional-title">NÃO CONTINUE.</div>
-    <div class="emocional-msg">Vá beber uma água, ver televisão ou fazer outra coisa.<br><strong style="color:var(--red)">Volte só amanhã.</strong></div>
-  </div>
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head">Stakes Ativas — Perfil <span id="e-perfil">Moderado</span></div>
-    <div class="stakes-row">
-      <div class="si"><div class="si-pct" id="el-g0pct">G0 · 7,5%</div><div id="el-g0" class="si-val">R$0</div></div>
-      <div class="si"><div class="si-pct" id="el-g1pct">G1 · 18,75%</div><div id="el-g1" class="si-val">R$0</div></div>
-      <div class="si"><div class="si-pct" id="el-g2pct">G2 · 22,5%</div><div id="el-g2" class="si-val">R$0</div></div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-head">Registrar Resultado</div>
-    <div class="btn-grid">
-      <button id="btnW0" class="ebtn btn-w0" onclick="reg('W0')">WIN G0<span class="ebtn-sub" id="bs-w0">+3% na banca</span></button>
-      <button id="btnW1" class="ebtn btn-w1" onclick="reg('W1')">WIN G1<span class="ebtn-sub">Empate 0x0</span></button>
-      <button id="btnW2" class="ebtn btn-w2" onclick="reg('W2')">WIN G2<span class="ebtn-sub" id="bs-w2">≈ -1,5% na banca</span></button>
-      <button id="btnL" class="ebtn btn-loss" onclick="reg('L')">LOSS G2<span class="ebtn-sub" id="bs-l">≈ -50% na banca</span></button>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-head"><span>Últimas Operações</span><button class="undo-btn" onclick="desfazer()">↩ Desfazer</button></div>
-    <div id="recentOps"><div style="padding:12px;text-align:center;color:var(--text3);font-size:10px">Nenhuma operação ainda</div></div>
-  </div>
-  <div class="sec" style="margin-top:9px">
-    <div class="sec-head">Diário Operacional</div>
-    <div class="diario-form">
-      <textarea class="diario-textarea" id="diarioInput" placeholder="Como você está se sentindo? Seguiu o método? Alguma observação..."></textarea>
-      <button class="diario-btn" onclick="salvarDiario()">Salvar anotação</button>
-    </div>
-    <div id="diarioEntries"></div>
+<div id="p-dash" class="pg a">
+<div id="alD" class="al"></div>
+<div id="emoD" class="emo"><div style="font-size:36px;margin-bottom:8px">🛑</div><div style="font-size:19px;font-weight:800;color:#e53935;margin-bottom:8px">NÃO CONTINUE.</div><div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:#e53935">Volte só amanhã.</strong></div></div>
+<div id="sqModal" class="sqm"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:3px">💰 SAQUE DISPONÍVEL</div><div id="sqVal" style="font-size:28px;font-weight:800;color:#00a85a;margin-bottom:8px">R$0</div><div style="font-size:10px;color:#8090b0;margin-bottom:10px">Banca travada no limite</div><div style="display:flex;gap:8px;justify-content:center"><button onclick="confSq()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Confirmar</button><button onclick="fechSq()" style="background:#e8ebf0;color:#4a5880;border:1px solid #b8c4d4;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Depois</button></div></div>
+<div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:#00a85a" id="dbD">Hoje</div><div style="font-size:10px;color:#8090b0">Toque para trocar o dia 📅</div></div><div style="color:#00a85a;font-size:18px">›</div></div>
+<div class="sec"><div class="sh"><span>Perfil Operacional</span><span id="pBadge" style="color:#00a85a;font-weight:700;font-size:10px">MODERADO</span></div>
+<div class="pgr">
+<div class="pc" id="pc-cons" onclick="setPerfil('cons')"><div style="font-size:20px;font-weight:800;color:#1565c0">+2%</div><div style="font-size:10px;font-weight:700;color:#1565c0">Conservador</div><div style="font-size:8px;color:#8090b0">Stake 5%·5w=+10%</div></div>
+<div class="pc sm" id="pc-mod" onclick="setPerfil('mod')"><div style="font-size:20px;font-weight:800;color:#00a85a">+3%</div><div style="font-size:10px;font-weight:700;color:#00a85a">Moderado</div><div style="font-size:8px;color:#8090b0">Stake 7,5%·5w=+15%</div></div>
+<div class="pc" id="pc-agr" onclick="setPerfil('agr')"><div style="font-size:20px;font-weight:800;color:#e65100">+4%</div><div style="font-size:10px;font-weight:700;color:#e65100">Agressivo</div><div style="font-size:8px;color:#8090b0">Stake 10%·5w=+20%</div></div>
+</div></div>
+<div class="g3">
+<div class="mc"><div class="ml">Banca Atual</div><div id="dBanca" class="mv ct">R$0</div><div id="dBSub" class="ms">Base: R$0</div></div>
+<div class="mc"><div class="ml">Lucro do Dia</div><div id="dLucro" class="mv cg">+R$0</div><div id="dLPct" class="ms">0,00%</div></div>
+<div class="mc"><div class="ml">Greens Seq.</div><div id="dGreens" class="mv cg">0</div><div class="ms">seguidos</div></div>
+</div>
+<div class="g3">
+<div class="mc"><div class="ml">Wins</div><div id="dWins" class="mv cg">0</div></div>
+<div class="mc"><div class="ml">Losses</div><div id="dLoss" class="mv cr">0</div></div>
+<div class="mc"><div class="ml">Faltam</div><div id="dFalt" class="mv cy">5</div><div class="ms" style="font-size:8px">wins p/ meta</div></div>
+</div>
+<div class="sec"><div class="sh"><span>Progresso</span><span id="dPPct" style="font-weight:700">0%</span></div>
+<div class="pl"><span>Stop Loss</span><span>0%</span><span id="mLbl">Meta +10%</span></div>
+<div class="pb"><div id="dProg" class="pf" style="width:50%;background:#00a85a"></div></div></div>
+<div class="sec"><div class="sh">Stakes — Odd <span id="dOdd">1.44</span></div>
+<div class="sr">
+<div class="si"><div class="sip" id="ds0p">G0·7,5%</div><div id="ds0" class="siv">R$0</div><div class="sil" id="ds0l">+3%</div></div>
+<div class="si"><div class="sip" id="ds1p">G1·18,75%</div><div id="ds1" class="siv">R$0</div><div class="sil">Empate</div></div>
+<div class="si"><div class="sip" id="ds2p">G2·22,5%</div><div id="ds2" class="siv">R$0</div><div class="sil" id="ds2l">≈-1,5%</div></div>
+</div></div>
+<div class="ajbox"><div style="font-size:11px;font-weight:700;color:#e67e00;margin-bottom:5px">⚖️ Ajustar banca real</div><div style="font-size:10px;color:#8090b0;margin-bottom:7px">Corrija se o saldo real for diferente</div><div style="display:flex;gap:8px"><input id="ajV" type="number" inputmode="decimal" placeholder="R$ valor real" style="flex:1;background:#fff;border:1px solid rgba(230,126,0,.3);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700;text-align:center;outline:none"><button onclick="ajustar()" style="background:#00a85a;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;font-size:12px;cursor:pointer">Ajustar</button></div></div>
+<div class="sec"><div class="sh">Evolução do Dia</div><div class="cw"><canvas id="dayC"></canvas></div></div>
+</div>
+
+<div id="p-exec" class="pg">
+<div id="alE" class="al"></div>
+<div id="emoE" class="emo"><div style="font-size:36px;margin-bottom:8px">🛑</div><div style="font-size:19px;font-weight:800;color:#e53935;margin-bottom:8px">NÃO CONTINUE.</div><div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:#e53935">Volte só amanhã.</strong></div></div>
+<div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:#00a85a" id="dbE">Hoje</div><div style="font-size:10px;color:#8090b0">Toque para trocar o dia</div></div><div style="color:#00a85a;font-size:18px">›</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Stakes Ativas — <span id="ePerfil">Moderado</span></div>
+<div class="sr">
+<div class="si"><div class="sip" id="es0p">G0·7,5%</div><div id="es0" class="siv">R$0</div></div>
+<div class="si"><div class="sip" id="es1p">G1·18,75%</div><div id="es1" class="siv">R$0</div></div>
+<div class="si"><div class="sip" id="es2p">G2·22,5%</div><div id="es2" class="siv">R$0</div></div>
+</div></div>
+<div class="sec"><div class="sh">Registrar Resultado</div>
+<div class="bgr">
+<button id="bW0" class="eb ew0" onclick="reg('W0')">WIN G0<span id="bs0" class="es">+3% na banca</span></button>
+<button id="bW1" class="eb ew1" onclick="reg('W1')">WIN G1<span class="es">Empate 0x0</span></button>
+<button id="bW2" class="eb ew2" onclick="reg('W2')">WIN G2<span id="bs2" class="es">≈ -1,5%</span></button>
+<button id="bL" class="eb el" onclick="reg('L')">LOSS G2<span id="bsl" class="es">≈ -22,5%</span></button>
+</div></div>
+<div class="sec"><div class="sh"><span>Últimas Operações</span><button onclick="desfazer()" style="background:#e8ebf0;border:1px solid #b8c4d4;color:#4a5880;border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:600">↩ Desfazer</button></div><div id="recentOps"><div class="empty">Nenhuma operação ainda</div></div></div>
+<div class="sec" style="margin-top:10px"><div class="sh">Diário Operacional</div><div style="padding:10px"><textarea class="dta" id="diaInp" placeholder="Como você está? Seguiu o método?"></textarea><button class="dbt" onclick="salvarDia()">Salvar anotação</button></div><div id="diaList"></div></div>
+</div>
+
+<div id="p-cal" class="pg">
+<div class="sec"><div class="sh">Calendário de Operações</div>
+<div style="padding:10px 12px 8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><button onclick="cNav(-1)" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:6px;padding:4px 12px;font-size:14px;cursor:pointer;color:#4a5880">‹</button><div style="font-size:13px;font-weight:700" id="cTit">Abril 2026</div><button onclick="cNav(1)" style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:6px;padding:4px 12px;font-size:14px;cursor:pointer;color:#4a5880">›</button></div>
+<div class="calg" id="calGrid"></div>
+<div style="display:flex;gap:14px;margin-top:8px;padding-top:8px;border-top:1px solid #d0d8e4;font-size:10px;color:#8090b0"><span><span style="width:7px;height:7px;border-radius:50%;background:#1565c0;display:inline-block;margin-right:3px;vertical-align:middle"></span>Operou</span><span><span style="width:7px;height:7px;border-radius:50%;background:#00a85a;display:inline-block;margin-right:3px;vertical-align:middle"></span>Meta</span><span><span style="width:7px;height:7px;border-radius:50%;background:#e53935;display:inline-block;margin-right:3px;vertical-align:middle"></span>Loss</span></div>
+</div></div>
+<div class="sec" id="calDet"><div class="sh" id="cDetTit">Selecione um dia</div><div id="cDetBody"><div class="empty">Toque em um dia</div></div></div>
+<button onclick="usarDia()" style="background:#00a85a;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:800;font-size:14px;width:100%;cursor:pointer;margin-bottom:4px">Operar neste dia</button>
+<div style="font-size:10px;color:#8090b0;text-align:center;margin-bottom:10px">Define o dia selecionado como dia ativo</div>
+</div>
+
+<div id="p-sim" class="pg">
+<div class="sec" style="margin-bottom:10px"><div class="sh">Simulador de Crescimento</div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Meta diária (%)</div><input id="simMeta" type="number" class="simi" value="10" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
+<button class="simbtn" onclick="rodarSim()">Simular</button></div>
+<div id="simRes" class="sec" style="display:none"><div class="sh" id="simTit">Projeção</div>
+<div style="overflow-x:auto"><table class="stt"><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
+<div class="cw" style="height:140px"><canvas id="simC"></canvas></div>
+<div id="simSum" style="padding:8px 12px;font-size:10px;color:#8090b0;border-top:1px solid #d0d8e4"></div></div>
+</div>
+
+<div id="p-meta" class="pg">
+<div class="sec" style="margin-bottom:10px"><div class="sh">Meta de Longo Prazo</div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Minha meta (R$)</div><input id="metaAlvo" type="number" class="simi" value="150000" inputmode="decimal"></div>
+<div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="metaSq" type="number" class="simi" value="50" inputmode="decimal"></div>
+<button class="simbtn" onclick="calcMeta()">Calcular</button></div>
+<div style="background:#e6f7ef;border:1.5px solid rgba(0,168,90,.3);border-radius:10px;padding:14px;margin:0 0 10px;text-align:center">
+<div id="metaV" style="font-size:30px;font-weight:800;color:#00a85a;margin-bottom:2px">—</div>
+<div style="font-size:9px;color:#8090b0;text-transform:uppercase">semanas para atingir a meta</div>
+<div style="height:7px;background:#e8ebf0;border-radius:4px;overflow:hidden;margin:10px 0 5px"><div id="metaPF" style="height:100%;background:#00a85a;border-radius:4px;transition:width .6s;width:0%"></div></div>
+<div id="metaPT" style="font-size:9px;color:#8090b0">0% do caminho</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Marcos</div><div id="marcosDiv"></div></div>
+<div class="sec"><div class="sh">Curva Projetada</div><div class="cw" style="height:150px"><canvas id="metaC"></canvas></div></div>
+</div>
+
+<div id="p-hist" class="pg">
+<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+  <button onclick="gerarRelatorio()" style="background:#1a2540;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer">📊 Gerar Relatório PDF</button>
+</div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Registrar Dia Manualmente</div>
+<div style="padding:10px 12px">
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Data</span><input type="date" id="mfD" class="mfinp" style="width:160px"></div>
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca inicial <span style="color:#8090b0;font-size:9px">(auto se já existe)</span></span><input type="number" id="mfBI" class="mfinp" placeholder="Opcional" inputmode="decimal"></div>
+<div class="mfrow"><span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Banca final</span><input type="number" id="mfBF" class="mfinp" placeholder="R$" inputmode="decimal"></div>
+<div id="mfRes" style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:7px;padding:8px 12px;font-size:11px;color:#00a85a;font-weight:600;text-align:center;display:none;margin-bottom:8px"></div>
+<button onclick="regManual()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:10px;font-weight:800;font-size:12px;cursor:pointer;width:100%">Calcular e Registrar</button>
+</div></div>
+<!-- STREAK + META SEMANAL -->
+<div class="g3" style="margin-bottom:10px">
+  <div class="mc"><div class="ml">🔥 Streak</div><div id="streakV" class="mv cg">0</div><div class="ms">dias seguidos</div></div>
+  <div class="mc"><div class="ml">📅 Esta semana</div><div id="semAtualV" class="mv ct">0%</div><div class="ms" id="semAtualS">0W · 0L</div></div>
+  <div class="mc"><div class="ml">📅 Semana ant.</div><div id="semAntV" class="mv ct">0%</div><div class="ms" id="semAntS">0W · 0L</div></div>
+</div>
+
+<!-- META SEMANAL VISUAL -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Meta Semanal</span><span id="metaSmLbl" style="color:#00a85a;font-weight:700">0/5 dias</span></div>
+  <div style="padding:10px 12px">
+    <div style="display:flex;gap:6px;margin-bottom:8px" id="metaSmDias"></div>
+    <div class="pl"><span>0%</span><span id="metaSmPct" style="font-weight:600;color:#00a85a">0%</span><span>Meta +50%</span></div>
+    <div class="pb"><div id="metaSmBar" class="pf" style="width:0%;background:#00a85a"></div></div>
+    <div id="metaSmMsg" style="font-size:11px;color:#8090b0;text-align:center;margin-top:4px"></div>
   </div>
 </div>
 
-<!-- SIMULADOR -->
-<div id="page-sim" class="page">
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head">Simulador de Crescimento</div>
-    <div class="sim-row"><div class="sim-label">Banca inicial (R$)</div><input id="sim-banca" type="number" class="sim-input" value="1000"></div>
-    <div class="sim-row">
-      <div class="sim-label">Perfil</div>
-      <select id="sim-perfil" class="sim-input" style="width:110px">
-        <option value="cons">Conservador +2%</option>
-        <option value="mod" selected>Moderado +3%</option>
-        <option value="agr">Agressivo +4%</option>
+<!-- COMPARATIVO SEMANAL -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh">Comparativo Semanal</div>
+  <div id="compSem" style="padding:10px 12px"><div class="empty">Sem dados suficientes</div></div>
+</div>
+
+<!-- GRÁFICO EVOLUÇÃO BANCA -->
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Evolução da Banca</span><span id="totDias" style="color:#8090b0">0 dias</span></div>
+  <div style="height:160px;padding:10px 12px 0"><canvas id="evolC"></canvas></div>
+  <div id="evoLista" style="max-height:200px;overflow-y:auto"></div>
+</div>
+<div class="sec" style="margin-bottom:10px"><div class="sh"><span>Resumo Semanal</span><button onclick="resetDia()" style="background:#e8ebf0;border:1px solid rgba(229,57,53,.3);color:#e53935;border-radius:5px;padding:3px 9px;font-size:9px;cursor:pointer;font-weight:600">Reset Dia</button></div><div id="resSem"><div class="empty">Sem histórico</div></div></div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh"><span>Saques</span><span id="totSq" style="color:#00a85a;font-weight:700">R$0</span></div>
+  <div style="padding:10px 12px;border-bottom:1px solid #d0d8e4">
+    <div style="font-size:10px;font-weight:700;color:#4a5880;margin-bottom:8px">💰 Registrar Saque Manual</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input type="number" id="sqManVal" inputmode="decimal" placeholder="Valor sacado R$" style="flex:1;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:9px 10px;font-size:14px;font-weight:700;color:#1a2540;outline:none">
+      <input type="date" id="sqManData" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:9px 10px;font-size:12px;color:#1a2540;outline:none">
+    </div>
+    <input type="text" id="sqManObs" placeholder="Observação (opcional)" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px 10px;font-size:12px;color:#1a2540;outline:none;margin-bottom:7px">
+    <button onclick="regSaqueManual()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:7px;padding:11px;font-weight:800;font-size:13px;cursor:pointer">💰 Confirmar Saque</button>
+  </div>
+  <div id="saqLista"><div class="empty">Nenhum saque</div></div>
+</div>
+<div class="sec"><div class="sh">Histórico Completo</div><div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead><tbody id="histBody"><tr><td colspan="6" class="empty">Sem histórico</td></tr></tbody></table></div></div>
+</div>
+
+<div id="p-cfg" class="pg">
+<div class="sec" style="margin-bottom:10px"><div class="sh">Configurações</div>
+<div style="padding:8px 12px;font-size:10px;color:#8090b0;background:rgba(230,126,0,.08);border-bottom:1px solid rgba(230,126,0,.3)">⚠️ Salvar não apaga histórico nem operações do dia.</div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Stop Win (%)</div><input id="cfgSW" type="number" class="cinp" value="10" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Stop Loss (%)</div><input id="cfgSL" type="number" class="cinp" value="33" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Limite de Saque (R$)</div><input id="cfgL" type="number" class="cinp" value="10000" inputmode="decimal"></div>
+<div class="crow"><div style="font-size:12px;color:#4a5880;font-weight:500">Odd (1.30–1.60)</div><input id="cfgOd" type="number" class="cinp" value="1.44" step="0.01" inputmode="decimal"></div>
+<div style="padding:10px 12px"><button class="savebtn" onclick="salvarCfg()">Salvar Configurações</button></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Reiniciar Banca</div>
+<div style="padding:10px 12px">
+<div class="crow" style="padding:0 0 10px"><div style="font-size:12px;color:#4a5880;font-weight:500">Nova banca (R$)</div><input id="cfgB" type="number" class="cinp" value="1000" inputmode="decimal"></div>
+<div style="font-size:10px;color:#8090b0;margin-bottom:8px">Cria novo ciclo. Histórico preservado.</div>
+<button class="rstbtn" onclick="reiniciar()">Reiniciar Banca (novo ciclo)</button></div></div>
+<div class="sec"><div class="sh">Sobre</div>
+<div style="padding:13px 12px;font-size:10px;color:#8090b0;line-height:2.2">
+<div>Estratégia de <strong style="color:#4a5880">Fábio Marques</strong></div>
+<div>Criação e Programação: <strong style="color:#4a5880">Fábio Marques</strong></div>
+<div style="margin-top:6px;padding-top:8px;border-top:1px solid #d0d8e4">FB Sistemas · Versão 4.0</div>
+</div></div>
+</div>
+
+<div id="p-rel" class="pg">
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh">Selecionar Banca</div>
+  <div id="relBancaSel" style="padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px"></div>
+</div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh" id="relTitulo">Relatório</div>
+  <div id="relConteudo"><div class="empty">Selecione uma banca acima</div></div>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:10px">
+  <button onclick="gerarRelPDF()" style="flex:1;background:#1a2540;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:700;font-size:13px;cursor:pointer">📄 Exportar PDF</button>
+</div>
+</div>
+
+<div id="p-sinal" class="pg">
+<div id="sinalCard" class="sec" style="margin-bottom:10px">
+  <div class="sh" id="sinalSh">📡 Aguardando sinal...</div>
+  <div id="sinalBody"><div class="empty">Nenhum sinal publicado ainda</div></div>
+</div>
+<div class="sec" style="margin-bottom:10px">
+  <div class="sh">Histórico de Sinais</div>
+  <div id="sinalHist"><div class="empty">Sem histórico</div></div>
+</div>
+</div>
+
+<div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v4.0 · Todos os direitos reservados</div>
+</div>
+</div>
+
+<!-- MODAL GERENCIAR BANCAS -->
+<div id="modalGerenciar" class="bmodal">
+  <div class="bmodalc" style="max-height:85vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:16px;font-weight:700">Gerenciar Bancas</div>
+      <button onclick="fecharGerenciarBancas()" style="background:#e8ebf0;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:13px">✕</button>
+    </div>
+    <div id="listaBancas" style="margin-bottom:16px"></div>
+    <button onclick="fecharGerenciarBancas();abrirModalBanca()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer">+ Nova Banca</button>
+  </div>
+</div>
+
+<!-- MODAL NOVA BANCA -->
+<div id="modalBanca" class="bmodal">
+  <div class="bmodalc">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">Nova Banca</div>
+    <div style="font-size:12px;color:#8090b0;margin-bottom:16px">Máximo 5 bancas por conta</div>
+    <div class="campo"><label>Nome da banca</label><input type="text" id="mbNome" placeholder="ex: Banca Patrick, Conta 2..." maxlength="20"></div>
+    <div class="campo"><label>Estratégia</label>
+      <select id="mbEstr">
+        <option value="Over 1.5">Over 1.5</option>
+        <option value="Over 2.5">Over 2.5 (em breve)</option>
+        <option value="Under 1.5">Under 1.5 (em breve)</option>
       </select>
     </div>
-    <div class="sim-row"><div class="sim-label">Saque semanal (%)</div><input id="sim-saque" type="number" class="sim-input" value="50" min="0" max="90"></div>
-    <div class="sim-row">
-      <div class="sim-label">Odd</div>
-      <input id="sim-odd" type="number" class="sim-input" value="1.44" min="1.30" max="1.60" step="0.01">
-    </div>
-    <button class="sim-btn" onclick="rodarSim()">Simular</button>
-  </div>
-  <div class="sec" id="simResult" style="display:none">
-    <div class="sec-head">Projeção — 8 semanas</div>
-    <div style="overflow-x:auto">
-      <table class="sim-table">
-        <thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado Sacado</th></tr></thead>
-        <tbody id="simBody"></tbody>
-      </table>
-    </div>
-    <div class="chart-wrap" style="height:150px"><canvas id="simChart" role="img" aria-label="Projeção simulada">Projeção simulada.</canvas></div>
-  </div>
-</div>
-
-<!-- META LONGO PRAZO -->
-<div id="page-meta" class="page">
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head">Meta de Longo Prazo</div>
-    <div class="sim-row"><div class="sim-label">Minha meta (R$)</div><input id="meta-alvo" type="number" class="sim-input" value="150000"></div>
-    <div class="sim-row"><div class="sim-label">Saque semanal (%)</div><input id="meta-saque" type="number" class="sim-input" value="50"></div>
-    <button class="sim-btn" onclick="calcMeta()">Calcular</button>
-  </div>
-  <div id="metaResult">
-    <div class="meta-box">
-      <div id="meta-diasval" class="meta-val">—</div>
-      <div class="meta-lbl">semanas para atingir R$150.000 sacado</div>
-      <div class="meta-prog"><div id="meta-prog-fill" class="meta-prog-fill" style="width:0%"></div></div>
-      <div style="font-size:9px;color:var(--text3)" id="meta-progtext">0% do caminho</div>
-    </div>
-    <div class="sec">
-      <div class="sec-head">Marcos do Caminho</div>
-      <div id="marcosDiv"></div>
-    </div>
-    <div class="sec" style="margin-top:9px">
-      <div class="sec-head">Curva Projetada</div>
-      <div class="chart-wrap" style="height:160px"><canvas id="metaChart" role="img" aria-label="Curva meta">Curva meta.</canvas></div>
+    <div class="campo"><label>Banca inicial (R$)</label><input type="number" id="mbVal" placeholder="1000" inputmode="decimal"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button onclick="criarBanca()" class="bv" style="flex:1">Criar</button>
+      <button onclick="fecharModalBanca()" class="bb" style="flex:1;margin-top:0">Cancelar</button>
     </div>
   </div>
 </div>
 
-<!-- HISTÓRICO -->
-<div id="page-hist" class="page">
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head"><span>Resumo Semanal</span><button class="undo-btn" onclick="resetDia()" style="color:var(--red);border-color:var(--red-bd)">Reset Dia</button></div>
-    <div id="resumoSemanal">
-      <div style="padding:12px;text-align:center;color:var(--text3);font-size:10px">Nenhum histórico ainda</div>
-    </div>
-  </div>
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head"><span>Saques Realizados</span><span id="totalSacado" style="color:var(--green)">R$0</span></div>
-    <div id="saquesLista"><div style="padding:10px;text-align:center;color:var(--text3);font-size:10px">Nenhum saque</div></div>
-  </div>
-  <div class="sec">
-    <div class="sec-head">Histórico Diário</div>
-    <div style="overflow-x:auto">
-      <table class="htable">
-        <thead><tr><th style="width:18%">Data</th><th style="width:18%">Inicial</th><th style="width:18%">Final</th><th style="width:14%">Res.</th><th style="width:14%">W/L</th><th style="width:18%">Meta</th></tr></thead>
-        <tbody id="histBody"><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:14px">Sem histórico</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+<!-- POP BANCA INICIAL -->
+<div id="popBI" class="popw"><div class="popc">
+<div style="font-size:32px;margin-bottom:8px">💰</div>
+<div style="font-size:16px;font-weight:700;margin-bottom:4px">Banca inicial do dia</div>
+<div style="font-size:12px;color:#8090b0;margin-bottom:14px">Qual é o saldo atual na sua conta de apostas?</div>
+<input id="pBIv" type="number" inputmode="decimal" placeholder="R$ 0,00" class="pinp">
+<button onclick="confirmarBI()" class="bv">Confirmar e começar</button>
+</div></div>
 
-<!-- CONFIG -->
-<div id="page-cfg" class="page">
-  <div class="sec" style="margin-bottom:9px">
-    <div class="sec-head">Configurações</div>
-    <div class="cfg-row"><div class="cfg-label">Banca Inicial (R$)</div><input id="cfg-banca" type="number" class="cfg-input" value="1000"></div>
-    <div class="cfg-row"><div class="cfg-label">Limite de Saque (R$)</div><input id="cfg-limite" type="number" class="cfg-input" value="10000"></div>
-    <div class="cfg-row"><div class="cfg-label">Stop Win (%)</div><input id="cfg-sw" type="number" class="cfg-input" value="10"></div>
-    <div class="cfg-row"><div class="cfg-label">Stop Loss (%)</div><input id="cfg-sl" type="number" class="cfg-input" value="33"></div>
-    <div class="cfg-row">
-      <div class="cfg-label">Odd (1.30–1.60)</div>
-      <input id="cfg-odd" type="number" class="cfg-input" value="1.44" min="1.30" max="1.60" step="0.01">
-    </div>
-    <div style="padding:9px 11px"><button class="savebtn" onclick="salvarCfg()">Salvar e Aplicar</button></div>
-  </div>
-  <div class="sec">
-    <div class="sec-head">Sobre o Sistema</div>
-    <div style="padding:12px 11px;font-size:10px;color:var(--text3);line-height:2">
-      <div>Estratégia Personalizada e Exclusiva de <strong style="color:var(--text2)">Fábio Marques</strong></div>
-      <div>Criação do Sistema: <strong style="color:var(--text2)">Fábio Marques</strong></div>
-      <div>Programação: <strong style="color:var(--text2)">Fábio Marques</strong></div>
-      <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">Over 1.5 FB · Versão 3.0 · Todos os direitos reservados</div>
-    </div>
-  </div>
-</div>
-
-<div class="footer-autor">
-  Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong> &nbsp;·&nbsp; Criação e Programação <strong>Fábio Marques</strong><br>
-  Over 1.5 FB · Todos os direitos reservados
-</div>
+<!-- POP STOP -->
+<div id="popStop" class="popw"><div class="popc">
+<div id="pStIc" style="font-size:32px;margin-bottom:8px">🎯</div>
+<div id="pStMsg" style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.6"></div>
+<div style="font-size:12px;color:#8090b0;margin-bottom:14px">Confirme o saldo real na sua conta:</div>
+<input id="pStV" type="number" inputmode="decimal" placeholder="R$ 0,00" class="pinp">
+<button onclick="confirmarStop()" class="bv">Confirmar saldo</button>
+</div></div>
 
 <div id="toastEl" class="toast"></div>
-</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const PERFIS={
-  cons:{nome:'Conservador',g0:0.05,g1:0.125,g2:0.15,win:0.02,cor:'blue'},
-  mod:{nome:'Moderado',g0:0.075,g1:0.1875,g2:0.225,win:0.03,cor:'green'},
-  agr:{nome:'Agressivo',g0:0.10,g1:0.25,g2:0.30,win:0.04,cor:'orange'}
-};
+// ───────────────────────────────────────────────
+// FIREBASE — APENAS AUTH/LOGIN
+// ───────────────────────────────────────────────
+firebase.initializeApp({apiKey:"AIzaSyBSw0VsSPNnwdhaWgQFCBF1Gg1MUYJY3bc",authDomain:"fb-system-67c4c.firebaseapp.com",databaseURL:"https://fb-system-67c4c-default-rtdb.firebaseio.com",projectId:"fb-system-67c4c",storageBucket:"fb-system-67c4c.firebasestorage.app",messagingSenderId:"731901344391",appId:"1:731901344391:web:ef8bd5c7d0be9d31439622"});
+var auth=firebase.auth(), db=firebase.database();
+var ADM_UID="u4XdK84rhVOOObBKJikwpodflv12", ADM_EMAIL="contato@mmservicecar.com.br";
+var _uid=null, _carregado=false;
 
-let S=JSON.parse(localStorage.getItem('fb_v3')||'null')||{
-  banca:1000,bancaBase:1000,limite:10000,stopWin:10,stopLoss:33,odd:1.44,
-  perfil:'mod',wins:0,losses:0,ops:0,greensSeq:0,greensMax:0,
-  operacoes:[],histDiario:[],saques:[],totalSacado:0,
-  dayChart:[],diario:[],travado:false,tipoTrava:null,
-  dataAtual:new Date().toDateString(),semanaInicio:new Date().toDateString()
-};
-function sv(){localStorage.setItem('fb_v3',JSON.stringify(S))}
-
-function toast(msg,cor){
-  let e=document.getElementById('toastEl');
-  e.textContent=msg;e.style.display='block';
-  e.style.color=cor||'var(--green)';
-  setTimeout(()=>e.style.display='none',2500);
+// ───────────────────────────────────────────────
+// SISTEMA OPERACIONAL — IDÊNTICO AO QUE FUNCIONAVA
+// ───────────────────────────────────────────────
+var PR={cons:{n:'Conservador',g0:.05,g1:.125,g2:.15,w:.02},mod:{n:'Moderado',g0:.075,g1:.1875,g2:.225,w:.03},agr:{n:'Agressivo',g0:.10,g1:.25,g2:.30,w:.04}};
+var S=null; // banca ativa
+var MS=null; // multi-state completo {bancas:{}, bancaAtiva:''}
+function defS(nome,estr,bi){
+  bi=bi||1000;
+  return {nome:nome||'Principal',estrategia:estr||'Over 1.5',
+    banca:bi,bancaBase:bi,limite:10000,stopWin:10,stopLoss:33,odd:1.44,perfil:'mod',
+    wins:0,losses:0,ops:0,greensSeq:0,operacoes:[],histDiario:[],saques:[],
+    totalSacado:0,dayChart:[bi],diario:[],travado:false,tipoTrava:null,
+    dataAtual:new Date().toDateString(),dataOperando:new Date().toDateString(),_biOk:false,
+    criadaEm:new Date().toISOString()};
 }
-function fR(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:0})}
-function fD(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function fP(v){return (v>=0?'+':'')+v.toFixed(2)+'%'}
+function defMS(){
+  var b=defS('Principal','Over 1.5',1000);
+  var id='b_'+Date.now();
+  return {bancas:{},bancaAtiva:id,_v:2};
+}
 
+// SAVE — só persiste, não lê de volta
+function sv(){
+  if(!_uid||!MS)return;
+  if(S&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS)));
+}
+
+// HELPERS
+function g(id){return document.getElementById(id);}
+function show(id){['tLoad','tLogin','tCad','tRec','tPend','tAdm','app'].forEach(function(t){var e=g(t);if(!e)return;e.classList.remove('on');});var e=g(id);if(e)e.classList.add('on');}
+function toast(m){var e=g('toastEl');e.textContent=m;e.style.display='block';setTimeout(function(){e.style.display='none';},2500);}
+function fR(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:0});}
+function fD(v){return 'R$'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fP(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
+function fmtBR(d){return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtL(d){return new Date(d).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+
+// AUTH
+auth.onAuthStateChanged(function(user){
+  if(!user){_uid=null;_carregado=false;show('tLogin');return;}
+  if(_carregado)return; // IMPEDE re-trigger por refresh de token
+  _uid=user.uid;
+  if(user.uid===ADM_UID||user.email===ADM_EMAIL){_carregado=true;show('tAdm');loadAdm();return;}
+  db.ref('users/'+user.uid).once('value').then(function(snap){
+    var ud=snap.val();
+    if(!ud){auth.signOut();return;}
+    if(ud.status==='pendente'){show('tPend');return;}
+    if(ud.status==='bloqueado'){show('tPend');g('pendBadge').textContent='ACESSO BLOQUEADO';g('pendTit').textContent='Acesso bloqueado';return;}
+    if(ud.status==='ativo'){
+      db.ref('users/'+user.uid+'/state').once('value').then(function(ss){
+        var raw=ss.val();
+        if(raw&&!raw._v){
+          // migrate old single-banca
+          MS={bancas:{},bancaAtiva:'',_v:2};
+          var id='b_'+Date.now();
+          raw.nome='Principal';raw.estrategia='Over 1.5';
+          if(!raw.dayChart||!raw.dayChart.length)raw.dayChart=[raw.banca||1000];
+          MS.bancas[id]=raw;MS.bancaAtiva=id;
+        } else if(raw&&raw._v===2){
+          MS=raw;
+          if(!MS.bancas)MS.bancas={};
+          if(!MS.bancaAtiva||!MS.bancas[MS.bancaAtiva]){
+            var ids=Object.keys(MS.bancas);
+            if(ids.length){MS.bancaAtiva=ids[0];}
+            else{var nid='b_'+Date.now();MS.bancas[nid]=defS('Principal','Over 1.5',1000);MS.bancaAtiva=nid;}
+          }
+        } else {
+          MS={bancas:{},bancaAtiva:'',_v:2};
+          var nid2='b_'+Date.now();
+          MS.bancas[nid2]=defS('Principal','Over 1.5',1000);MS.bancaAtiva=nid2;
+        }
+        S=MS.bancas[MS.bancaAtiva];
+        if(!S.dataAtual)S.dataAtual=new Date().toDateString();
+        if(!S.dataOperando)S.dataOperando=new Date().toDateString();
+        if(S.stopWin==null)S.stopWin=10;if(S.stopLoss==null)S.stopLoss=33;
+        if(!S.operacoes)S.operacoes=[];if(!S.histDiario)S.histDiario=[];
+        if(!S.saques)S.saques=[];if(!S.dayChart||!S.dayChart.length)S.dayChart=[S.banca||1000];
+        if(!S.diario)S.diario=[];if(!S.nome)S.nome='Principal';if(!S.estrategia)S.estrategia='Over 1.5';
+        _carregado=true;
+        g('uInfo').textContent=(ud.nome||'')+' · '+(ud.genero||'');
+        show('app');
+        renderBancaSel();
+        checkDia();
+        render();
+        ouvirSinal();
+        setTimeout(function(){if(!S._biOk&&S.ops===0){g('pBIv').value='';g('popBI').classList.add('v');}},600);
+      });
+    }
+  });
+});
+
+async function doLogin(){
+  var e=g('iEmail').value.trim(),s=g('iSenha').value,err=g('eLogin');err.className='merr';
+  if(!e||!s){err.textContent='Preencha e-mail e senha';err.className='merr v';return;}
+  try{await auth.signInWithEmailAndPassword(e,s);}
+  catch(ex){err.textContent=(ex.code==='auth/user-not-found'||ex.code==='auth/wrong-password')?'E-mail ou senha incorretos':'Erro ao entrar.';err.className='merr v';}
+}
+async function doCad(){
+  var nome=g('iNome').value.trim(),email=g('iCEmail').value.trim(),s=g('iCSenha').value,s2=g('iCSenha2').value,gen=g('iGenero').value;
+  var err=g('eCad'),ok=g('okCad');err.className='merr';ok.className='mok';
+  if(!nome||!email||!s||!gen){err.textContent='Preencha todos os campos';err.className='merr v';return;}
+  if(s!==s2){err.textContent='As senhas não coincidem';err.className='merr v';return;}
+  if(s.length<6){err.textContent='Senha mínimo 6 caracteres';err.className='merr v';return;}
+  try{
+    var c=await auth.createUserWithEmailAndPassword(email,s);
+    await db.ref('users/'+c.user.uid).set({nome:nome,email:email,genero:gen,status:'pendente',criadoEm:new Date().toISOString()});
+    ok.textContent='Cadastro realizado! Aguarde aprovação.';ok.className='mok v';
+    setTimeout(function(){show('tPend');},1500);
+  }catch(ex){err.textContent=ex.code==='auth/email-already-in-use'?'E-mail já cadastrado':'Erro ao cadastrar.';err.className='merr v';}
+}
+async function doRec(){
+  var e=g('iREmail').value.trim(),err=g('eRec'),ok=g('okRec');err.className='merr';ok.className='mok';
+  if(!e){err.textContent='Digite seu e-mail';err.className='merr v';return;}
+  try{await auth.sendPasswordResetEmail(e);ok.textContent='Link enviado! Verifique sua caixa.';ok.className='mok v';}
+  catch(ex){err.textContent='E-mail não encontrado.';err.className='merr v';}
+}
+async function checkStatus(){
+  if(!_uid)return;
+  var snap=await db.ref('users/'+_uid+'/status').once('value');
+  if(snap.val()==='ativo'){_carregado=false;location.reload();}else toast('Ainda aguardando...');
+}
+async function doLogout(){_carregado=false;_uid=null;S=null;await auth.signOut();show('tLogin');}
+
+// ADMIN
+function loadAdm(){
+  db.ref('users').on('value',function(snap){
+    var data=snap.val()||{};
+    var lista=Object.keys(data).map(function(uid){return Object.assign({uid:uid},data[uid]);});
+    g('stTot').textContent=lista.length;
+    g('stPend').textContent=lista.filter(function(u){return u.status==='pendente';}).length;
+    g('stAtiv').textContent=lista.filter(function(u){return u.status==='ativo';}).length;
+    if(!lista.length){g('admLista').innerHTML='<div class="empty">Nenhum aluno</div>';return;}
+    lista.sort(function(a,b){return a.status==='pendente'?-1:1;});
+    var done=0;lista.forEach(function(u){db.ref('users/'+u.uid+'/state').once('value').then(function(ss){u._st=ss.val();done++;if(done===lista.length)renderAdm(lista);});});
+  });
+}
+function renderAdm(lista){
+  var tSac=0;lista.forEach(function(u){if(u.status==='ativo'&&u._st)tSac+=u._st.totalSacado||0;});
+  g('admFin').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:8px;color:#8090b0;margin-bottom:2px">TOTAL SACADO</div><div style="font-size:18px;font-weight:700;color:#00a85a">'+fD(tSac)+'</div></div><div style="background:#fff3e0;border:1px solid rgba(230,126,0,.3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:8px;color:#8090b0;margin-bottom:2px">A RECEBER (10%)</div><div style="font-size:18px;font-weight:700;color:#e65100">'+fD(tSac*0.10)+'</div></div></div>';
+  g('admLista').innerHTML=lista.map(function(u){
+    var sc=u.status==='pendente'?'stp':u.status==='ativo'?'sta':'stb';
+    var sl=u.status==='pendente'?'Pendente':u.status==='ativo'?'Ativo':'Bloqueado';
+    var dt=u.criadoEm?new Date(u.criadoEm).toLocaleDateString('pt-BR'):'—';
+    var fin='';
+    if(u._st&&u.status==='ativo'){var b=u._st.banca||0,bb=u._st.bancaBase||0,ts=u._st.totalSacado||0,pct=bb>0?((b-bb)/bb*100):0,cor=pct>=0?'#00a85a':'#e53935';fin='<div style="background:#f0f2f5;border-radius:7px;padding:9px;margin-bottom:8px"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px"><div style="text-align:center"><div style="font-size:8px;color:#8090b0">BANCA</div><div style="font-size:13px;font-weight:700">'+fD(b)+'</div></div><div style="text-align:center"><div style="font-size:8px;color:#8090b0">HOJE</div><div style="font-size:13px;font-weight:700;color:'+cor+'">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</div></div><div style="text-align:center"><div style="font-size:8px;color:#8090b0">WINS</div><div style="font-size:13px;font-weight:700;color:#00a85a">'+(u._st.wins||0)+'</div></div></div><div style="border-top:1px solid #d0d8e4;padding-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="text-align:center"><div style="font-size:8px;color:#8090b0">TOTAL SACADO</div><div style="font-size:12px;font-weight:700;color:#1565c0">'+fD(ts)+'</div></div><div style="text-align:center;background:#fff3e0;border-radius:5px;padding:3px"><div style="font-size:8px;color:#8090b0">A RECEBER 10%</div><div style="font-size:13px;font-weight:800;color:#e65100">'+fD(ts*0.10)+'</div></div></div></div>';}
+    var btns='<div class="abtns">';
+    if(u.status!=='ativo')btns+='<button class="abtn aapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">✓ Aprovar</button>';
+    if(u.status!=='bloqueado')btns+='<button class="abtn ablk" data-uid="'+u.uid+'" data-st="bloqueado" onclick="setStatus(this.dataset.uid,this.dataset.st)">✕ Bloquear</button>';
+    if(u.status==='bloqueado')btns+='<button class="abtn aapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">↩ Reativar</button>';
+    btns+='</div>';
+    return '<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:12px 14px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600">'+(u.nome||'—')+'</div><div style="font-size:11px;color:#8090b0;margin-top:1px">'+(u.email||'—')+'</div></div><span class="astag '+sc+'">'+sl+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">📅 '+dt+'</span>'+(u.genero?'<span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">'+u.genero+'</span>':'')+'</div>'+fin+btns+'</div>';
+  }).join('');
+}
+async function setStatus(uid,status){await db.ref('users/'+uid+'/status').set(status);toast(status==='ativo'?'Aluno aprovado!':'Aluno bloqueado');}
+
+// POP-UPS
+function confirmarBI(){var val=parseFloat(g('pBIv').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}S.bancaBase=val;S.banca=val;S.dayChart=[val];S._biOk=true;g('popBI').classList.remove('v');sv();render();toast('Banca inicial: '+fR(val));}
+function confirmarStop(){var val=parseFloat(g('pStV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor correto');return;}S.banca=val;S.dayChart.push(val);g('popStop').classList.remove('v');sv();render();toast('Banca atualizada: '+fR(val));}
+
+// ─── OPERAÇÕES ───────────────────────────────────
 function checkDia(){
-  let hoje=new Date().toDateString();
+  var hoje=new Date().toDateString();
+  if(!S.dataAtual)S.dataAtual=hoje;
+  if(!S.dataOperando)S.dataOperando=hoje;
   if(S.dataAtual!==hoje){
-    if(S.ops>0){
-      let res=((S.banca-S.bancaBase)/S.bancaBase*100);
-      S.histDiario.unshift({data:new Date(S.dataAtual).toLocaleDateString('pt-BR'),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=S.stopWin,perfil:S.perfil});
-    }
+    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
     S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;
-    S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;
-    S.dataAtual=hoje;sv();
+    S.operacoes=[];S.dayChart=[S.banca];
+    S.travado=false;S.tipoTrava=null;S._biOk=false;
+    S.dataAtual=hoje;S.dataOperando=hoje;sv();
   }
 }
-
 function resetDia(){
-  if(confirm('Resetar dia? Histórico preservado.')){
-    if(S.ops>0){
-      let res=((S.banca-S.bancaBase)/S.bancaBase*100);
-      S.histDiario.unshift({data:new Date(S.dataAtual).toLocaleDateString('pt-BR'),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=S.stopWin,perfil:S.perfil});
-    }
-    S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;
-    S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;
-    sv();render();toast('Dia resetado');
-  }
+  if(!confirm('Resetar o dia? Histórico preservado.'))return;
+  if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+  S.wins=0;S.losses=0;S.ops=0;S.bancaBase=S.banca;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;sv();render();toast('Dia resetado');
 }
-
-function setPerfil(p){
-  S.perfil=p;sv();render();toast('Perfil: '+PERFIS[p].nome);
-}
+function setPerfil(p){S.perfil=p;sv();render();toast('Perfil: '+PR[p].n);}
+function ajustar(){var val=parseFloat(g('ajV').value);if(!val||isNaN(val)||val<=0){toast('Digite o valor real');return;}S.banca=val;S.bancaBase=val;S.dayChart.push(val);sv();render();g('ajV').value='';toast('Banca ajustada: '+fR(val));}
 
 function reg(tipo){
   if(S.travado)return;
-  let b=S.banca,P=PERFIS[S.perfil],delta;
-  const odd=S.odd;
-  if(tipo==='W0') delta=b*P.win;
-  else if(tipo==='W1') delta=0;
-  else if(tipo==='W2') delta=-(b*P.g2*(2-odd));
-  else delta=-(b*P.g2);
-
-  let prev=b;
-  S.banca=Math.max(0,b+delta);
-  S.ops++;
-  if(tipo!=='L'){S.wins++;S.greensSeq++;if(S.greensSeq>S.greensMax)S.greensMax=S.greensSeq;}
-  else{S.losses++;S.greensSeq=0;}
+  var b=S.banca,Pf=PR[S.perfil],od=parseFloat(S.odd)||1.44;
+  var stopW=parseFloat(S.stopWin)||10,stopL=parseFloat(S.stopLoss)||33;
+  var delta;
+  if(tipo==='W0')delta=b*Pf.w;
+  else if(tipo==='W1')delta=0;
+  else if(tipo==='W2')delta=-(b*Pf.g2*(2-od));
+  else delta=-(b*Pf.g2);
+  S.banca=Math.max(0,b+delta);S.ops++;
+  if(tipo!=='L'){S.wins++;S.greensSeq++;}else{S.losses++;S.greensSeq=0;}
   S.dayChart.push(S.banca);
-  S.operacoes.unshift({tipo:{W0:'WIN G0',W1:'WIN G1',W2:'WIN G2',L:'LOSS G2'}[tipo],cat:tipo==='L'?'L':'W',prev,after:S.banca,delta,ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  S.operacoes.unshift({tipo:{W0:'WIN G0',W1:'WIN G1',W2:'WIN G2',L:'LOSS G2'}[tipo],cat:tipo==='L'?'L':'W',prev:b,after:S.banca,delta:delta,ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
   if(S.operacoes.length>30)S.operacoes.pop();
-
-  let pct=((S.banca-S.bancaBase)/S.bancaBase*100);
-  if(pct>=S.stopWin){S.travado=true;S.tipoTrava='win';}
-  if(pct<=-S.stopLoss){S.travado=true;S.tipoTrava='loss';}
+  var pct=((S.banca-S.bancaBase)/S.bancaBase*100);
+  if(pct>=stopW&&!S.travado){S.travado=true;S.tipoTrava='win';setTimeout(function(){g('pStIc').textContent='🎯';g('pStMsg').textContent='Você ganhou '+pct.toFixed(2)+'% hoje!';g('pStV').value=S.banca.toFixed(2);g('popStop').classList.add('v');},400);}
+  if(pct<=-stopL&&!S.travado){S.travado=true;S.tipoTrava='loss';setTimeout(function(){g('pStIc').textContent='🛑';g('pStMsg').textContent='Stop Loss atingido.';g('pStV').value=S.banca.toFixed(2);g('popStop').classList.add('v');},400);}
   if(tipo==='L'){S.travado=true;S.tipoTrava='loss_emo';}
-
-  if(S.banca>S.limite){
-    let exc=S.banca-S.limite;
-    S.saques.unshift({valor:exc,data:new Date().toLocaleDateString('pt-BR'),ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
-    S.totalSacado+=exc;S.banca=S.limite;
-  }
+  if(S.banca>S.limite){var exc=S.banca-S.limite;S.saques.unshift({valor:exc,data:fmtBR(new Date().toDateString()),ts:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});S.totalSacado+=exc;S.banca=S.limite;}
   sv();render();
 }
 
 function desfazer(){
   if(!S.operacoes.length)return;
-  let last=S.operacoes.shift();
-  S.banca=last.prev;S.ops--;
-  if(last.cat==='W'){S.wins=Math.max(0,S.wins-1);S.greensSeq=Math.max(0,S.greensSeq-1);}
-  else S.losses=Math.max(0,S.losses-1);
-  S.dayChart.pop();S.travado=false;S.tipoTrava=null;
-  sv();render();toast('Desfeito','var(--yellow)');
+  var last=S.operacoes.shift();S.banca=last.prev;S.ops--;
+  if(last.cat==='W'){S.wins=Math.max(0,S.wins-1);S.greensSeq=Math.max(0,S.greensSeq-1);}else{S.losses=Math.max(0,S.losses-1);S.greensSeq=0;}
+  S.dayChart.pop();S.travado=false;S.tipoTrava=null;sv();render();toast('Desfeito');
 }
-
-function confirmarSaque(){document.getElementById('saqueModal').classList.remove('show');toast('Saque registrado!');}
-function fecharSaque(){document.getElementById('saqueModal').classList.remove('show');}
-
-function salvarDiario(){
-  let txt=document.getElementById('diarioInput').value.trim();
-  if(!txt)return;
-  S.diario.unshift({texto:txt,ts:new Date().toLocaleString('pt-BR'),ops:S.ops});
-  if(S.diario.length>50)S.diario.pop();
-  document.getElementById('diarioInput').value='';
-  sv();render();toast('Anotação salva');
+function confSq(){g('sqModal').classList.remove('v');toast('Saque registrado!');}
+function fechSq(){g('sqModal').classList.remove('v');}
+function salvarDia(){var t=g('diaInp').value.trim();if(!t)return;S.diario.unshift({texto:t,ts:new Date().toLocaleString('pt-BR')});if(S.diario.length>50)S.diario.pop();g('diaInp').value='';sv();render();toast('Anotação salva');}
+function salvarCfg(){S.stopWin=parseFloat(g('cfgSW').value)||10;S.stopLoss=parseFloat(g('cfgSL').value)||33;S.limite=parseFloat(g('cfgL').value)||10000;S.odd=parseFloat(g('cfgOd').value)||1.44;sv();render();toast('Configurações salvas!');}
+function reiniciar(){
+  var nb=parseFloat(g('cfgB').value)||1000;
+  if(!confirm('Reiniciar com '+fR(nb)+'? Histórico preservado.'))return;
+  if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(S.dataOperando),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+  S.bancaBase=nb;S.banca=nb;S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[nb];S.travado=false;S.tipoTrava=null;S._biOk=false;S.dataOperando=new Date().toDateString();sv();render();toast('Novo ciclo: '+fR(nb));
 }
-
-function salvarCfg(){
-  S.bancaBase=parseFloat(document.getElementById('cfg-banca').value)||1000;
-  S.banca=S.bancaBase;
-  S.limite=parseFloat(document.getElementById('cfg-limite').value)||10000;
-  S.stopWin=parseFloat(document.getElementById('cfg-sw').value)||10;
-  S.stopLoss=parseFloat(document.getElementById('cfg-sl').value)||33;
-  S.odd=parseFloat(document.getElementById('cfg-odd').value)||1.44;
-  S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[S.banca];
-  S.travado=false;S.tipoTrava=null;
-  sv();render();toast('Configurações salvas!');
-}
-
-function rodarSim(){
-  let b=parseFloat(document.getElementById('sim-banca').value)||1000;
-  let p=document.getElementById('sim-perfil').value;
-  let saqPct=parseFloat(document.getElementById('sim-saque').value)/100||0.5;
-  let P=PERFIS[p];
-  let sacAcum=0,rows=[],bancas=[];
-  for(let i=1;i<=8;i++){
-    for(let d=0;d<5;d++) b=b*(1+P.win*5/5);
-    let saq=b*saqPct;sacAcum+=saq;b=b-saq;
-    rows.push([i,b,saq,sacAcum]);bancas.push(b);
-  }
-  let tb=document.getElementById('simBody');
-  tb.innerHTML=rows.map(([s,bn,sq,ac])=>`<tr><td>Sem ${s}</td><td style="color:var(--green)">${fR(bn)}</td><td style="color:var(--yellow)">${fR(sq)}</td><td style="color:var(--orange)">${fR(ac)}</td></tr>`).join('');
-  document.getElementById('simResult').style.display='block';
-  if(window._simCI){window._simCI.destroy();}
-  let ctx=document.getElementById('simChart');
-  window._simCI=new Chart(ctx,{type:'line',data:{labels:rows.map(r=>'S'+r[0]),datasets:[{label:'Banca',data:bancas,borderColor:'#00e676',backgroundColor:'rgba(0,230,118,.1)',borderWidth:2,pointRadius:3,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#3d5a72',font:{size:9}},grid:{color:'#1e2e3d'}},y:{ticks:{color:'#3d5a72',font:{size:9},callback:v=>'R$'+v.toFixed(0)},grid:{color:'#1e2e3d'}}}}});
-}
-
-function calcMeta(){
-  let alvo=parseFloat(document.getElementById('meta-alvo').value)||150000;
-  let saqPct=parseFloat(document.getElementById('meta-saque').value)/100||0.5;
-  let P=PERFIS[S.perfil],b=S.banca;
-  let sacAcum=0,semanas=0,pts=[{s:0,v:b,sac:0}];
-  while(sacAcum<alvo&&semanas<500){
-    semanas++;
-    for(let d=0;d<5;d++) b=b*(1+P.win);
-    if(b>S.limite){let e=b-S.limite;sacAcum+=e;b=S.limite;}
-    let saq=b*saqPct;sacAcum+=saq;b=b-saq;
-    if(semanas<=20||semanas%5===0) pts.push({s:semanas,v:sacAcum,banca:b});
-  }
-  document.getElementById('meta-diasval').textContent=semanas>=500?'500+':semanas;
-  let pctFeito=Math.min(100,(S.totalSacado/alvo*100));
-  document.getElementById('meta-prog-fill').style.width=pctFeito+'%';
-  document.getElementById('meta-progtext').textContent=pctFeito.toFixed(1)+'% do caminho · '+fR(S.totalSacado)+' sacado';
-
-  let marcos=[[10000,'R$10k'],[25000,'R$25k'],[50000,'R$50k'],[100000,'R$100k'],[150000,'R$150k'],[200000,'R$200k']].filter(m=>m[0]<=alvo*1.2);
-  document.getElementById('marcosDiv').innerHTML=marcos.map(([v,lbl])=>{
-    let s2=S.banca,d2=0,ac2=0;
-    while(ac2<v&&d2<500){d2++;for(let x=0;x<5;x++)s2=s2*(1+P.win);if(s2>S.limite){let e=s2-S.limite;ac2+=e;s2=S.limite;}let sq=s2*saqPct;ac2+=sq;s2-=sq;}
-    let ok=S.totalSacado>=v;
-    return `<div style="display:flex;justify-content:space-between;padding:7px 11px;border-bottom:1px solid var(--border);font-size:11px"><span style="color:${ok?'var(--green)':'var(--text2)'}">${lbl}</span><span style="color:${ok?'var(--green)':'var(--text3)'}">${ok?'✓ Atingido':d2>=500?'500+ sem':d2+' semanas'}</span></div>`;
-  }).join('');
-
-  if(window._metaCI){window._metaCI.destroy();}
-  let ctx=document.getElementById('metaChart');
-  window._metaCI=new Chart(ctx,{type:'line',data:{labels:pts.map(p=>'S'+p.s),datasets:[{label:'Acumulado Sacado',data:pts.map(p=>p.sac||0),borderColor:'#00e676',backgroundColor:'rgba(0,230,118,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#3d5a72',font:{size:9},maxTicksLimit:8},grid:{color:'#1e2e3d'}},y:{ticks:{color:'#3d5a72',font:{size:9},callback:v=>'R$'+v.toFixed(0)},grid:{color:'#1e2e3d'}}}}});
-}
-
-let _dayCI=null;
-function render(){
-  checkDia();
-  let b=S.banca,base=S.bancaBase,P=PERFIS[S.perfil];
-  let lucro=b-base,pct=base>0?((b-base)/base*100):0;
-
-  // perfil cards
-  ['cons','mod','agr'].forEach(p=>{
-    let el=document.getElementById('pc-'+p);
-    el.className='perfil-card '+p+(S.perfil===p?' selected':'');
-  });
-  document.getElementById('perfilBadge').textContent=P.nome.toUpperCase()+' +'+Math.round(P.win*100)+'%';
-  document.getElementById('e-perfil').textContent=P.nome;
-
-  // stakes labels
-  document.getElementById('sl-g0pct').textContent='G0 · '+(P.g0*100)+'%';
-  document.getElementById('sl-g1pct').textContent='G1 · '+(P.g1*100)+'%';
-  document.getElementById('sl-g2pct').textContent='G2 · '+(P.g2*100)+'%';
-  document.getElementById('sl-g0lbl').textContent='+'+Math.round(P.win*100)+'%';
-  document.getElementById('el-g0pct').textContent='G0 · '+(P.g0*100)+'%';
-  document.getElementById('el-g1pct').textContent='G1 · '+(P.g1*100)+'%';
-  document.getElementById('el-g2pct').textContent='G2 · '+(P.g2*100)+'%';
-  document.getElementById('bs-w0').textContent='+'+Math.round(P.win*100)+'% na banca';
-  document.getElementById('bs-w2').textContent='≈ -'+(P.g2*(2-S.odd)*100).toFixed(1)+'% na banca';
-  document.getElementById('bs-l').textContent='≈ -'+(P.g2*100).toFixed(0)+'% da stake';
-  document.getElementById('d-oddshow').textContent=S.odd.toFixed(2);
-
-  let s0=(b*P.g0).toFixed(2),s1=(b*P.g1).toFixed(2),s2=(b*P.g2).toFixed(2);
-  ['sl-g0','el-g0'].forEach(id=>document.getElementById(id).textContent='R$'+s0);
-  ['sl-g1','el-g1'].forEach(id=>document.getElementById(id).textContent='R$'+s1);
-  ['sl-g2','el-g2'].forEach(id=>document.getElementById(id).textContent='R$'+s2);
-
-  document.getElementById('d-banca').textContent=fR(b);
-  document.getElementById('d-banca').className='mval '+(lucro>=0?'c-green':'c-red');
-  document.getElementById('d-bancasub').textContent='Base: '+fR(base);
-  document.getElementById('d-lucro').textContent=(lucro>=0?'+':'-')+fR(lucro);
-  document.getElementById('d-lucro').className='mval '+(lucro>=0?'c-green':'c-red');
-  document.getElementById('d-lucropct').textContent=fP(pct);
-  document.getElementById('d-greens').textContent=S.greensSeq;
-  document.getElementById('d-wins').textContent=S.wins;
-  document.getElementById('d-losses').textContent=S.losses;
-  let metaWins=Math.ceil(S.stopWin/Math.round(P.win*100));
-  let faltam=Math.max(0,metaWins-S.wins);
-  document.getElementById('d-faltam').textContent=pct>=S.stopWin?'Meta!':faltam;
-  document.getElementById('metaLabel').textContent='Meta +'+(S.stopWin)+'%';
-  let progN=Math.min(1,Math.max(0,(pct+S.stopLoss)/(S.stopWin+S.stopLoss)));
-  let pf=document.getElementById('d-prog');
-  pf.style.width=(progN*100)+'%';
-  pf.style.background=pct>=0?'var(--green)':'var(--red)';
-  document.getElementById('d-progpct').textContent=fP(pct);
-
-  // STATUS e alertas
-  let sp=document.getElementById('statusPill');
-  let ab=document.getElementById('alertSW');
-  let ae=document.getElementById('alertExec');
-  let eb=document.getElementById('emocionalBlock');
-  let ee=document.getElementById('emocionalExec');
-  ['btnW0','btnW1','btnW2','btnL'].forEach(id=>document.getElementById(id).disabled=S.travado);
-
-  if(S.tipoTrava==='win'){
-    sp.textContent='◆ STOP WIN';sp.className='status-pill pill-sw';
-    ab.textContent='🎯 STOP WIN! Meta de +'+S.stopWin+'% atingida. Dia encerrado.';ab.className='alert alert-show alert-sw';
-    ae.textContent='🎯 STOP WIN! Meta atingida. Encerre o dia.';ae.className='alert alert-show alert-sw';
-    eb.classList.remove('show');ee.classList.remove('show');
-  } else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){
-    sp.textContent='✕ STOP LOSS';sp.className='status-pill pill-sl';
-    ab.style.display='none';ab.className='alert';
-    ae.style.display='none';ae.className='alert';
-    eb.classList.add('show');ee.classList.add('show');
+function regManual(){
+  var data=g('mfD').value,bf=parseFloat(g('mfBF').value);
+  if(!data||!bf){toast('Preencha a data e banca final');return;}
+  var dtBR=new Date(data+'T12:00:00').toLocaleDateString('pt-BR');
+  // Find existing entry for this date
+  var existing=null;
+  for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){existing=S.histDiario[i];break;}}
+  var bi;
+  if(existing){
+    // Keep original bancaInicial, just update bancaFinal
+    bi=existing.bancaInicial;
   } else {
-    sp.textContent='● OPERANDO';sp.className='status-pill pill-op';
-    ab.style.display='none';ab.className='alert';
-    ae.style.display='none';ae.className='alert';
-    eb.classList.remove('show');ee.classList.remove('show');
+    // New entry - use input or current banca as initial
+    bi=parseFloat(g('mfBI').value)||S.banca;
+  }
+  var res=((bf-bi)/bi*100);
+  var newEntry={data:dtBR,bancaInicial:bi,bancaFinal:bf,resultado:res,
+    wins:existing?existing.wins:0,losses:existing?existing.losses:0,
+    metaBatida:res>=(S.stopWin||10),perfil:S.perfil,manual:true};
+  // Remove old entry for this date and add updated one
+  S.histDiario=S.histDiario.filter(function(h){return h.data!==dtBR;});
+  S.histDiario.push(newEntry);
+  S.histDiario.sort(function(a,b){return new Date(b.data.split('/').reverse().join('-'))-new Date(a.data.split('/').reverse().join('-'));});
+  // Update current banca to match (if this is today or most recent)
+  var todayBR=new Date().toLocaleDateString('pt-BR');
+  if(dtBR===todayBR||S.histDiario[0].data===dtBR){
+    S.banca=bf;
+    S.bancaBase=bi;
+    if(!S.dayChart||!S.dayChart.length)S.dayChart=[bi];
+    S.dayChart[S.dayChart.length-1]=bf;
+  }
+  var r=g('mfRes');
+  r.textContent=(existing?'Atualizado: ':'Registrado: ')+dtBR+': '+fR(bi)+' → '+fR(bf)+' = '+fP(res);
+  r.style.display='block';
+  g('mfD').value='';g('mfBI').value='';g('mfBF').value='';
+  sv();render();renderBancaSel();
+  toast(existing?'Dia atualizado!':'Dia registrado!');
+}
+
+// SIMULADOR
+function rodarSim(){
+  var bi=parseFloat(g('simB').value)||1000;
+  var sqRaw=parseFloat(g('simSq').value);var sq=Math.min(95,isNaN(sqRaw)?50:sqRaw)/100;
+  var meta=parseFloat(g('simMeta').value)||10;
+  var taxa=meta/100;
+  var b=bi,acum=0,rows=[],bancas=[bi];
+  for(var i=1;i<=8;i++){
+    for(var d=0;d<7;d++)b*=(1+taxa); // 7 dias na semana
+    var sq2=b*sq;  // saque = % da banca total
+    acum+=sq2;
+    b=b-sq2;       // banca segue = banca_fim * (1-sq)
+    rows.push({i:i,b:b,sq2:sq2,acum:acum});bancas.push(b);
+  }
+  var tb='';rows.forEach(function(r){tb+='<tr><td>Sem '+r.i+'</td><td style="color:#00a85a;font-weight:600">'+fR(r.b)+'</td><td style="color:#e67e00;font-weight:600">'+fR(r.sq2)+'</td><td style="color:#e65100;font-weight:600">'+fR(r.acum)+'</td></tr>';});
+  g('simBody').innerHTML=tb;g('simTit').textContent='Projeção 8 semanas · Meta +'+meta+'%/dia · Saque '+(sq*100).toFixed(0)+'%';
+  g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> · Meta +'+meta+'%/dia · Saque '+(sq*100).toFixed(0)+'%<br>Semana 8: banca <strong style="color:#00a85a">'+fR(rows[7].b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(rows[7].acum)+'</strong>';
+  g('simRes').style.display='block';
+  if(window._sCI)window._sCI.destroy();
+  window._sCI=new Chart(g('simC'),{type:'line',data:{labels:['Início'].concat(rows.map(function(r){return 'S'+r.i;})),datasets:[{data:bancas,borderColor:'#00a85a',backgroundColor:'rgba(0,168,90,.1)',borderWidth:2,pointRadius:3,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9}},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
+}
+
+// META
+function calcMeta(){
+  var alvo=parseFloat(g('metaAlvo').value)||150000;
+  var sqRaw2=parseFloat(g('metaSq').value);var sq=Math.min(95,isNaN(sqRaw2)?50:sqRaw2)/100;
+  var taxa=0.10;
+  var b=S.banca,acum=S.totalSacado||0,sem=0,pts=[{s:0,v:acum}];
+  while(acum<alvo&&sem<1000){
+    sem++;
+    for(var d=0;d<7;d++)b*=(1+taxa);
+    if(b>S.limite){var e2=b-S.limite;acum+=e2;b=S.limite;}
+    var sq2=b*sq;
+    acum+=sq2;
+    b=b-sq2;
+    if(sem<=40||sem%5===0)pts.push({s:sem,v:acum});
+  }
+  g('metaV').textContent=sem>=1000?'1000+':sem;
+  var pctF=Math.min(100,((S.totalSacado||0)/alvo*100));g('metaPF').style.width=pctF+'%';g('metaPT').textContent=pctF.toFixed(1)+'% · '+fR(S.totalSacado||0)+' de '+fR(alvo)+' sacado';
+  var mHtml='';[[5000,'R$5k'],[10000,'R$10k'],[25000,'R$25k'],[50000,'R$50k'],[100000,'R$100k'],[150000,'R$150k'],[200000,'R$200k']].filter(function(m){return m[0]<=alvo*1.1;}).forEach(function(m){
+    var v=m[0],lbl=m[1],b2=S.banca,d2=0,ac2=S.totalSacado||0;
+    while(ac2<v&&d2<500){d2++;for(var x=0;x<7;x++)b2*=(1+taxa);if(b2>S.limite){var ex=b2-S.limite;ac2+=ex;b2=S.limite;}var s2=b2*sq;ac2+=s2;b2=b2-s2;}
+    var ok=(S.totalSacado||0)>=v;
+    mHtml+='<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px"><span style="color:'+(ok?'#00a85a':'#4a5880')+';font-weight:'+(ok?'700':'400')+'">'+lbl+'</span><span style="color:'+(ok?'#00a85a':'#8090b0')+'">'+(ok?'✓ Atingido':d2>=500?'500+ sem':d2+' semanas')+'</span></div>';
+  });
+  g('marcosDiv').innerHTML=mHtml;
+  if(window._mCI)window._mCI.destroy();
+  window._mCI=new Chart(g('metaC'),{type:'line',data:{labels:pts.map(function(p){return 'S'+p.s;}),datasets:[{data:pts.map(function(p){return p.v;}),borderColor:'#00a85a',backgroundColor:'rgba(0,168,90,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:10},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
+}
+
+// CALENDÁRIO
+var calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel=null;
+var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function renderCal(){
+  if(!S)return;calSel=calSel||S.dataOperando||new Date().toDateString();
+  g('cTit').textContent=MESES[calM]+' '+calY;
+  var hist={};S.histDiario.forEach(function(h){hist[h.data]=h;});
+  var first=new Date(calY,calM,1),last=new Date(calY,calM+1,0),today=new Date().toDateString();
+  var html=['D','S','T','Q','Q','S','S'].map(function(d){return '<div class="cdw">'+d+'</div>';}).join('');
+  for(var i=0;i<first.getDay();i++){var dd=new Date(calY,calM,1-first.getDay()+i);html+='<div class="cd outro">'+dd.getDate()+'</div>';}
+  for(var day=1;day<=last.getDate();day++){
+    var dt=new Date(calY,calM,day),key=dt.toDateString(),dtBR=fmtBR(key),h=hist[dtBR];
+    var cls='cd';if(key===today)cls+=' hoje';if(key===calSel)cls+=' sel';
+    if(h){cls+=' hop';if(h.metaBatida)cls+=' hmeta';if(h.losses>0)cls+=' hloss';}
+    html+='<div class="'+cls+'" data-k="'+key+'" onclick="calClick(this.dataset.k)">'+day+'</div>';
+  }
+  g('calGrid').innerHTML=html;renderCalDet();
+}
+function calClick(key){calSel=key;renderCal();}
+function cNav(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
+function renderCalDet(){
+  if(!calSel)return;var dtBR=fmtBR(calSel);g('cDetTit').textContent=fmtL(calSel);
+  var h=null;for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){h=S.histDiario[i];break;}}
+  var isOp=calSel===S.dataOperando,isHoje=calSel===new Date().toDateString(),body='';
+  if(isOp)body+='<div style="padding:8px 12px;background:#e6f7ef;border-bottom:1px solid #d0d8e4;font-size:11px;color:#00a85a;font-weight:600">✓ Dia ativo de operação</div>';
+  if(h){var cor=h.resultado>=0?'#00a85a':'#e53935',res=(h.resultado>=0?'+':'')+h.resultado.toFixed(2)+'%';body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0"><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">INICIAL</div><div style="font-size:14px;font-weight:700">R$'+h.bancaInicial.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">FINAL</div><div style="font-size:14px;font-weight:700;color:'+cor+'">R$'+h.bancaFinal.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:#8090b0">RESULTADO</div><div style="font-size:14px;font-weight:700;color:'+cor+'">'+res+'</div></div></div><div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:11px;color:#4a5880"><span>'+h.wins+'W · '+h.losses+'L</span><span class="bdg '+(h.metaBatida?'bwg':'bwl')+'">'+(h.metaBatida?'Meta':'Sem meta')+'</span></div>';}
+  else if(isHoje&&isOp){var pct2=S.bancaBase>0?((S.banca-S.bancaBase)/S.bancaBase*100):0;body+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0"><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">BANCA</div><div style="font-size:14px;font-weight:700;color:#00a85a">R$'+S.banca.toFixed(0)+'</div></div><div style="padding:10px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:8px;color:#8090b0">WINS</div><div style="font-size:14px;font-weight:700;color:#00a85a">'+S.wins+'</div></div><div style="padding:10px 8px;text-align:center"><div style="font-size:8px;color:#8090b0">HOJE</div><div style="font-size:14px;font-weight:700;color:'+(pct2>=0?'#00a85a':'#e53935')+'">'+(pct2>=0?'+':'')+pct2.toFixed(1)+'%</div></div></div><div style="padding:8px 12px;font-size:11px;color:#4a5880">Em andamento · '+S.ops+' ops</div>';}
+  else body+='<div class="empty">Sem operações neste dia</div>';
+  g('cDetBody').innerHTML=body;
+}
+function usarDia(){
+  if(!calSel)return;var ant=S.dataOperando;
+  if(ant!==calSel){
+    if(S.ops>0){var res=((S.banca-S.bancaBase)/S.bancaBase*100);S.histDiario.unshift({data:fmtBR(ant),bancaInicial:S.bancaBase,bancaFinal:S.banca,resultado:res,wins:S.wins,losses:S.losses,metaBatida:res>=(S.stopWin||10),perfil:S.perfil});}
+    S.dataOperando=calSel;var dtBR2=fmtBR(calSel);
+    for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR2){S.bancaBase=S.histDiario[i].bancaFinal;S.banca=S.histDiario[i].bancaFinal;break;}}
+    S.wins=0;S.losses=0;S.ops=0;S.operacoes=[];S.dayChart=[S.banca];S.travado=false;S.tipoTrava=null;S._biOk=false;sv();render();toast('Operando em: '+fmtBR(calSel));
+  }goP('exec');
+}
+
+// ─── RENDER ─────────────────────────────────────
+var _dCI=null;
+function render(){
+  if(!S)return;
+  checkDia();
+  var b=S.banca,base=S.bancaBase,Pf=PR[S.perfil]||PR.mod;
+  var lucro=b-base,pct=base>0?((b-base)/base*100):0;
+  var stopW=parseFloat(S.stopWin)||10,stopL=parseFloat(S.stopLoss)||33,odd=parseFloat(S.odd)||1.44;
+  // data
+  var dOp=new Date(S.dataOperando),isHoje=S.dataOperando===new Date().toDateString();
+  var dStr=isHoje?'Hoje · '+dOp.toLocaleDateString('pt-BR'):dOp.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  if(g('dbD'))g('dbD').textContent=dStr;if(g('dbE'))g('dbE').textContent=dStr;
+  // perfis
+  ['cons','mod','agr'].forEach(function(p){var e=g('pc-'+p);if(e)e.className='pc'+(S.perfil===p?' s'+p[0]:'');});
+  if(g('pBadge'))g('pBadge').textContent=Pf.n.toUpperCase()+' +'+Math.round(Pf.w*100)+'%';
+  if(g('ePerfil'))g('ePerfil').textContent=Pf.n;
+  // stakes
+  var s0=fD(b*Pf.g0),s1=fD(b*Pf.g1),s2=fD(b*Pf.g2);
+  if(g('dOdd'))g('dOdd').textContent=odd.toFixed(2);
+  if(g('ds0p'))g('ds0p').textContent='G0·'+(Pf.g0*100)+'%';if(g('ds1p'))g('ds1p').textContent='G1·'+(Pf.g1*100)+'%';if(g('ds2p'))g('ds2p').textContent='G2·'+(Pf.g2*100)+'%';
+  if(g('ds0l'))g('ds0l').textContent='+'+Math.round(Pf.w*100)+'%';if(g('ds2l'))g('ds2l').textContent='≈-'+(Pf.g2*(2-odd)*100).toFixed(1)+'%';
+  if(g('ds0'))g('ds0').textContent=s0;if(g('ds1'))g('ds1').textContent=s1;if(g('ds2'))g('ds2').textContent=s2;
+  if(g('es0p'))g('es0p').textContent='G0·'+(Pf.g0*100)+'%';if(g('es1p'))g('es1p').textContent='G1·'+(Pf.g1*100)+'%';if(g('es2p'))g('es2p').textContent='G2·'+(Pf.g2*100)+'%';
+  if(g('es0'))g('es0').textContent=s0;if(g('es1'))g('es1').textContent=s1;if(g('es2'))g('es2').textContent=s2;
+  if(g('bs0'))g('bs0').textContent='+'+Math.round(Pf.w*100)+'% na banca';
+  if(g('bs2'))g('bs2').textContent='≈ -'+(Pf.g2*(2-odd)*100).toFixed(1)+'%';
+  if(g('bsl'))g('bsl').textContent='≈ -'+(Pf.g2*100).toFixed(0)+'% stake';
+  // métricas
+  var bEl=g('dBanca');if(bEl){bEl.textContent=fR(b);bEl.className='mv '+(lucro>=0?'cg':'cr');}
+  if(g('dBSub'))g('dBSub').textContent='Base: '+fR(base);
+  var lEl=g('dLucro');if(lEl){lEl.textContent=(lucro>=0?'+':'-')+fR(lucro);lEl.className='mv '+(lucro>=0?'cg':'cr');}
+  if(g('dLPct'))g('dLPct').textContent=fP(pct);
+  if(g('dGreens'))g('dGreens').textContent=S.greensSeq;if(g('dWins'))g('dWins').textContent=S.wins;if(g('dLoss'))g('dLoss').textContent=S.losses;
+  var mw=Math.ceil(stopW/Math.round(Pf.w*100));if(g('dFalt'))g('dFalt').textContent=pct>=stopW?'Meta!':Math.max(0,mw-S.wins);
+  if(g('mLbl'))g('mLbl').textContent='Meta +'+stopW+'%';
+  var pN=Math.min(1,Math.max(0,(pct+stopL)/(stopW+stopL)));
+  var pf=g('dProg');if(pf){pf.style.width=(pN*100)+'%';pf.style.background=pct>=0?'#00a85a':'#e53935';}
+  if(g('dPPct'))g('dPPct').textContent=fP(pct);
+  // alertas
+  var sp=g('sPill'),alD=g('alD'),alE=g('alE'),emD=g('emoD'),emE=g('emoE');
+  ['bW0','bW1','bW2','bL'].forEach(function(id){var el=g(id);if(el)el.disabled=S.travado;});
+  if(S.tipoTrava==='win'){
+    if(sp){sp.textContent='◆ STOP WIN';sp.className='pill psw';}
+    var msg='🎯 Você ganhou '+pct.toFixed(2)+'% hoje! Mantenha a gestão do Fábio.';
+    if(alD){alD.textContent=msg;alD.className='al v asw';}if(alE){alE.textContent=msg;alE.className='al v asw';}
+    if(emD)emD.classList.remove('v');if(emE)emE.classList.remove('v');
+  }else if(S.tipoTrava==='loss'||S.tipoTrava==='loss_emo'){
+    if(sp){sp.textContent='✕ LOSS';sp.className='pill psl';}
+    if(alD)alD.className='al';if(alE)alE.className='al';
+    if(emD)emD.classList.add('v');if(emE)emE.classList.add('v');
+  }else{
+    if(sp){sp.textContent='● OPERANDO';sp.className='pill pop';}
+    if(alD)alD.className='al';if(alE)alE.className='al';
+    if(emD)emD.classList.remove('v');if(emE)emE.classList.remove('v');
+  }
+  // saque modal
+  var sqM=g('sqModal');if(sqM&&S.saques.length&&!sqM.dataset.shown&&S.tipoTrava!=='loss_emo'){if(g('sqVal'))g('sqVal').textContent=fD(S.saques[0].valor);sqM.classList.add('v');sqM.dataset.shown='1';}
+  // OPERAÇÕES RECENTES
+  var ro=g('recentOps');
+  if(ro){
+    if(S.operacoes.length){
+      var oh='';
+      S.operacoes.slice(0,8).forEach(function(op){
+        oh+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px">'+
+          '<div style="display:flex;align-items:center;gap:7px"><span class="bdg '+(op.cat==='W'?'bwg':'bwl')+'">'+(op.cat==='W'?'WIN':'LOSS')+'</span>'+
+          '<span style="color:#4a5880">'+op.tipo+'</span></div>'+
+          '<div style="text-align:right"><div style="color:'+(op.delta>=0?'#00a85a':'#e53935')+';font-weight:600">'+(op.delta>=0?'+':'-')+fD(op.delta)+'</div>'+
+          '<div style="font-size:9px;color:#8090b0">'+op.ts+'</div></div></div>';
+      });
+      ro.innerHTML=oh;
+    }else ro.innerHTML='<div class="empty">Nenhuma operação ainda</div>';
+  }
+  // diário
+  var de=g('diaList');if(de){var dh='';S.diario.slice(0,5).forEach(function(d){dh+='<div style="padding:8px 12px;border-top:1px solid #d0d8e4"><div style="color:#4a5880;font-size:11px">'+d.texto+'</div><div style="font-size:9px;color:#8090b0;margin-top:2px">'+d.ts+'</div></div>';});de.innerHTML=dh;}
+  // evolução
+  var evoEl=g('evoLista');if(g('totDias'))g('totDias').textContent=S.histDiario.length+' dias';
+  if(evoEl){if(S.histDiario.length){var mx=0;S.histDiario.forEach(function(d){if(Math.abs(d.resultado)>mx)mx=Math.abs(d.resultado);});var evH='';S.histDiario.slice(0,30).forEach(function(d){var cor=d.resultado>=0?'#00a85a':'#e53935',bw=Math.min(100,(Math.abs(d.resultado)/Math.max(mx,1))*100),res=(d.resultado>=0?'+':'')+d.resultado.toFixed(2)+'%';evH+='<div class="evrow"><div style="color:#8090b0;width:70px;flex-shrink:0;font-size:10px">'+d.data+(d.manual?' ✎':'')+'</div><div style="flex:1;height:6px;background:#e8ebf0;border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;width:'+bw+'%;background:'+(d.resultado>=0?'#00a85a':'#e53935')+'"></div></div><div style="font-weight:700;width:52px;text-align:right;flex-shrink:0;font-size:11px;color:'+cor+'">'+res+'</div><div style="font-size:9px;color:#8090b0;width:90px;text-align:right;flex-shrink:0">R$'+d.bancaInicial.toFixed(0)+'→R$'+d.bancaFinal.toFixed(0)+'</div></div>';});evoEl.innerHTML=evH;}else evoEl.innerHTML='<div class="empty">Sem histórico</div>';}
+  // hist tabela
+  var hbEl=g('histBody');if(hbEl){if(S.histDiario.length){var hH='';S.histDiario.slice(0,30).forEach(function(d){hH+='<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td style="color:'+(d.bancaFinal>=d.bancaInicial?'#00a85a':'#e53935')+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+'</td><td style="color:'+(d.resultado>=0?'#00a85a':'#e53935')+';font-weight:600">'+fP(d.resultado)+'</td><td>'+d.wins+'W/'+d.losses+'L</td><td><span class="bdg '+(d.metaBatida?'bwg':'bwl')+'">'+(d.metaBatida?'SIM':'NÃO')+'</span></td></tr>';});hbEl.innerHTML=hH;}else hbEl.innerHTML='<tr><td colspan="6" class="empty">Sem histórico</td></tr>';}
+  // saques
+  if(g('totSq'))g('totSq').textContent='Total: '+fR(S.totalSacado||0);
+  var sqEl=g('saqLista');if(sqEl){if(S.saques.length){var sqH='';S.saques.forEach(function(s,i){sqH+='<div style="padding:9px 12px;display:flex;justify-content:space-between;border-bottom:1px solid #d0d8e4;font-size:11px"><div><div style="color:#00a85a;font-weight:700;font-size:13px">+'+fR(s.valor)+'</div><div style="font-size:9px;color:#8090b0">'+s.data+' '+(s.ts||'')+(s.obs?' · '+s.obs:'')+'</div></div><span style="padding:2px 8px;border-radius:10px;font-size:9px;background:'+(s.manual?'#e8f0fc':'#e6f7ef')+';color:'+(s.manual?'#1565c0':'#00a85a')+';font-weight:600">'+(s.manual?'Manual':'Auto')+'</span></div>';});sqEl.innerHTML=sqH;}else sqEl.innerHTML='<div class="empty">Nenhum saque</div>';}
+  // resumo
+  var rsEl=g('resSem');if(rsEl&&S.histDiario.length){var sem=S.histDiario.slice(0,5),tw=0,tl=0,mt=0;sem.forEach(function(d){tw+=d.wins;tl+=d.losses;if(d.metaBatida)mt++;});var bi2=sem[sem.length-1].bancaInicial,bf2=sem[0].bancaFinal,res3=bi2>0?((bf2-bi2)/bi2*100):0,msg2=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss':'Atenção: '+tl+' losses';rsEl.innerHTML='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;margin:10px"><div style="font-size:9px;color:#00a85a;font-weight:700;text-transform:uppercase;margin-bottom:8px">Últimos '+sem.length+' dias</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px"><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#00a85a">'+tw+'</div><div style="font-size:8px;color:#8090b0">Wins</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e53935">'+tl+'</div><div style="font-size:8px;color:#8090b0">Losses</div></div><div style="background:#fff;border-radius:7px;padding:8px 4px;text-align:center;border:1px solid #d0d8e4"><div style="font-size:15px;font-weight:700;color:#e67e00">'+mt+'</div><div style="font-size:8px;color:#8090b0">Metas</div></div></div><div style="font-size:11px;color:#4a5880;padding-top:9px;border-top:1px solid #d0d8e4">'+msg2+'<br>Resultado: <strong style="color:'+(res3>=0?'#00a85a':'#e53935')+'">'+fP(res3)+'</strong></div></div>';}
+  // config
+  if(g('cfgSW'))g('cfgSW').value=S.stopWin||10;if(g('cfgSL'))g('cfgSL').value=S.stopLoss||33;
+  if(g('cfgL'))g('cfgL').value=S.limite||10000;if(g('cfgOd'))g('cfgOd').value=S.odd||1.44;if(g('cfgB'))g('cfgB').value=S.bancaBase||1000;
+  // gráfico evolução — histórico completo + dia atual
+  var ctx=g('dayC');
+  if(ctx&&ctx.offsetParent!==null){
+    // Monta dados: histDiario ordenado + ponto atual do dia
+    var sorted=(S.histDiario||[]).slice().sort(function(a,b){
+      return new Date(a.data.split('/').reverse().join('-'))-new Date(b.data.split('/').reverse().join('-'));
+    });
+    var chartLabels=[],chartData=[];
+    if(sorted.length){
+      // Ponto inicial da banca
+      chartLabels.push('Início');
+      chartData.push(sorted[0].bancaInicial);
+      sorted.forEach(function(d){
+        chartLabels.push(d.data.substring(0,5));
+        chartData.push(d.bancaFinal);
+      });
+    } else {
+      // Sem histórico — mostra só dayChart do dia
+      var dc=S.dayChart.length?S.dayChart:[S.bancaBase];
+      dc.forEach(function(v,i){chartLabels.push(i===0?'Início':'Op '+i);chartData.push(v);});
+    }
+    // Adiciona ponto do dia atual se ainda não fechado
+    var todayBR=new Date().toLocaleDateString('pt-BR');
+    var ultimoHist=sorted.length?sorted[sorted.length-1]:null;
+    if(S.ops>0&&(!ultimoHist||ultimoHist.data!==todayBR)){
+      chartLabels.push('Hoje');
+      chartData.push(S.banca);
+    }
+    var cor=chartData[chartData.length-1]>=chartData[0]?'#00a85a':'#e53935';
+    if(_dCI){_dCI.destroy();_dCI=null;}
+    _dCI=new Chart(ctx,{type:'line',data:{labels:chartLabels,datasets:[{data:chartData,borderColor:cor,backgroundColor:cor+'18',borderWidth:2,pointRadius:chartData.length>20?1:3,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return 'R$'+c.raw.toFixed(0);}}}},scales:{x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:8},grid:{color:'#e8ebf0'}},y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}}}});
+  }
+  // cal
+  if(g('calGrid')&&g('calGrid').innerHTML)renderCal();
+}
+
+// ─── MULTI-BANCA ─────────────────────────────────────────────────────────────
+// ─── MULTI-BANCA ─────────────────────────────────────────────────────────────
+function renderBancaSel(){
+  if(!MS||!S)return;
+  var el=g('bancaNomeAtivo');
+  if(el){
+    el.innerHTML=(S.nome||'Principal')+' <span style="opacity:.6;font-size:10px">'+(S.estrategia||'Over 1.5')+'</span>';
+  }
+}
+
+function abrirGerenciarBancas(){
+  if(!MS)return;
+  var lista=g('listaBancas');
+  if(!lista)return;
+  var ids=Object.keys(MS.bancas||{});
+  var html='';
+  ids.forEach(function(id,i){
+    var b=MS.bancas[id];
+    var ativo=(id===MS.bancaAtiva);
+    html+='<div style="border:1.5px solid '+(ativo?'#1a2540':'#d0d8e4')+';border-radius:10px;padding:12px;margin-bottom:8px;background:'+(ativo?'#f0f2f5':'#fff')+'">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:#1a2540">'+(b.nome||'Banca')+(ativo?' <span style="background:#1a2540;color:#fff;border-radius:10px;padding:1px 8px;font-size:9px">ATIVA</span>':'')+'</div>';
+    html+='<div style="font-size:10px;color:#8090b0;margin-top:1px">'+(b.estrategia||'Over 1.5')+' · R$'+(b.banca||0).toFixed(0)+'</div></div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:6px">';
+    if(!ativo){
+      html+='<button onclick="selecionarBanca('+i+')" style="flex:1;background:#00a85a;color:#fff;border:none;border-radius:7px;padding:9px;font-size:12px;font-weight:700;cursor:pointer">✓ Selecionar</button>';
+    }
+    if(ids.length>1){
+      html+='<button onclick="excluirBancaById('+i+')" style="background:#feecec;color:#e53935;border:1px solid rgba(229,57,53,.3);border-radius:7px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer">🗑</button>';
+    }
+    html+='</div></div>';
+  });
+  lista.innerHTML=html;
+  g('modalGerenciar').classList.add('v');
+}
+
+function fecharGerenciarBancas(){
+  var m=g('modalGerenciar');
+  if(m)m.classList.remove('v');
+}
+
+function selecionarBanca(idx){
+  var ids=Object.keys(MS.bancas||{});
+  var id=ids[idx];
+  if(!id||!MS.bancas[id])return;
+  if(S&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  MS.bancaAtiva=id;
+  S=MS.bancas[id];
+  if(!S.dataAtual)S.dataAtual=new Date().toDateString();
+  if(!S.dataOperando)S.dataOperando=new Date().toDateString();
+  if(!S.operacoes)S.operacoes=[];
+  if(!S.histDiario)S.histDiario=[];
+  if(!S.saques)S.saques=[];
+  if(!S.dayChart||!S.dayChart.length)S.dayChart=[S.banca||1000];
+  if(!S.diario)S.diario=[];
+  sv();
+  fecharGerenciarBancas();
+  renderBancaSel();
+  checkDia();
+  render();
+  toast('Banca: '+(S.nome||'Principal'));
+}
+
+function excluirBancaById(idx){
+  var ids=Object.keys(MS.bancas||{});
+  var id=ids[idx];
+  if(!id)return;
+  var b=MS.bancas[id];
+  if(!confirm('Excluir banca "'+(b.nome||'esta banca')+'"? Os dados serão perdidos.'))return;
+  delete MS.bancas[id];
+  var newIds=Object.keys(MS.bancas);
+  if(newIds.length===0){
+    var nid='b_'+Date.now();
+    MS.bancas[nid]=defS('Principal','Over 1.5',1000);
+    newIds=[nid];
+  }
+  MS.bancaAtiva=newIds[0];
+  S=MS.bancas[MS.bancaAtiva];
+  sv();
+  fecharGerenciarBancas();
+  renderBancaSel();
+  checkDia();
+  render();
+  toast('Banca excluída');
+}
+
+function abrirModalBanca(){
+  var ids=Object.keys(MS.bancas||{});
+  if(ids.length>=5){toast('Máximo 5 bancas');return;}
+  g('mbNome').value='';g('mbVal').value='1000';
+  g('modalBanca').classList.add('v');
+  setTimeout(function(){g('mbNome').focus();},200);
+}
+function fecharModalBanca(){g('modalBanca').classList.remove('v');}
+
+function criarBanca(){
+  var nome=g('mbNome').value.trim();
+  var estr=g('mbEstr').value;
+  var val=parseFloat(g('mbVal').value)||1000;
+  if(!nome){toast('Digite um nome para a banca');return;}
+  var ids=Object.keys(MS.bancas||{});
+  if(ids.length>=5){toast('Máximo 5 bancas');return;}
+  var id='b_'+Date.now();
+  MS.bancas[id]=defS(nome,estr,val);
+  fecharModalBanca();
+  // auto-select new banca
+  if(S&&MS.bancaAtiva)MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  MS.bancaAtiva=id;
+  S=MS.bancas[id];
+  sv();
+  renderBancaSel();
+  checkDia();
+  render();
+  toast('Banca "'+nome+'" criada!');
+}
+
+// Keep old trocarBanca for compatibility
+function trocarBanca(idx){selecionarBanca(idx);}
+function excluirBanca(){
+  var ids=Object.keys(MS.bancas||{});
+  var idx=ids.indexOf(MS.bancaAtiva);
+  if(idx>=0)excluirBancaById(idx);
+}
+
+
+// ─── RELATÓRIO ───────────────────────────────────────────────────────────────
+function renderRelBancaSel(){
+  var el=g('relBancaSel');if(!el||!MS)return;
+  var ids=Object.keys(MS.bancas||{});
+  el.innerHTML='';
+  ids.forEach(function(id){
+    var b=MS.bancas[id];
+    var ativo=id===_relBancaId;
+    var div=document.createElement('div');
+    div.className='bpill'+(ativo?' ba':'');
+    div.innerHTML=(b.nome||'Banca')+'<span style="font-size:9px;opacity:.7;margin-left:4px">'+(b.estrategia||'Over 1.5')+'</span>';
+    div.addEventListener('click',function(bid){return function(){_relBancaId=bid;renderRelBancaSel();renderRel();};}(id));
+    el.appendChild(div);
+  });
+}
+var _relBancaId=null;
+function renderRel(){
+  if(!MS||!g('relConteudo'))return;
+  if(!_relBancaId||!MS.bancas[_relBancaId])_relBancaId=MS.bancaAtiva;
+  renderRelBancaSel();
+  var SR=MS.bancas[_relBancaId];
+  if(!SR){g('relConteudo').innerHTML='<div class="empty">Banca não encontrada</div>';return;}
+  if(g('relTitulo'))g('relTitulo').textContent='Relatório · '+(SR.nome||'Principal');
+  var hist=SR.histDiario||[];
+  var nome=SR.nome||'Principal',estr=SR.estrategia||'Over 1.5';
+  var criadaEm=S.criadaEm?new Date(S.criadaEm).toLocaleDateString('pt-BR'):'—';
+  var totalDias=hist.length;
+  var totalWins=0,totalLoss=0,totalMetas=0,somaRes=0;
+  hist.forEach(function(d){totalWins+=d.wins||0;totalLoss+=d.losses||0;if(d.metaBatida)totalMetas++;somaRes+=d.resultado||0;});
+  var mediaRes=totalDias>0?(somaRes/totalDias).toFixed(2):0;
+  var melhorDia=hist.length?hist.reduce(function(a,b){return a.resultado>b.resultado?a:b;}):null;
+  var piorDia=hist.length?hist.reduce(function(a,b){return a.resultado<b.resultado?a:b;}):null;
+  // simulação
+  var b=SR.banca,bOrig=SR.banca,taxa=0.10,sq=0.5,simRows=[];
+  for(var i=1;i<=8;i++){
+    var fim=b;for(var d=0;d<5;d++)fim*=(1+taxa);
+    var lucro=fim-bOrig,saque=lucro*sq;b=fim-saque;
+    simRows.push({s:i,b:b,sq:saque});
+  }
+  var html='';
+  // header
+  html+='<div style="background:#1a2540;padding:14px 16px;border-radius:0">';
+  html+='<div style="color:#fff;font-size:16px;font-weight:700">'+nome+'</div>';
+  html+='<div style="color:#7A9BB5;font-size:11px;margin-top:2px">'+estr+' · Iniciada em '+criadaEm+'</div></div>';
+  // stats grid
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #d0d8e4">';
+  html+='<div style="padding:12px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:20px;font-weight:700;color:#00a85a">'+fR(S.banca)+'</div><div style="font-size:9px;color:#8090b0;margin-top:2px">BANCA ATUAL</div></div>';
+  html+='<div style="padding:12px 8px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:20px;font-weight:700;color:#1565c0">'+totalDias+'</div><div style="font-size:9px;color:#8090b0;margin-top:2px">DIAS OPERADOS</div></div>';
+  html+='<div style="padding:12px 8px;text-align:center"><div style="font-size:20px;font-weight:700;color:#e65100">'+fR(S.totalSacado||0)+'</div><div style="font-size:9px;color:#8090b0;margin-top:2px">TOTAL SACADO</div></div>';
+  html+='</div>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid #d0d8e4">';
+  html+='<div style="padding:10px 6px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:16px;font-weight:700;color:#00a85a">'+totalWins+'</div><div style="font-size:9px;color:#8090b0">WINS</div></div>';
+  html+='<div style="padding:10px 6px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:16px;font-weight:700;color:#e53935">'+totalLoss+'</div><div style="font-size:9px;color:#8090b0">LOSSES</div></div>';
+  html+='<div style="padding:10px 6px;text-align:center;border-right:1px solid #d0d8e4"><div style="font-size:16px;font-weight:700;color:#e67e00">'+totalMetas+'</div><div style="font-size:9px;color:#8090b0">METAS</div></div>';
+  html+='<div style="padding:10px 6px;text-align:center"><div style="font-size:16px;font-weight:700;color:'+(mediaRes>=0?'#00a85a':'#e53935')+'">'+mediaRes+'%</div><div style="font-size:9px;color:#8090b0">MÉDIA/DIA</div></div>';
+  html+='</div>';
+  // melhor/pior
+  if(melhorDia){
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #d0d8e4">';
+    html+='<div style="padding:10px 12px;border-right:1px solid #d0d8e4"><div style="font-size:9px;color:#8090b0;margin-bottom:2px">MELHOR DIA</div><div style="font-size:13px;font-weight:700;color:#00a85a">'+melhorDia.data+' +'+melhorDia.resultado.toFixed(2)+'%</div></div>';
+    html+='<div style="padding:10px 12px"><div style="font-size:9px;color:#8090b0;margin-bottom:2px">PIOR DIA</div><div style="font-size:13px;font-weight:700;color:#e53935">'+piorDia.data+' '+piorDia.resultado.toFixed(2)+'%</div></div>';
+    html+='</div>';
+  }
+  // sim projeção
+  html+='<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4"><div style="font-size:10px;font-weight:700;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📈 Projeção 8 semanas (10%/dia · saque 50%)</div>';
+  html+='<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="background:#e8ebf0"><th style="padding:5px 8px;text-align:center;color:#8090b0;font-weight:600">Sem</th><th style="padding:5px 8px;text-align:right;color:#8090b0;font-weight:600">Banca</th><th style="padding:5px 8px;text-align:right;color:#8090b0;font-weight:600">Saque</th></tr></thead><tbody>';
+  simRows.forEach(function(r){
+    html+='<tr style="border-bottom:1px solid #d0d8e4"><td style="padding:5px 8px;text-align:center;color:#4a5880">'+r.s+'</td><td style="padding:5px 8px;text-align:right;color:#00a85a;font-weight:600">'+fR(r.b)+'</td><td style="padding:5px 8px;text-align:right;color:#e67e00;font-weight:600">'+fR(r.sq)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  // hist resumo
+  if(hist.length){
+    html+='<div style="padding:10px 12px"><div style="font-size:10px;font-weight:700;color:#4a5880;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📋 Histórico</div>';
+    hist.slice(0,20).forEach(function(d){
+      var cor=d.resultado>=0?'#00a85a':'#e53935';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0f2f5;font-size:11px">';
+      html+='<span style="color:#4a5880">'+d.data+'</span>';
+      html+='<span style="color:#8090b0">'+d.wins+'W/'+d.losses+'L</span>';
+      html+='<span style="font-weight:700;color:'+cor+'">'+(d.resultado>=0?'+':'')+d.resultado.toFixed(2)+'%</span>';
+      html+='<span style="color:#8090b0">'+fR(d.bancaFinal)+'</span></div>';
+    });
+    html+='</div>';
+  }
+  g('relConteudo').innerHTML=html;
+}
+
+function gerarRelPDF(){
+  var SR2=MS&&_relBancaId?MS.bancas[_relBancaId]:S;
+  if(!SR2){toast('Selecione uma banca no relatório');return;}
+  var nome=SR2.nome||'Principal';
+  var hist=SR2.histDiario||[];
+  var totalDias=hist.length,totalWins=0,totalLoss=0,totalMetas=0,somaRes=0;
+  hist.forEach(function(d){totalWins+=d.wins||0;totalLoss+=d.losses||0;if(d.metaBatida)totalMetas++;somaRes+=d.resultado||0;});
+  var mediaRes=totalDias>0?(somaRes/totalDias).toFixed(2):0;
+  var criadaEm=SR2.criadaEm?new Date(SR2.criadaEm).toLocaleDateString('pt-BR'):'—';
+  var histRows=hist.slice(0,50).map(function(d){
+    return ['<tr><td>',d.data,'</td><td>R$',d.bancaInicial.toFixed(0),'</td><td>R$',d.bancaFinal.toFixed(0),
+    '</td><td style="color:',(d.resultado>=0?'green':'red'),'">',(d.resultado>=0?'+':''),d.resultado.toFixed(2),
+    '%</td><td>',d.wins,'W/',d.losses,'L</td><td>',(d.metaBatida?'✓':'—'),'</td></tr>'].join('');
+  }).join('');
+  var b=SR2.banca,bOrig=SR2.banca,simR='';
+  for(var i=1;i<=8;i++){
+    var fim=b;for(var d=0;d<5;d++)fim*=1.10;
+    var lucro=fim-bOrig,sq2=lucro*0.5;b=fim-sq2;
+    simR+='<tr><td>'+i+'</td><td>R$'+b.toFixed(2)+'</td><td>R$'+sq2.toFixed(2)+'</td></tr>';
+  }
+  var css='body{font-family:Arial,sans-serif;font-size:12px;color:#1a2540;margin:20px}'+
+    'h1{font-size:18px;color:#1a2540;margin-bottom:4px}'+
+    'h2{font-size:13px;color:#4a5880;margin:16px 0 8px;border-bottom:1px solid #d0d8e4;padding-bottom:4px}'+
+    '.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}'+
+    '.card{background:#f0f2f5;border-radius:6px;padding:10px;text-align:center}'+
+    '.cv{font-size:20px;font-weight:700}.cl{font-size:9px;color:#8090b0;text-transform:uppercase;margin-top:2px}'+
+    'table{width:100%;border-collapse:collapse;font-size:11px}'+
+    'th{background:#1a2540;color:#fff;padding:6px 8px;text-align:left}'+
+    'td{padding:5px 8px;border-bottom:1px solid #d0d8e4}'+
+    '.footer{margin-top:20px;font-size:9px;color:#8090b0;text-align:center;border-top:1px solid #d0d8e4;padding-top:10px}'+
+    '@media print{button{display:none}}';
+  var html=[
+    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatorio ',nome,'</title>',
+    '<style>',css,'</style></head><body>',
+    '<h1>FB Sistemas · Relatório de Banca</h1>',
+    '<p style="color:#8090b0;font-size:11px">',nome,' · ',(SR2.estrategia||'Over 1.5'),' · Iniciada em ',criadaEm,' · Gerado em ',new Date().toLocaleDateString('pt-BR'),'</p>',
+    '<div class="grid">',
+    '<div class="card"><div class="cv" style="color:#00a85a">R$',SR2.banca.toFixed(0),'</div><div class="cl">Banca atual</div></div>',
+    '<div class="card"><div class="cv" style="color:#1565c0">',totalDias,'</div><div class="cl">Dias operados</div></div>',
+    '<div class="card"><div class="cv" style="color:#e67e00">',totalWins,'W ',totalLoss,'L</div><div class="cl">Wins/Losses</div></div>',
+    '<div class="card"><div class="cv" style="color:#e65100">R$',(SR2.totalSacado||0).toFixed(0),'</div><div class="cl">Total sacado</div></div>',
+    '</div>',
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr)">',
+    '<div class="card"><div class="cv">',totalMetas,'</div><div class="cl">Metas batidas</div></div>',
+    '<div class="card"><div class="cv" style="color:',(mediaRes>=0?'green':'red'),'">',mediaRes,'%</div><div class="cl">Media/dia</div></div>',
+    '<div class="card"><div class="cv" style="color:#e65100">',totalDias,'</div><div class="cl">Dias</div></div>',
+    '</div>',
+    (hist.length?'<h2>Historico</h2><table><thead><tr><th>Data</th><th>Inicial</th><th>Final</th><th>Resultado</th><th>W/L</th><th>Meta</th></tr></thead><tbody>'+histRows+'</tbody></table>':''),
+    '<h2>Projecao 8 Semanas (10%/dia · Saque 50%)</h2>',
+    '<table><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th></tr></thead><tbody>',simR,'</tbody></table>',
+    '<div class="footer">FB Sistemas · Estrategia Exclusiva de Fabio Marques</div>',
+    '<br><button onclick="window.print()" style="background:#1a2540;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px">Imprimir / Salvar PDF</button>',
+    '</body></html>'
+  ].join('');
+  var w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+function ouvirSinal(){
+  db.ref('sinal_ativo').on('value',function(snap){
+    var s=snap.val();
+    var badge=g('nbSinal');
+    if(!s){
+      if(badge)badge.textContent='📡 Sinal';
+      if(g('sinalSh'))g('sinalSh').textContent='📡 Aguardando sinal...';
+      if(g('sinalBody'))g('sinalBody').innerHTML='<div class="empty">Nenhum sinal publicado ainda</div>';
+      return;
+    }
+    // badge piscando se ativo
+    if(badge){badge.textContent=s.status==='ativo'?'📡 Sinal 🔴':s.status==='green'?'📡 Sinal ✅':'📡 Sinal ❌';}
+    renderSinalCard(s);
+  });
+  db.ref('sinais_hist').limitToLast(5).on('value',function(snap){
+    var hist=[];snap.forEach(function(c){hist.unshift(c.val());});
+    if(!g('sinalHist'))return;
+    if(!hist.length){g('sinalHist').innerHTML='<div class="empty">Sem histórico</div>';return;}
+    g('sinalHist').innerHTML=hist.map(function(s){
+      var cor=s.status==='green'?'#00a85a':s.status==='red'?'#e53935':'#8090b0';
+      var icone=s.status==='green'?'✅':s.status==='red'?'❌':'⏳';
+      var dt=new Date(s.publicadoEm).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return '<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4;display:flex;justify-content:space-between;align-items:center;font-size:11px"><div><div style="font-weight:600;color:#1a2540">'+icone+' '+s.estrategia+' · '+s.campeonato+'</div><div style="color:#8090b0;margin-top:2px">'+dt+(s.resAss?' · '+s.resAss+'% acerto':'')+'</div></div><span style="font-weight:700;color:'+cor+'">'+s.status.toUpperCase()+'</span></div>';
+    }).join('');
+  });
+}
+function renderSinalCard(s){
+  if(!g('sinalSh')||!g('sinalBody'))return;
+  var cor=s.status==='green'?'#00a85a':s.status==='red'?'#e53935':'#1565c0';
+  var icone=s.status==='green'?'✅':s.status==='red'?'❌':'📡';
+  g('sinalSh').textContent=icone+' '+s.estrategia+' · '+s.campeonato;
+  g('sinalSh').style.color=cor;
+  var html='';
+  // jogo e odd
+  if(s.jogo||s.odd){html+='<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4;display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:600;color:#1a2540">'+(s.jogo||'')+'</div>'+(s.odd?'<div style="background:#e8f0fc;border:1px solid rgba(21,101,192,.3);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;color:#1565c0">Odd '+s.odd+'</div>':'')+'</div>';}
+  // entradas
+  if(s.entradas&&s.entradas.length){
+    html+='<div style="padding:8px 12px 4px"><div style="font-size:10px;font-weight:700;color:#8090b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">✔ Entradas</div>';
+    s.entradas.forEach(function(e,i){
+      var iconeE=s.status==='green'?'✅':s.status==='red'&&i===s.entradas.length-1?'❌':'⏳';
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f2f5;font-size:13px"><span>'+iconeE+'</span><span style="color:#1a2540;font-weight:500">'+e+'</span></div>';
+    });
+    html+='</div>';
+  }
+  // resultado
+  if(s.resultado){
+    var resCor=s.resultado==='green'?'#e6f7ef':'#feecec';
+    var resBrd=s.resultado==='green'?'rgba(0,168,90,.3)':'rgba(229,57,53,.3)';
+    var resTxt=s.resultado==='green'?'#00a85a':'#e53935';
+    html+='<div style="margin:10px 12px;background:'+resCor+';border:1.5px solid '+resBrd+';border-radius:8px;padding:10px 12px;text-align:center"><div style="font-size:18px;font-weight:800;color:'+resTxt+'">'+(s.resultado==='green'?'✅ GREEN':'❌ RED')+'</div>'+(s.resHora?'<div style="font-size:11px;color:'+resTxt+';margin-top:2px">Bateu às '+s.resHora+'</div>':'')+'</div>';
+  }
+  // stats
+  var total=parseInt(s.sg||0)+parseInt(s.g1||0)+parseInt(s.g2||0);
+  if(total>0){
+    var ass=s.resAss||s.assertividade;
+    html+='<div style="padding:10px 12px;border-top:1px solid #d0d8e4"><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;text-align:center">';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#1a2540">'+total+'</div><div style="font-size:9px;color:#8090b0">Total</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#00a85a">'+s.sg+'</div><div style="font-size:9px;color:#8090b0">SG</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#1565c0">'+s.g1+'</div><div style="font-size:9px;color:#8090b0">G1</div></div>';
+    html+='<div><div style="font-size:16px;font-weight:700;color:#e67e00">'+s.g2+'</div><div style="font-size:9px;color:#8090b0">G2</div></div>';
+    html+='</div>';
+    if(ass)html+='<div style="margin-top:8px;text-align:center;font-size:13px;font-weight:700;color:#1a2540">🎯 '+ass+'% de Acerto</div>';
+    if(s.greenseguidos)html+='<div style="text-align:center;font-size:11px;color:#00a85a;font-weight:600;margin-top:2px">'+s.greenseguidos+' Greens Seguidos! 🚀</div>';
+    html+='</div>';
+  }
+  // link
+  if(s.link){html+='<div style="padding:6px 12px;border-top:1px solid #d0d8e4"><a href="'+s.link+'" target="_blank" style="font-size:12px;color:#1565c0;font-weight:600;text-decoration:none">🔗 Acessar aqui →</a></div>';}
+  // ts
+  var dt=new Date(s.publicadoEm).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  html+='<div style="padding:8px 12px;font-size:9px;color:#8090b0;border-top:1px solid #d0d8e4">Publicado às '+dt+'</div>';
+  g('sinalBody').innerHTML=html;
+}
+
+// ─── BANCAS MÚLTIPLAS ────────────────────────────────────────────────────────
+var _bancaAtual = 'banca1'; // key da banca ativa
+
+function initBancas(){
+  if(!S.bancas){
+    // migra estado atual para banca1
+    S.bancas = {
+      banca1: {
+        nome:'Banca 1', estrategia:'Over 1.5',
+        banca:S.banca||1000, bancaBase:S.bancaBase||1000,
+        limite:S.limite||10000, stopWin:S.stopWin||10, stopLoss:S.stopLoss||33,
+        odd:S.odd||1.44, perfil:S.perfil||'mod',
+        wins:S.wins||0, losses:S.losses||0, ops:S.ops||0, greensSeq:S.greensSeq||0,
+        operacoes:S.operacoes||[], histDiario:S.histDiario||[],
+        saques:S.saques||[], totalSacado:S.totalSacado||0,
+        dayChart:S.dayChart||[S.banca||1000], diario:S.diario||[],
+        travado:S.travado||false, tipoTrava:S.tipoTrava||null,
+        dataAtual:S.dataAtual||new Date().toDateString(),
+        dataOperando:S.dataOperando||new Date().toDateString(),
+        _biOk:S._biOk||false
+      }
+    };
+    sv();
+  }
+  _bancaAtual = _bancaAtual || Object.keys(S.bancas)[0];
+  renderBancaBar();
+  carregarBanca(_bancaAtual);
+}
+
+function renderBancaBar(){
+  var btns = g('bancaBtns'); if(!btns) return;
+  var keys = Object.keys(S.bancas||{});
+  btns.innerHTML = keys.map(function(k){
+    var b = S.bancas[k];
+    var cls = 'bbt' + (k===_bancaAtual?' ab':'');
+    return '<button class="'+cls+'" data-k="'+k+'" onclick="trocarBanca(this.dataset.k)" oncontextmenu="renomearBanca(this.dataset.k);return false">'+b.nome+'</button>';
+  }).join('');
+}
+
+function trocarBanca(key){
+  salvarBancaAtual();
+  _bancaAtual = key;
+  carregarBanca(key);
+  renderBancaBar();
+  render();
+  toast('Banca: '+S.bancas[key].nome);
+}
+
+function salvarBancaAtual(){
+  if(!S.bancas||!_bancaAtual) return;
+  // sync S fields back to banca object
+  var b = S.bancas[_bancaAtual];
+  ['banca','bancaBase','limite','stopWin','stopLoss','odd','perfil','wins','losses','ops',
+   'greensSeq','operacoes','histDiario','saques','totalSacado','dayChart','diario',
+   'travado','tipoTrava','dataAtual','dataOperando','_biOk'].forEach(function(k){
+    if(S[k]!==undefined) b[k]=S[k];
+  });
+}
+
+function carregarBanca(key){
+  if(!S.bancas||!S.bancas[key]) return;
+  var b = S.bancas[key];
+  ['banca','bancaBase','limite','stopWin','stopLoss','odd','perfil','wins','losses','ops',
+   'greensSeq','operacoes','histDiario','saques','totalSacado','dayChart','diario',
+   'travado','tipoTrava','dataAtual','dataOperando','_biOk'].forEach(function(k){
+    S[k] = b[k]!==undefined ? b[k] : defS()[k];
+  });
+}
+
+function novaBanca(){
+  var keys = Object.keys(S.bancas||{});
+  if(keys.length>=5){toast('Máximo 5 bancas');return;}
+  var nome = prompt('Nome da nova banca (ex: Banca Patrick, Banca 2):');
+  if(!nome||!nome.trim()) return;
+  var key = 'banca'+(Date.now());
+  var estr = 'Over 1.5';
+  S.bancas[key] = Object.assign(defS(),{nome:nome.trim(),estrategia:estr,dayChart:[1000]});
+  salvarBancaAtual();
+  sv();
+  trocarBanca(key);
+}
+
+function renomearBanca(key){
+  var atual = S.bancas[key]?S.bancas[key].nome:'';
+  var nome = prompt('Novo nome para a banca:',atual);
+  if(!nome||!nome.trim()) return;
+  S.bancas[key].nome = nome.trim();
+  sv();
+  renderBancaBar();
+  toast('Renomeado: '+nome.trim());
+}
+
+function excluirBanca(key){
+  var keys = Object.keys(S.bancas||{});
+  if(keys.length<=1){toast('Precisa ter ao menos 1 banca');return;}
+  if(!confirm('Excluir banca "'+S.bancas[key].nome+'"? Histórico será apagado.')) return;
+  delete S.bancas[key];
+  _bancaAtual = Object.keys(S.bancas)[0];
+  carregarBanca(_bancaAtual);
+  sv();
+  renderBancaBar();
+  render();
+  toast('Banca excluída');
+}
+
+// ─── RELATÓRIO PDF ───────────────────────────────────────────────────────────
+function gerarRelatorio(){
+  var key=_bancaAtual, b=S.bancas?S.bancas[key]:S;
+  if(!b){toast('Sem dados');return;}
+  var hist=b.histDiario||[];
+  var totalDias=hist.length;
+  var wins=hist.filter(function(d){return d.resultado>=0;}).length;
+  var losses=hist.filter(function(d){return d.resultado<0;}).length;
+  var mediaRes=totalDias>0?(hist.reduce(function(a,d){return a+d.resultado;},0)/totalDias):0;
+  var melhor=totalDias>0?Math.max.apply(null,hist.map(function(d){return d.resultado;})):0;
+  var pior=totalDias>0?Math.min.apply(null,hist.map(function(d){return d.resultado;})):0;
+  var bancaIni=hist.length?hist[hist.length-1].bancaInicial:b.bancaBase;
+  var bancaAtual=b.banca;
+  var lucroTotal=bancaAtual-bancaIni;
+  var lucroTotalPct=bancaIni>0?((bancaAtual-bancaIni)/bancaIni*100):0;
+
+  // Simulação próximas 8 semanas
+  var simRows=[];
+  var sb=bancaAtual, sbOrig=bancaAtual;
+  for(var i=1;i<=8;i++){
+    var sbFim=sb;
+    for(var d=0;d<5;d++) sbFim*=1.10;
+    var slucro=sbFim-sbOrig;
+    var ssaque=slucro*0.5;
+    sb=sbFim-ssaque;
+    simRows.push({sem:i,banca:sb,saque:ssaque});
   }
 
-  // saque modal
-  if(S.saques.length&&S.saques[0]&&S.tipoTrava!=='loss_emo'){
-    let sm=document.getElementById('saqueModal');
-    if(!sm.dataset.shown){
-      document.getElementById('saqueModalVal').textContent=fD(S.saques[0].valor);
-      sm.classList.add('show');sm.dataset.shown='1';
+  var w=window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório FB Sistemas</title>');
+  w.document.write('<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:12px;color:#1a2540;padding:24px;max-width:700px;margin:0 auto}');
+  w.document.write('.hdr{background:#1a2540;color:#fff;border-radius:10px;padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}');
+  w.document.write('.sec{border:1px solid #d0d8e4;border-radius:8px;margin-bottom:14px;overflow:hidden}');
+  w.document.write('.sh{background:#e8ebf0;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#4a5880}');
+  w.document.write('.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0}');
+  w.document.write('.g2{display:grid;grid-template-columns:1fr 1fr;gap:0}');
+  w.document.write('.mc{padding:10px 12px;border-right:1px solid #d0d8e4;text-align:center}');
+  w.document.write('.mc:last-child{border-right:none}');
+  w.document.write('.ml{font-size:9px;color:#8090b0;text-transform:uppercase;margin-bottom:3px}');
+  w.document.write('.mv{font-size:18px;font-weight:700}');
+  w.document.write('.cg{color:#00a85a}.cr{color:#e53935}.cb{color:#1565c0}');
+  w.document.write('table{width:100%;border-collapse:collapse}th,td{padding:6px 10px;text-align:left;border-bottom:1px solid #d0d8e4;font-size:11px}');
+  w.document.write('th{background:#e8ebf0;font-weight:700;color:#4a5880;font-size:10px}');
+  
+  w.document.write('@media print{body{padding:10px}.no-print{display:none}}');
+  w.document.write('</style></head><body>');
+
+  var dt=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  w.document.write('<div class="hdr"><div><div style="font-size:18px;font-weight:800">FB Sistemas</div><div style="font-size:11px;opacity:.7;margin-top:2px">Relatório de Performance · '+(b.nome||'Banca')+'</div></div><div style="text-align:right"><div style="font-size:11px;opacity:.7">Gerado em</div><div style="font-size:13px;font-weight:600">'+dt+'</div></div></div>');
+
+  w.document.write('<div class="sec"><div class="sh">Resumo Geral</div><div class="g4">');
+  w.document.write('<div class="mc"><div class="ml">Banca Atual</div><div class="mv cg">R$'+bancaAtual.toFixed(0)+'</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Lucro Total</div><div class="mv '+(lucroTotal>=0?'cg':'cr')+'">'+(lucroTotal>=0?'+':'')+lucroTotalPct.toFixed(1)+'%</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Total Sacado</div><div class="mv cb">R$'+(b.totalSacado||0).toFixed(0)+'</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Dias Operados</div><div class="mv">'+totalDias+'</div></div>');
+  w.document.write('</div></div>');
+
+  w.document.write('<div class="sec"><div class="sh">Estatísticas</div><div class="g4">');
+  w.document.write('<div class="mc"><div class="ml">Dias Positivos</div><div class="mv cg">'+wins+'</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Dias Negativos</div><div class="mv cr">'+losses+'</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Média/Dia</div><div class="mv '+(mediaRes>=0?'cg':'cr')+'">'+(mediaRes>=0?'+':'')+mediaRes.toFixed(2)+'%</div></div>');
+  w.document.write('<div class="mc"><div class="ml">Melhor Dia</div><div class="mv cg">+'+melhor.toFixed(2)+'%</div></div>');
+  w.document.write('</div></div>');
+
+  if(hist.length){
+    w.document.write('<div class="sec"><div class="sh">Histórico de Dias</div><table><thead><tr><th>Data</th><th>Inicial</th><th>Final</th><th>Resultado</th><th>W/L</th><th>Meta</th></tr></thead><tbody>');
+    hist.slice(0,20).forEach(function(d){
+      var cor=d.resultado>=0?'color:#00a85a':'color:#e53935';
+      var res=(d.resultado>=0?'+':'')+d.resultado.toFixed(2)+'%';
+      w.document.write('<tr><td>'+d.data+'</td><td>R$'+d.bancaInicial.toFixed(0)+'</td><td style="'+cor+';font-weight:600">R$'+d.bancaFinal.toFixed(0)+'</td><td style="'+cor+';font-weight:600">'+res+'</td><td>'+d.wins+'W/'+d.losses+'L</td><td>'+(d.metaBatida?'✅':'❌')+'</td></tr>');
+    });
+    w.document.write('</tbody></table></div>');
+  }
+
+  w.document.write('<div class="sec"><div class="sh">Projeção 8 Semanas (10%/dia · Saque 50%)</div><table><thead><tr><th>Semana</th><th>Banca</th><th>Saque Estimado</th><th>Crescimento</th></tr></thead><tbody>');
+  simRows.forEach(function(r){
+    w.document.write('<tr><td>Semana '+r.sem+'</td><td style="color:#00a85a;font-weight:600">R$'+r.banca.toFixed(0)+'</td><td style="color:#e67e00;font-weight:600">R$'+r.saque.toFixed(0)+'</td><td style="color:#1565c0">+10%/dia</td></tr>');
+  });
+  w.document.write('</tbody></table></div>');
+
+  w.document.write('<div class="no-print" style="text-align:center;margin:16px 0"><button onclick="window.print()" style="background:#1a2540;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:700;cursor:pointer">🖨️ Imprimir / Salvar PDF</button></div>');
+  w.document.write('<div class="footer">FB Sistemas · Estratégia Exclusiva de Fábio Marques · Todos os direitos reservados</div>');
+  w.document.write('</body></html>');
+  w.document.close();
+}
+
+// ─── DADOS / GRÁFICOS ────────────────────────────────────────────────────────
+var _evolCI=null;
+
+function calcStreak(){
+  if(!S||!S.histDiario||!S.histDiario.length)return 0;
+  var hist=S.histDiario.slice().sort(function(a,b){
+    return new Date(b.data.split('/').reverse().join('-'))-new Date(a.data.split('/').reverse().join('-'));
+  });
+  var streak=0;
+  for(var i=0;i<hist.length;i++){
+    if(hist[i].metaBatida)streak++;
+    else break;
+  }
+  return streak;
+}
+
+function getSemana(offset){
+  // offset=0 = semana atual, offset=1 = semana anterior
+  var hoje=new Date();
+  var diaSem=hoje.getDay(); // 0=dom
+  var inicioSem=new Date(hoje);
+  inicioSem.setDate(hoje.getDate()-diaSem-(offset*7));
+  inicioSem.setHours(0,0,0,0);
+  var fimSem=new Date(inicioSem);
+  fimSem.setDate(inicioSem.getDate()+6);
+  fimSem.setHours(23,59,59,999);
+  return {ini:inicioSem,fim:fimSem};
+}
+
+function filtrarHistSemana(sem){
+  if(!S||!S.histDiario)return[];
+  return S.histDiario.filter(function(d){
+    var parts=d.data.split('/');
+    var dt=new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+    return dt>=sem.ini&&dt<=sem.fim;
+  });
+}
+
+function renderDados(){
+  if(!S)return;
+  var hist=S.histDiario||[];
+
+  // ── STREAK ──
+  var streak=calcStreak();
+  if(g('streakV')){
+    g('streakV').textContent=streak;
+    g('streakV').className='mv '+(streak>=3?'cg':streak>=1?'cy':'cr');
+  }
+
+  // ── SEMANAS ──
+  var semAtual=filtrarHistSemana(getSemana(0));
+  var semAnt=filtrarHistSemana(getSemana(1));
+
+  function calcResSem(dias){
+    var tw=0,tl=0,res=0;
+    dias.forEach(function(d){tw+=d.wins||0;tl+=d.losses||0;res+=d.resultado||0;});
+    return{tw:tw,tl:tl,res:dias.length?res:null};
+  }
+  var rA=calcResSem(semAtual),rAnt=calcResSem(semAnt);
+
+  if(g('semAtualV')){
+    g('semAtualV').textContent=rA.res!==null?(rA.res>=0?'+':'')+rA.res.toFixed(1)+'%':'—';
+    g('semAtualV').className='mv '+(rA.res===null?'ct':rA.res>=0?'cg':'cr');
+    g('semAtualS').textContent=rA.tw+'W · '+rA.tl+'L';
+  }
+  if(g('semAntV')){
+    g('semAntV').textContent=rAnt.res!==null?(rAnt.res>=0?'+':'')+rAnt.res.toFixed(1)+'%':'—';
+    g('semAntV').className='mv '+(rAnt.res===null?'ct':rAnt.res>=0?'cg':'cr');
+    g('semAntS').textContent=rAnt.tw+'W · '+rAnt.tl+'L';
+  }
+
+  // ── META SEMANAL ──
+  var diasSemAtual=semAtual.length;
+  var metasDias=semAtual.filter(function(d){return d.metaBatida;}).length;
+  var pctSem=semAtual.length?semAtual.reduce(function(a,b){return a+(b.resultado||0);},0):0;
+  var metaAlvo=50; // 50% na semana = 5 dias x 10%
+  var pctBar=Math.min(100,Math.max(0,(pctSem/metaAlvo)*100));
+
+  if(g('metaSmLbl'))g('metaSmLbl').textContent=diasSemAtual+'/5 dias';
+  if(g('metaSmPct'))g('metaSmPct').textContent=(pctSem>=0?'+':'')+pctSem.toFixed(1)+'%';
+  if(g('metaSmBar'))g('metaSmBar').style.width=pctBar+'%';
+
+  // 5 dias da semana como bolinhas
+  if(g('metaSmDias')){
+    var semR=getSemana(0);
+    var html='';
+    for(var i=1;i<=5;i++){
+      var dt=new Date(semR.ini);dt.setDate(semR.ini.getDate()+i);
+      var dtBR=dt.toLocaleDateString('pt-BR');
+      var diaHist=hist.find?hist.find(function(d){return d.data===dtBR;}):null;
+      if(!diaHist)for(var k=0;k<hist.length;k++){if(hist[k].data===dtBR){diaHist=hist[k];break;}}
+      var cor=!diaHist?'#e8ebf0':diaHist.metaBatida?'#00a85a':'#e53935';
+      var txtCor=!diaHist?'#8090b0':'#fff';
+      var dias=['S','T','Q','Q','S'];
+      html+='<div style="flex:1;height:36px;border-radius:8px;background:'+cor+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+txtCor+'">'+dias[i-1]+'</div>';
+    }
+    g('metaSmDias').innerHTML=html;
+  }
+
+  var msg='';
+  if(pctSem>=metaAlvo)msg='🏆 Meta semanal batida!';
+  else if(diasSemAtual===0)msg='Nenhum dia operado esta semana';
+  else msg='Faltam '+(metaAlvo-pctSem).toFixed(1)+'% para a meta semanal';
+  if(g('metaSmMsg'))g('metaSmMsg').textContent=msg;
+
+  // ── COMPARATIVO SEMANAL ──
+  if(g('compSem')){
+    if(rA.res===null&&rAnt.res===null){
+      g('compSem').innerHTML='<div class="empty">Sem dados suficientes</div>';
+    } else {
+      var diff=rA.res!==null&&rAnt.res!==null?rA.res-rAnt.res:null;
+      var compHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+      compHtml+='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;text-align:center">';
+      compHtml+='<div style="font-size:10px;color:#00a85a;font-weight:700;margin-bottom:4px">ESTA SEMANA</div>';
+      compHtml+='<div style="font-size:22px;font-weight:800;color:'+(rA.res>=0?'#00a85a':'#e53935')+'">'+(rA.res!==null?(rA.res>=0?'+':'')+rA.res.toFixed(1)+'%':'—')+'</div>';
+      compHtml+='<div style="font-size:10px;color:#8090b0;margin-top:3px">'+rA.tw+'W · '+rA.tl+'L · '+diasSemAtual+' dias</div></div>';
+      compHtml+='<div style="background:#e8ebf0;border:1px solid #d0d8e4;border-radius:8px;padding:12px;text-align:center">';
+      compHtml+='<div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:4px">SEMANA ANT.</div>';
+      compHtml+='<div style="font-size:22px;font-weight:800;color:'+(rAnt.res>=0?'#00a85a':'#e53935')+'">'+(rAnt.res!==null?(rAnt.res>=0?'+':'')+rAnt.res.toFixed(1)+'%':'—')+'</div>';
+      compHtml+='<div style="font-size:10px;color:#8090b0;margin-top:3px">'+rAnt.tw+'W · '+rAnt.tl+'L · '+semAnt.length+' dias</div></div></div>';
+      if(diff!==null){
+        var diffCor=diff>=0?'#00a85a':'#e53935';
+        var diffMsg=diff>=0?'📈 '+diff.toFixed(1)+'% melhor que a semana anterior':'📉 '+Math.abs(diff).toFixed(1)+'% pior que a semana anterior';
+        compHtml+='<div style="background:'+(diff>=0?'rgba(0,168,90,.08)':'rgba(229,57,53,.07)')+';border:1px solid '+(diff>=0?'rgba(0,168,90,.3)':'rgba(229,57,53,.3)')+';border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:700;color:'+diffCor+'">'+diffMsg+'</div>';
+      }
+      g('compSem').innerHTML=compHtml;
     }
   }
 
-  // ops recentes
-  let rod=document.getElementById('recentOps');
-  rod.innerHTML=S.operacoes.length?S.operacoes.slice(0,8).map(op=>`
-    <div class="op-item">
-      <div style="display:flex;align-items:center;gap:7px">
-        <span class="badge ${op.cat==='W'?'bw':'bl'}">${op.cat==='W'?'WIN':'LOSS'}</span>
-        <span>${op.tipo}</span>
-      </div>
-      <div style="text-align:right">
-        <div style="color:${op.delta>=0?'var(--green)':'var(--red)'}">${op.delta>=0?'+':'-'}${fD(op.delta)}</div>
-        <div style="font-size:9px;color:var(--text3)">${op.ts}</div>
-      </div>
-    </div>`).join(''):'<div style="padding:12px;text-align:center;color:var(--text3);font-size:10px">Nenhuma operação</div>';
-
-  // diário
-  let de=document.getElementById('diarioEntries');
-  de.innerHTML=S.diario.slice(0,5).map(d=>`<div class="diario-entry"><div style="color:var(--text2)">${d.texto}</div><div style="font-size:9px;color:var(--text3);margin-top:2px">${d.ts}</div></div>`).join('');
-
-  // histórico
-  let hb=document.getElementById('histBody');
-  hb.innerHTML=S.histDiario.length?S.histDiario.slice(0,30).map(d=>`
-    <tr>
-      <td>${d.data}</td><td>R$${d.bancaInicial.toFixed(0)}</td>
-      <td style="color:${d.bancaFinal>=d.bancaInicial?'var(--green)':'var(--red)'}">R$${d.bancaFinal.toFixed(0)}</td>
-      <td style="color:${d.resultado>=0?'var(--green)':'var(--red)'}">${fP(d.resultado)}</td>
-      <td>${d.wins}W/${d.losses}L</td>
-      <td><span class="badge ${d.metaBatida?'bw':'bl'}">${d.metaBatida?'SIM':'NÃO'}</span></td>
-    </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:14px">Sem histórico</td></tr>';
-
-  // saques
-  let sl=document.getElementById('saquesLista');
-  document.getElementById('totalSaques').textContent='Total: '+fR(S.totalSacado);
-  sl.innerHTML=S.saques.length?S.saques.map((s,i)=>`<div class="saque-item"><div><div style="color:var(--green);font-weight:700">+${fR(s.valor)}</div><div style="font-size:9px;color:var(--text3)">${s.data} ${s.ts||''}</div></div><span style="font-size:9px;color:var(--text3)">Saque #${S.saques.length-i}</span></div>`).join(''):'<div style="padding:10px;text-align:center;color:var(--text3);font-size:10px">Nenhum saque</div>';
-
-  // resumo semanal
-  let rs=document.getElementById('resumoSemanal');
-  if(S.histDiario.length){
-    let semana=S.histDiario.slice(0,5);
-    let tw=semana.reduce((a,d)=>a+d.wins,0);
-    let tl=semana.reduce((a,d)=>a+d.losses,0);
-    let bi=semana[semana.length-1].bancaInicial;
-    let bf=semana[0].bancaFinal;
-    let res=bi>0?((bf-bi)/bi*100):0;
-    let meta=semana.filter(d=>d.metaBatida).length;
-    let msg=tl===0?'Semana perfeita — zero losses':tl===1?'Atenção: 1 loss na semana':'Atenção: '+tl+' losses esta semana';
-    rs.innerHTML=`<div class="resumo-card">
-      <div class="resumo-title">Resumo — Últimos ${semana.length} Dias</div>
-      <div class="resumo-grid">
-        <div class="resumo-stat"><div class="resumo-val c-green">${tw}</div><div class="resumo-lbl">Wins</div></div>
-        <div class="resumo-stat"><div class="resumo-val c-red">${tl}</div><div class="resumo-lbl">Losses</div></div>
-        <div class="resumo-stat"><div class="resumo-val c-yellow">${meta}</div><div class="resumo-lbl">Metas batidas</div></div>
-      </div>
-      <div class="resumo-msg">${msg}<br>Resultado do período: <strong style="color:${res>=0?'var(--green)':'var(--red)'}">${fP(res)}</strong></div>
-    </div>`;
+  // ── GRÁFICO EVOLUÇÃO ──
+  var ctx=g('evolC');
+  if(ctx&&ctx.offsetParent!==null&&hist.length){
+    var sorted=hist.slice().sort(function(a,b){
+      return new Date(a.data.split('/').reverse().join('-'))-new Date(b.data.split('/').reverse().join('-'));
+    });
+    var labels=sorted.map(function(d){return d.data.substring(0,5);});
+    var bancas=[];var b=sorted[0].bancaInicial;
+    sorted.forEach(function(d){bancas.push(d.bancaFinal);});
+    var corLinha=sorted[sorted.length-1].bancaFinal>=sorted[0].bancaInicial?'#00a85a':'#e53935';
+    if(_evolCI){_evolCI.destroy();_evolCI=null;}
+    _evolCI=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[{
+          data:bancas,
+          borderColor:corLinha,
+          backgroundColor:corLinha+'20',
+          borderWidth:2,
+          pointRadius:sorted.length>20?0:3,
+          fill:true,
+          tension:.3
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#8090b0',font:{size:9},maxTicksLimit:8},grid:{color:'#e8ebf0'}},
+          y:{ticks:{color:'#8090b0',font:{size:9},callback:function(v){return 'R$'+v.toFixed(0);}},grid:{color:'#e8ebf0'}}
+        }
+      }
+    });
   }
-
-  // cfg
-  document.getElementById('cfg-banca').value=S.bancaBase;
-  document.getElementById('cfg-limite').value=S.limite;
-  document.getElementById('cfg-sw').value=S.stopWin;
-  document.getElementById('cfg-sl').value=S.stopLoss;
-  document.getElementById('cfg-odd').value=S.odd;
-
-  // day chart
-  let data=S.dayChart.length?S.dayChart:[S.bancaBase];
-  let labels=data.map((_,i)=>i===0?'Início':'Op '+i);
-  let cor=S.banca>=S.bancaBase?'#00e676':'#ff5252';
-  if(_dayCI)_dayCI.destroy();
-  let ctx=document.getElementById('dayChart');
-  if(ctx)_dayCI=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Banca',data,borderColor:cor,backgroundColor:cor+'18',borderWidth:2,pointRadius:2,fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#3d5a72',font:{size:8}},grid:{color:'#1e2e3d'}},y:{ticks:{color:'#3d5a72',font:{size:8},callback:v=>'R$'+v.toFixed(0)},grid:{color:'#1e2e3d'}}}}});
 }
 
-function goPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  let map={dash:0,exec:1,sim:2,meta:3,hist:4,cfg:5};
-  document.querySelectorAll('.nb')[map[id]].classList.add('active');
-  if(['dash','meta'].includes(id)) setTimeout(render,50);
+function regSaqueManual(){
+  var val=parseFloat(g('sqManVal').value);
+  var data=g('sqManData').value;
+  var obs=(g('sqManObs').value||'').trim();
+  if(isNaN(val)||val<=0){toast('Digite o valor do saque');return;}
+  if(val>S.banca){toast('Saque maior que a banca! Banca atual: '+fR(S.banca));return;}
+  var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+  var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  var bancaAntes=S.banca;
+  // Desconta da banca
+  S.banca=Math.max(0,S.banca-val);
+  S.totalSacado=(S.totalSacado||0)+val;
+  // bancaBase = nova banca (base do próximo dia)
+  S.bancaBase=S.banca;
+  // Atualiza dayChart
+  if(!S.dayChart)S.dayChart=[S.banca];
+  S.dayChart.push(S.banca);
+  // Registra no histDiario como entrada de saque
+  if(!S.histDiario)S.histDiario=[];
+  // Atualiza entrada do dia se já existir, senão insere nova
+  var entDia=null;
+  for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){entDia=i;break;}}
+  var entSaque={data:dtBR,bancaInicial:bancaAntes,bancaFinal:S.banca,resultado:((S.banca-bancaAntes)/bancaAntes*100),wins:0,losses:0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val,obs:obs};
+  if(entDia!==null){
+    // Atualiza bancaFinal e resultado do dia existente
+    S.histDiario[entDia].bancaFinal=S.banca;
+    S.histDiario[entDia].resultado=((S.banca-S.histDiario[entDia].bancaInicial)/S.histDiario[entDia].bancaInicial*100);
+    S.histDiario[entDia].saque=true;
+    S.histDiario[entDia].valorSaque=val;
+  } else {
+    S.histDiario.unshift(entSaque);
+  }
+  // Registra no array de saques
+  if(!S.saques)S.saques=[];
+  S.saques.unshift({valor:val,data:dtBR,ts:ts,obs:obs,manual:true});
+  // Sincroniza S→MS
+  MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  var snapMS=JSON.parse(JSON.stringify(MS));
+  var bancaFinal=S.banca;
+  // Limpa campos
+  g('sqManVal').value='';
+  if(g('sqManObs'))g('sqManObs').value='';
+  if(g('sqManData'))g('sqManData').value=new Date().toISOString().split('T')[0];
+  // Salva no Firebase
+  db.ref('users/'+_uid+'/state').set(snapMS).then(function(){
+    S=MS.bancas[MS.bancaAtiva];
+    render();
+    toast('💰 Saque de '+fR(val)+' registrado! Banca: '+fR(bancaFinal));
+  }).catch(function(e){
+    toast('Erro ao salvar: '+e.message);
+  });
 }
 
-checkDia();render();
+function goP(id){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
+  var pg=g('p-'+id);if(pg)pg.classList.add('a');
+  var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6,rel:7,sinal:8};
+  var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
+  setTimeout(function(){render();},50);
+  if(id==='cal'){calSel=S?S.dataOperando:new Date().toDateString();var d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();renderCal();}
+  if(id==='rel'){renderRel();}
+  if(id==='hist'){setTimeout(function(){renderDados();},80);}
+}
+
+var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];var sqDEl=g('sqManData');if(sqDEl)sqDEl.value=new Date().toISOString().split('T')[0];
 </script>
+</body>
+</html>
