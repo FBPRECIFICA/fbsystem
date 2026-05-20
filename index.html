@@ -1750,13 +1750,17 @@ function regSaqueManual(){
   var idxHist=-1;
   for(var hi=0;hi<S.histDiario.length;hi++){if(S.histDiario[hi].data===dtBR){idxHist=hi;break;}}
   if(idxHist>=0){
-    // Dia já existe: atualiza só o bancaFinal para refletir saque (resultado do dia fica igual)
+    // Dia já existe: atualiza bancaFinal mas preserva resultado original do dia
     S.histDiario[idxHist].bancaFinal=S.banca;
     S.histDiario[idxHist].saque=true;
     S.histDiario[idxHist].valorSaque=(S.histDiario[idxHist].valorSaque||0)+val;
+    // Recalcula resultado só em cima das operações (sem contar o saque como perda)
+    var bi=S.histDiario[idxHist].bancaInicial;
+    var bf=bancaAntes; // banca antes do saque = resultado real das operações
+    S.histDiario[idxHist].resultado=bi>0?((bf-bi)/bi*100):0;
   } else {
-    // Dia não existe ainda: insere entrada de saque
-    S.histDiario.unshift({data:dtBR,bancaInicial:bancaAntes,bancaFinal:S.banca,resultado:0,wins:S.wins||0,losses:S.losses||0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val});
+    // Dia não existe: cria entrada neutra — bancaInicial=bancaFinal, resultado=0
+    S.histDiario.unshift({data:dtBR,bancaInicial:S.banca,bancaFinal:S.banca,resultado:0,wins:S.wins||0,losses:S.losses||0,metaBatida:false,perfil:S.perfil,saque:true,valorSaque:val});
   }
   MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
   var snapMS=JSON.parse(JSON.stringify(MS));
