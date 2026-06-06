@@ -278,8 +278,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <button class="nb" onclick="goP('cfg')">Config</button>
   <button class="nb" onclick="goP('rel')">📊 Relatório</button>
   <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
-  <button class="nb" onclick="goP('rel')">📊 Relatório</button>
-  <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
+  <button class="nb" onclick="goP('stakes')">📊 Stakes</button>
 </div>
 
 <div style="background:#fff;border-bottom:2px solid #d0d8e4;padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
@@ -292,6 +291,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
 <div id="p-dash" class="pg a">
 <div id="alD" class="al"></div>
+<div id="alBancaDiaria" style="display:none;background:rgba(230,126,0,.08);border:1px solid rgba(230,126,0,.3);border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;color:#e67e00;margin-bottom:10px;line-height:1.7"></div>
 <div id="emoD" class="emo"><div style="font-size:36px;margin-bottom:8px">🛑</div><div style="font-size:19px;font-weight:800;color:#e53935;margin-bottom:8px">NÃO CONTINUE.</div><div style="font-size:13px;color:#7a2020;line-height:1.9">Vá beber uma água, ver televisão<br>ou fazer outra coisa.<br><strong style="color:#e53935">Volte só amanhã.</strong></div></div>
 <div id="sqModal" class="sqm"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:3px">💰 SAQUE DISPONÍVEL</div><div id="sqVal" style="font-size:28px;font-weight:800;color:#00a85a;margin-bottom:8px">R$0</div><div style="font-size:10px;color:#8090b0;margin-bottom:10px">Banca travada no limite</div><div style="display:flex;gap:8px;justify-content:center"><button onclick="confSq()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Confirmar</button><button onclick="fechSq()" style="background:#e8ebf0;color:#4a5880;border:1px solid #b8c4d4;border-radius:7px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Depois</button></div></div>
 <div class="dbanner" onclick="goP('cal')"><div><div style="font-size:12px;font-weight:600;color:#00a85a" id="dbD">Hoje</div><div style="font-size:10px;color:#8090b0">Toque para trocar o dia 📅</div></div><div style="color:#00a85a;font-size:18px">›</div></div>
@@ -322,6 +322,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 </div></div>
 <div class="ajbox"><div style="font-size:11px;font-weight:700;color:#e67e00;margin-bottom:5px">⚖️ Ajustar banca real</div><div style="font-size:10px;color:#8090b0;margin-bottom:7px">Corrija se o saldo real for diferente</div><div style="display:flex;gap:8px"><input id="ajV" type="number" inputmode="decimal" placeholder="R$ valor real" style="flex:1;background:#fff;border:1px solid rgba(230,126,0,.3);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700;text-align:center;outline:none"><button onclick="ajustar()" style="background:#00a85a;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:700;font-size:12px;cursor:pointer">Ajustar</button></div></div>
 <div class="sec"><div class="sh">Evolução do Dia</div><div class="cw"><canvas id="dayC"></canvas></div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">📅 Atualização Diária de Banca</div>
+<div style="padding:10px 12px">
+  <div style="font-size:10px;color:#8090b0;margin-bottom:7px">Informe sua banca atual para acompanhamento pelo admin</div>
+  <div id="ultimaAtualBanca" style="font-size:10px;color:#8090b0;margin-bottom:8px"></div>
+  <div style="display:flex;gap:8px">
+    <input type="number" id="bancaDiariaVal" placeholder="R$ banca atual" inputmode="decimal" style="flex:1;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px 10px;font-size:13px;color:#1a2540;font-family:inherit;outline:none">
+    <button onclick="salvarBancaDiaria()" style="background:#00a85a;color:#fff;border:none;border-radius:7px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+  </div>
+</div>
+</div>
 </div>
 
 <div id="p-exec" class="pg">
@@ -487,6 +497,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 </div>
 </div>
 
+<div id="p-stakes" class="pg">
+<div class="sec" style="margin-bottom:10px"><div class="sh">Calculadora de Stakes</div>
+<div style="padding:12px">
+  <div style="font-size:10px;color:#8090b0;margin-bottom:8px">Calcule o valor exato de cada aposta por gale baseado na sua banca</div>
+  <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+    <div style="flex:1">
+      <div style="font-size:10px;font-weight:700;color:#4a5880;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Banca (R$)</div>
+      <input type="number" id="stkBanca" placeholder="1000.00" inputmode="decimal" oninput="calcStakes()" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:9px 10px;font-size:14px;font-family:inherit;color:#1a2540;outline:none">
+    </div>
+    <button onclick="stkUsarBanca()" style="background:#1a2540;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Usar banca ativa</button>
+  </div>
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr style="background:#e8ebf0">
+        <th style="padding:7px 6px;text-align:left;font-weight:700;color:#4a5880">Gale</th>
+        <th style="padding:7px 5px;text-align:center;font-weight:700;color:#1565c0;white-space:nowrap">Over 2.5</th>
+        <th style="padding:7px 5px;text-align:center;font-weight:700;color:#00a85a;white-space:nowrap">Over 3.5</th>
+        <th style="padding:7px 5px;text-align:center;font-weight:700;color:#e65100;white-space:nowrap">5+</th>
+        <th style="padding:7px 5px;text-align:center;font-weight:700;color:#8090b0;white-space:nowrap">5+TC</th>
+        <th style="padding:7px 5px;text-align:center;font-weight:700;color:#8090b0;white-space:nowrap">5+TF</th>
+      </tr></thead>
+      <tbody id="stkBody"><tr><td colspan="6" style="padding:20px;text-align:center;color:#8090b0;font-size:12px">Digite a banca acima para calcular</td></tr></tbody>
+    </table>
+  </div>
+</div></div>
+<div class="sec" style="margin-bottom:10px"><div class="sh">Lucro Estimado (Over 3.5 / 5+)</div>
+<div id="stkLucro" style="padding:12px;text-align:center;color:#8090b0;font-size:12px">Digite a banca para ver o lucro estimado</div>
+</div>
+</div>
+
 <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v4.0 · Todos os direitos reservados</div>
 </div>
 </div>
@@ -643,6 +683,7 @@ auth.onAuthStateChanged(function(user){
         checkDia();
         render();
         ouvirSinal();
+        setTimeout(function(){verificarBancaDiaria();},1500);
         setTimeout(function(){if(!S._biOk&&S.ops===0){g('pBIv').value='';g('popBI').classList.add('v');}},600);
       });
     }
@@ -691,7 +732,7 @@ function loadAdm(){
     g('stAtiv').textContent=lista.filter(function(u){return u.status==='ativo';}).length;
     if(!lista.length){g('admLista').innerHTML='<div class="empty">Nenhum aluno</div>';return;}
     lista.sort(function(a,b){return a.status==='pendente'?-1:1;});
-    var done=0;lista.forEach(function(u){db.ref('users/'+u.uid+'/state').once('value').then(function(ss){u._st=ss.val();done++;if(done===lista.length)renderAdm(lista);});});
+    var done=0;lista.forEach(function(u){Promise.all([db.ref('users/'+u.uid+'/state').once('value'),db.ref('users/'+u.uid+'/bancaDiaria').orderByKey().limitToLast(30).once('value')]).then(function(res){u._st=res[0].val();u._bd=res[1].val();done++;if(done===lista.length)renderAdm(lista);});});
   });
 }
 function renderAdm(lista){
@@ -708,7 +749,7 @@ function renderAdm(lista){
     if(u.status!=='bloqueado')btns+='<button class="abtn ablk" data-uid="'+u.uid+'" data-st="bloqueado" onclick="setStatus(this.dataset.uid,this.dataset.st)">✕ Bloquear</button>';
     if(u.status==='bloqueado')btns+='<button class="abtn aapr" data-uid="'+u.uid+'" data-st="ativo" onclick="setStatus(this.dataset.uid,this.dataset.st)">↩ Reativar</button>';
     btns+='</div>';
-    return '<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:12px 14px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600">'+(u.nome||'—')+'</div><div style="font-size:11px;color:#8090b0;margin-top:1px">'+(u.email||'—')+'</div></div><span class="astag '+sc+'">'+sl+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">📅 '+dt+'</span>'+(u.genero?'<span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">'+u.genero+'</span>':'')+'</div>'+fin+btns+'</div>';
+    return '<div style="background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:12px 14px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600">'+(u.nome||'—')+'</div><div style="font-size:11px;color:#8090b0;margin-top:1px">'+(u.email||'—')+'</div></div><span class="astag '+sc+'">'+sl+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">📅 '+dt+'</span>'+(u.genero?'<span style="background:#e8ebf0;border-radius:5px;padding:2px 8px;font-size:10px;color:#4a5880">'+u.genero+'</span>':'')+'</div>'+fin+getBancaDiariaHtml(u)+btns+'</div>';
   }).join('');
 }
 async function setStatus(uid,status){await db.ref('users/'+uid+'/status').set(status);toast(status==='ativo'?'Aluno aprovado!':'Aluno bloqueado');}
@@ -1793,15 +1834,129 @@ function goP(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
   var pg=g('p-'+id);if(pg)pg.classList.add('a');
-  var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6,rel:7,sinal:8};
+  var map={dash:0,exec:1,cal:2,sim:3,meta:4,hist:5,cfg:6,rel:7,sinal:8,stakes:9};
   var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
   setTimeout(function(){render();},50);
   if(id==='cal'){calSel=S?S.dataOperando:new Date().toDateString();var d=new Date(calSel);calY=d.getFullYear();calM=d.getMonth();renderCal();}
   if(id==='rel'){renderRel();}
   if(id==='hist'){setTimeout(function(){renderDados();},80);}
+  if(id==='stakes'){if(typeof calcStakes==='function')setTimeout(calcStakes,50);}
 }
 
 var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];var sqDEl=g('sqManData');if(sqDEl)sqDEl.value=new Date().toISOString().split('T')[0];
+
+// ─── STAKES ──────────────────────────────────────
+var STAKES_PCT=[
+  {g:'G0',o25:.75,o35:1.25,m5:.05,m5tc:.05,m5tf:.05},
+  {g:'G1',o25:1.25,o35:2.00,m5:.05,m5tc:.05,m5tf:.05},
+  {g:'G2',o25:2.00,o35:3.25,m5:.05,m5tc:.05,m5tf:.05},
+  {g:'G3',o25:3.00,o35:4.75,m5:.05,m5tc:.05,m5tf:.05},
+  {g:'G4',o25:4.25,o35:6.50,m5:.05,m5tc:.05,m5tf:.05},
+  {g:'G5',o25:6.50,o35:9.00,m5:.25,m5tc:.10,m5tf:.10}
+];
+function stkUsarBanca(){if(!S)return;g('stkBanca').value=S.banca.toFixed(2);calcStakes();}
+function calcStakes(){
+  var b=parseFloat(g('stkBanca').value);
+  var tbody=g('stkBody');var lucroDiv=g('stkLucro');
+  if(!b||isNaN(b)||b<=0){
+    tbody.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center;color:#8090b0;font-size:12px">Digite a banca acima para calcular</td></tr>';
+    lucroDiv.innerHTML='<span style="color:#8090b0;font-size:12px">Digite a banca para ver o lucro estimado</span>';return;
+  }
+  var oddO35=S?(parseFloat(S.odd)||1.44):1.44;
+  var html='';
+  STAKES_PCT.forEach(function(row,i){
+    var bg=i%2===0?'#fff':'#f8f9fb';
+    var s25=(b*row.o25/100),s35=(b*row.o35/100),sm5=(b*row.m5/100),sm5tc=(b*row.m5tc/100),sm5tf=(b*row.m5tf/100);
+    html+='<tr style="background:'+bg+'"><td style="padding:7px 6px;font-weight:700;color:#1a2540">'+row.g+'</td>';
+    html+='<td style="padding:7px 5px;text-align:center;color:#1565c0">R$'+s25.toFixed(2)+'</td>';
+    html+='<td style="padding:7px 5px;text-align:center;color:#00a85a;font-weight:600">R$'+s35.toFixed(2)+'</td>';
+    html+='<td style="padding:7px 5px;text-align:center;color:#e65100">R$'+sm5.toFixed(2)+'</td>';
+    html+='<td style="padding:7px 5px;text-align:center;color:#8090b0">R$'+sm5tc.toFixed(2)+'</td>';
+    html+='<td style="padding:7px 5px;text-align:center;color:#8090b0">R$'+sm5tf.toFixed(2)+'</td></tr>';
+  });
+  tbody.innerHTML=html;
+  var lucroHtml='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">';
+  var custoAcum=0;
+  STAKES_PCT.forEach(function(row,i){
+    var s25=b*row.o25/100, s35=b*row.o35/100, sm5=Math.max(1,b*row.m5/100);
+    var sm5tc=Math.max(1,b*row.m5tc/100), sm5tf=Math.max(1,b*row.m5tf/100);
+    custoAcum+=s25+s35+sm5+sm5tc+sm5tf;
+    var l35=s35*4-custoAcum; // Over 3.5 @ 4.00
+    var lm5=sm5*10-custoAcum; // 5+ @ 10.00
+    var corL35=l35>=0?'#00a85a':'#e53935';
+    var corM5=lm5>=0?'#e65100':'#e53935';
+    lucroHtml+='<div style="background:#f0f2f5;border-radius:8px;padding:8px;text-align:center">';
+    lucroHtml+='<div style="font-size:9px;color:#4a5880;font-weight:700;margin-bottom:3px">'+row.g+'</div>';
+    lucroHtml+='<div style="font-size:11px;font-weight:700;color:'+corL35+'">O3.5 '+(l35>=0?'+':'')+fR(l35)+'</div>';
+    lucroHtml+='<div style="font-size:11px;font-weight:700;color:'+corM5+'">5+ '+(lm5>=0?'+':'')+fR(lm5)+'</div>';
+    lucroHtml+='</div>';
+  });
+  lucroHtml+='</div>';
+  lucroDiv.innerHTML=lucroHtml;
+}
+
+// ─── ATUALIZAÇÃO DIÁRIA DE BANCA ─────────────────
+function salvarBancaDiaria(){
+  var val=parseFloat(g('bancaDiariaVal').value);
+  if(isNaN(val)||val<=0){toast('Digite o valor da sua banca atual');return;}
+  var hoje=new Date().toISOString().split('T')[0];
+  db.ref('users/'+_uid+'/bancaDiaria/'+hoje).set({banca:val,ts:new Date().toISOString(),data:new Date().toLocaleDateString('pt-BR')}).then(function(){
+    g('bancaDiariaVal').value='';
+    var el=g('ultimaAtualBanca');if(el)el.textContent='✅ Atualizado hoje: '+fR(val);
+    var av=g('alBancaDiaria');if(av)av.style.display='none';
+    toast('✅ Banca atualizada: '+fR(val));
+  }).catch(function(e){toast('Erro ao salvar: '+e.message);});
+}
+function verificarBancaDiaria(){
+  if(!_uid)return;
+  db.ref('users/'+_uid+'/bancaDiaria').orderByKey().limitToLast(1).once('value').then(function(snap){
+    var data=snap.val();var hoje=new Date();var ultimaData=null;
+    if(data){
+      var keys=Object.keys(data);
+      if(keys.length){
+        ultimaData=new Date(keys[0]+'T12:00:00');
+        var el=g('ultimaAtualBanca');
+        if(el)el.textContent='Última atualização: '+keys[0].split('-').reverse().join('/')+' — '+fR(data[keys[0]].banca);
+      }
+    }
+    if(!ultimaData){
+      db.ref('users/'+_uid+'/criadoEm').once('value').then(function(cs){
+        var cr=cs.val();var ref=cr?new Date(cr):hoje;
+        _checarAvisoBancaDiaria(Math.floor((hoje-ref)/(1000*60*60*24)));
+      });return;
+    }
+    _checarAvisoBancaDiaria(Math.floor((hoje-ultimaData)/(1000*60*60*24)));
+  });
+}
+function _checarAvisoBancaDiaria(dias){
+  var av=g('alBancaDiaria');if(!av)return;
+  if(dias>=5&&S&&S.histDiario&&S.histDiario.length>0){
+    db.ref('users/'+_uid+'/status').set('bloqueado').then(function(){
+      show('tPend');
+      g('pendBadge').textContent='ACESSO BLOQUEADO';
+      g('pendTit').textContent='Banca não atualizada';
+    });return;
+  }
+  if(dias>=3){av.style.display='block';av.innerHTML='⚠️ Você não atualiza sua banca há <strong>'+dias+' dias</strong>. Atualize abaixo para evitar bloqueio automático.';}
+}
+function getBancaDiariaHtml(u){
+  if(!u._bd)return '';
+  var keys=Object.keys(u._bd).sort();
+  if(!keys.length)return '';
+  var last=keys[keys.length-1];
+  var entry=u._bd[last];
+  var hoje=new Date();var ultimaData=new Date(last+'T12:00:00');
+  var dias=Math.floor((hoje-ultimaData)/(1000*60*60*24));
+  var cor=dias>=5?'#e53935':dias>=3?'#e67e00':'#00a85a';
+  var label=dias===0?'hoje':dias===1?'ontem':dias+' dias atrás';
+  var evo='';
+  if(keys.length>1){
+    var primeiro=u._bd[keys[0]];
+    var pct=primeiro.banca>0?((entry.banca-primeiro.banca)/primeiro.banca*100):0;
+    evo=' | Evolução: <span style="color:'+(pct>=0?'#00a85a':'#e53935');evo+=';font-weight:700">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</span>';
+  }
+  return '<div style="background:#f0f2f5;border-radius:7px;padding:7px 10px;margin-bottom:8px;font-size:10px;color:#4a5880">📅 Última banca: <strong>'+fR(entry.banca)+'</strong> <span style="color:'+cor+'">'+label+'</span>'+evo+'</div>';
+}
 </script>
 </body>
 </html>
