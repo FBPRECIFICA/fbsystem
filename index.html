@@ -211,6 +211,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
       </div>
     </div>
 
+    <!-- RESULTADO DO SINAL -->
+    <div class="sec" style="margin-bottom:10px">
+      <div class="sh">🎯 Resultado do Sinal Ativo</div>
+      <div id="admSinalAtual" style="padding:10px 12px;font-size:12px;color:#8090b0;border-bottom:1px solid #d0d8e4">Nenhum sinal ativo</div>
+      <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:11px;color:#4a5880;font-weight:600;margin-bottom:2px">Placar que bateu:</div>
+        <input id="admPlacar" placeholder="Ex: 3-1 ou 2-1 ou 4-0" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;outline:none">
+        <div style="font-size:11px;color:#4a5880;font-weight:600;margin-bottom:2px">Gale:</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="admSetGale(0)" id="admG0" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G0</button>
+          <button onclick="admSetGale(1)" id="admG1" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G1</button>
+          <button onclick="admSetGale(2)" id="admG2" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G2</button>
+          <button onclick="admSetGale(3)" id="admG3" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G3</button>
+          <button onclick="admSetGale(4)" id="admG4" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G4</button>
+          <button onclick="admSetGale(5)" id="admG5" style="flex:1;background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880">G5</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button onclick="admResultado('GREEN')" style="flex:1;background:#e6f7ef;border:2px solid #00a85a;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;color:#00a85a">✅ GREEN</button>
+          <button onclick="admResultado('RED')" style="flex:1;background:#feecec;border:2px solid #e53935;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;color:#e53935">❌ RED</button>
+        </div>
+      </div>
+    </div>
+
     <!-- LISTA ALUNOS -->
     <div class="sec">
       <div class="sh">👥 Alunos <span id="admTotal" style="color:#00a85a;font-weight:700"></span></div>
@@ -685,7 +708,9 @@ function setEstrategia(est){
 function renderEstrTag(){
   var tag=g('hEstrTag');
   if(!tag||!S)return;
-  tag.textContent=ESTR[S.estrategia||'over15'].nome;
+  var est=S.estrategia||'over15';
+  var estrObj=ESTR[est];
+  tag.textContent=estrObj?estrObj.nome:'Multi Mercado';
 }
 
 // ===== GERENCIAR BANCAS =====
@@ -1275,17 +1300,69 @@ function verificarBancaDiaria(){
 }
 
 // ===== SINAIS =====
+function tocarSomSinal(){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var tones=[523,659,784,1047];
+    tones.forEach(function(freq,i){
+      var osc=ctx.createOscillator();
+      var gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=freq;
+      osc.type='sine';
+      gain.gain.setValueAtTime(0,ctx.currentTime+i*0.15);
+      gain.gain.linearRampToValueAtTime(0.3,ctx.currentTime+i*0.15+0.05);
+      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+i*0.15+0.2);
+      osc.start(ctx.currentTime+i*0.15);
+      osc.stop(ctx.currentTime+i*0.15+0.25);
+    });
+  }catch(e){}
+}
+
 function initSinais(){
+  var _ultimoSinal=null;
+  var _ultimoResultado=null;
   db.ref('sinal_ativo').on('value',function(snap){
     var s=snap.val();
     var banner=g('dSinalBanner'),txt=g('dSinalTxt'),at=g('sinalAtivo');
     if(s&&s.texto){
+      // Tocar som só se for sinal novo (não no carregamento)
+      if(_ultimoSinal!==null&&s.ts!==_ultimoSinal){
+        tocarSomSinal();
+        toast('📡 Novo sinal recebido!',3000);
+      }
+      _ultimoSinal=s.ts;
+      var textoExib=s.texto;
+      var corBanner='rgba(0,168,90,.08)';var corBorder='rgba(0,168,90,.3)';
+      var resHtml='';
+      if(s.resultado){
+        var isGreen=s.resultado==='GREEN';
+        corBanner=isGreen?'rgba(0,168,90,.1)':'rgba(239,68,68,.1)';
+        corBorder=isGreen?'#00a85a':'#e53935';
+        resHtml='<div style="margin-top:8px;padding:8px 10px;background:'+(isGreen?'#e6f7ef':'#feecec')+';border-radius:8px;font-size:13px;font-weight:800;color:'+(isGreen?'#00a85a':'#e53935')+'">'+(isGreen?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</div>';
+        if(_ultimoSinal&&s.tsResultado&&s.tsResultado!==_ultimoResultado){
+          _ultimoResultado=s.tsResultado;
+          tocarSomSinal();
+          toast((isGreen?'✅ GREEN':'❌ RED')+' — '+s.placar+' | '+s.gale,4000);
+        }
+      }
+      if(banner){banner.style.display='block';banner.style.background=corBanner;banner.style.borderColor=corBorder;}
+      if(txt)txt.innerHTML=textoExib+resHtml;
+      if(at)at.innerHTML='<div style="background:'+(s.resultado&&s.resultado==='RED'?'#feecec':s.resultado?'#e6f7ef':'rgba(0,168,90,.05)')+';border:1.5px solid '+(s.resultado?corBorder:'rgba(0,168,90,.3)')+';border-radius:10px;padding:14px">'
+        +'<div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">📡 SINAL ATIVO</div>'
+        +'<div style="font-size:14px;font-weight:600;color:#1a2540">'+s.texto+'</div>'
+        +'<div style="font-size:10px;color:#8090b0;margin-top:4px">'+s.ts+'</div>'
+        +resHtml+'</div>';
       if(banner)banner.style.display='block';
       if(txt)txt.textContent=s.texto;
       if(at)at.innerHTML='<div style="background:#e6f7ef;border-radius:10px;padding:14px"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">📡 SINAL ATIVO</div><div style="font-size:14px;font-weight:600;color:#1a2540">'+s.texto+'</div><div style="font-size:10px;color:#8090b0;margin-top:6px">'+(s.ts||'')+'</div></div>';
+      // Destacar botão de sinal na navbar
+      var nb=g('nbSinal');if(nb){nb.style.color='#00a85a';nb.style.fontWeight='800';nb.textContent='📡 Sinal 🔴';}
     }else{
+      _ultimoSinal=null;
       if(banner)banner.style.display='none';
       if(at)at.innerHTML='<div class="empty">Sem sinal no momento</div>';
+      var nb=g('nbSinal');if(nb){nb.style.color='';nb.style.fontWeight='';nb.textContent='📡 Sinal';}
     }
   });
   db.ref('sinais_hist').limitToLast(5).on('value',function(snap){
@@ -1305,6 +1382,17 @@ function initSinais(){
 // ===== ADMIN =====
 function carregarAdm(){
   show('tAdm');
+  // Mostrar sinal atual
+  db.ref('sinal_ativo').on('value',function(snap){
+    var s=snap.val();
+    var el=document.getElementById('admSinalAtual');
+    if(el){
+      if(s&&s.texto){
+        var res=s.resultado?('<br><span style="color:'+(s.resultado==='GREEN'?'#00a85a':'#e53935')+';font-weight:700">'+(s.resultado==='GREEN'?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>'):'';
+        el.innerHTML='<strong style="color:#1a2540">'+s.texto+'</strong>'+res+'<div style="font-size:10px;color:#8090b0;margin-top:4px">'+s.ts+'</div>';
+      }else{el.innerHTML='<span style="color:#8090b0">Nenhum sinal ativo</span>';}
+    }
+  });
   db.ref('users').once('value').then(function(snap){
     var data=snap.val()||{};
     var lista=[];
@@ -1387,6 +1475,42 @@ function aprAluno(uid){
 function bloqAluno(uid){
   var motivo=prompt('Motivo do bloqueio (opcional):','Inatividade');
   db.ref('users/'+uid+'/info').update({status:'bloqueado',motivoBloqueio:motivo||'Bloqueado pelo administrador'}).then(function(){toast('Aluno bloqueado');carregarAdm();});
+}
+
+var _admGaleSel=0;
+
+function admSetGale(g){
+  _admGaleSel=g;
+  for(var i=0;i<=5;i++){
+    var btn=document.getElementById('admG'+i);
+    if(btn){
+      btn.style.background=i===g?'#1a2540':'#f0f2f5';
+      btn.style.color=i===g?'#fff':'#4a5880';
+      btn.style.borderColor=i===g?'#1a2540':'#d0d8e4';
+    }
+  }
+}
+
+function admResultado(tipo){
+  var placar=(document.getElementById('admPlacar').value||'').trim();
+  if(!placar){toast('Digite o placar que bateu');return;}
+  var gale='G'+_admGaleSel;
+  var emoji=tipo==='GREEN'?'✅':'❌';
+  var ts=new Date().toLocaleString('pt-BR');
+  var textoResult=emoji+' '+tipo+' — '+placar+' | '+gale;
+  // Atualizar sinal ativo com resultado
+  db.ref('sinal_ativo').once('value').then(function(snap){
+    var s=snap.val()||{};
+    var textoOriginal=s.texto||'';
+    var textoFinal=textoOriginal+'\n'+textoResult;
+    db.ref('sinal_ativo').update({resultado:tipo,placar:placar,gale:gale,tsResultado:ts,textoResultado:textoFinal}).then(function(){
+      // Salvar no histórico
+      db.ref('sinais_hist').push({texto:textoFinal,ts:ts,resultado:tipo,placar:placar,gale:gale});
+      toast(emoji+' Resultado publicado: '+tipo+' '+placar+' '+gale);
+      document.getElementById('admPlacar').value='';
+      admSetGale(0);
+    });
+  });
 }
 
 function pubSinal(){
