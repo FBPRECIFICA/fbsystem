@@ -365,6 +365,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="sec">
       <div class="sh">📊 Calculadora de Stakes</div>
       <div style="padding:12px">
+        <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:8px">Modo de operação:</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button id="stkModoCons" onclick="stkSetModo('cons')" style="flex:1;background:#e8f0fc;border:2px solid #1565c0;border-radius:8px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;color:#1565c0;line-height:1.5">🛡 Conservador<br><span style="font-size:10px;font-weight:400">25% da banca</span></button>
+          <button id="stkModoAgr" onclick="stkSetModo('agr')" style="flex:1;background:#f0f2f5;border:2px solid #d0d8e4;border-radius:8px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880;line-height:1.5">⚡ Agressivo<br><span style="font-size:10px;font-weight:400">50% da banca</span></button>
+        </div>
         <div style="font-size:10px;color:#8090b0;margin-bottom:10px">Informe a banca do dia para calcular as stakes exatas por gale</div>
         <div style="display:flex;gap:8px;margin-bottom:12px">
           <input id="stkBanca" type="number" inputmode="decimal" placeholder="Ex: 2000" style="flex:1;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:10px;font-size:16px;font-weight:700;color:#1a2540;outline:none;font-family:inherit" oninput="calcStakes()">
@@ -720,13 +725,22 @@ async function doLogout(){
 
 // ===== ESTRATÉGIA =====
 var ESTR={
-  multi:{nome:'Multi Mercado',pcts:[
-    {g:'G0',o25:3.5,o35:1.5},
-    {g:'G1',o25:5.25,o35:2.25},
-    {g:'G2',o25:7.0,o35:3.0},
-    {g:'G3',o25:8.75,o35:3.75},
-    {g:'G4',o25:10.5,o35:4.5}
-  ]},
+  multi:{nome:'Multi Mercado',pcts:{
+    cons:[
+      {g:'G0',pct:2.0,o25:0.70,o35:0.30},
+      {g:'G1',pct:3.0,o25:0.70,o35:0.30},
+      {g:'G2',pct:4.5,o25:0.70,o35:0.30},
+      {g:'G3',pct:6.5,o25:0.70,o35:0.30},
+      {g:'G4',pct:9.0,o25:0.70,o35:0.30}
+    ],
+    agr:[
+      {g:'G0',pct:4.0,o25:0.70,o35:0.30},
+      {g:'G1',pct:6.0,o25:0.70,o35:0.30},
+      {g:'G2',pct:9.0,o25:0.70,o35:0.30},
+      {g:'G3',pct:13.0,o25:0.70,o35:0.30},
+      {g:'G4',pct:18.0,o25:0.70,o35:0.30}
+    ]
+  }},
   over15:{nome:'Over 1.5',perfis:{
     cons:{n:'Conservador',g0:.05,g1:.125,g2:.15,w:.02},
     mod:{n:'Moderado',g0:.075,g1:.1875,g2:.225,w:.03},
@@ -1182,34 +1196,44 @@ function calcSim(){
 }
 
 // ===== CALCULADORA STAKES =====
+var _stkModo='cons';
+function stkSetModo(modo){
+  _stkModo=modo;
+  var bc=g('stkModoCons'),ba=g('stkModoAgr');
+  if(bc){bc.style.background=modo==='cons'?'#e8f0fc':'#f0f2f5';bc.style.borderColor=modo==='cons'?'#1565c0':'#d0d8e4';bc.style.color=modo==='cons'?'#1565c0':'#4a5880';}
+  if(ba){ba.style.background=modo==='agr'?'#feecec':'#f0f2f5';ba.style.borderColor=modo==='agr'?'#e53935':'#d0d8e4';ba.style.color=modo==='agr'?'#e53935':'#4a5880';}
+  calcStakes();
+}
 function stkUsarBanca(){if(!S)return;g('stkBanca').value=S.banca.toFixed(2);calcStakes();}
 function calcStakes(){
   var b=parseFloat(g('stkBanca').value)||0;
   var body=g('stkBody'),foot=g('stkFoot'),lucroDiv=g('stkLucro'),info=g('stkInfo');
   if(!b||b<=0){
-    if(body)body.innerHTML='<tr><td colspan="7" class="empty">Digite a banca para calcular</td></tr>';
+    if(body)body.innerHTML='<tr><td colspan="4" class="empty">Digite a banca para calcular</td></tr>';
     if(foot)foot.innerHTML='';
-    if(lucroDiv)lucroDiv.innerHTML='<div class="empty">Digite a banca para ver o lucro estimado</div>';
+    if(lucroDiv)lucroDiv.innerHTML='<div class="empty">Digite a banca para ver as regras</div>';
     if(info)info.style.display='none';
     return;
   }
-  var pcts=ESTR.multi.pcts;
-  var totalExp=0;
-  pcts.forEach(function(r){totalExp+=(r.o25+r.o35)*b/100;});
-  if(info){info.style.display='block';info.textContent='Banca: '+fR(b)+' | Exposição total: '+fR(totalExp)+' ('+((totalExp/b)*100).toFixed(1)+'% da banca)';}
+  var pcts=ESTR.multi.pcts[_stkModo];
+  var totalExp=b*(_stkModo==='cons'?0.25:0.50);
+  if(info){
+    info.style.display='block';
+    info.textContent='Banca: '+fR(b)+' | Exposição: '+fR(totalExp)+' | Modo: '+(_stkModo==='cons'?'🛡 Conservador (25%)':'⚡ Agressivo (50%)');
+  }
   var html='';
   var tots={o25:0,o35:0,tot:0};
   var cores=['#fff','#f8f9fb','#fff','#f8f9fb','#fff'];
   pcts.forEach(function(r,i){
-    var o25=Math.round(r.o25*b/100*100)/100;
-    var o35=Math.round(r.o35*b/100*100)/100;
-    var tot=o25+o35;
-    tots.o25+=o25;tots.o35+=o35;tots.tot+=tot;
+    var total=Math.round(r.pct*b/100*100)/100;
+    var o25=Math.round(total*r.o25*100)/100;
+    var o35=Math.round(total*r.o35*100)/100;
+    tots.o25+=o25;tots.o35+=o35;tots.tot+=total;
     html+='<tr style="background:'+cores[i]+'">'
       +'<td style="padding:8px 6px;font-weight:700;color:#1a2540">'+r.g+'</td>'
       +'<td style="padding:8px 10px;text-align:center;font-weight:600;color:#1565c0">'+fR(o25)+'</td>'
       +'<td style="padding:8px 10px;text-align:center;font-weight:600;color:#00a85a">'+fR(o35)+'</td>'
-      +'<td style="padding:8px 10px;text-align:center;font-weight:700;background:#f0f4ff">'+fR(tot)+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;font-weight:700;background:#f0f4ff">'+fR(total)+'</td>'
       +'</tr>';
   });
   body.innerHTML=html;
@@ -1222,11 +1246,10 @@ function calcStakes(){
   var lHtml='<div style="display:flex;flex-direction:column;gap:8px">'
     +'<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;font-size:12px;color:#1a6b3c;line-height:1.7">'
     +'<div style="font-size:13px;font-weight:700;color:#00a85a;margin-bottom:6px">📌 Regras de Gestão</div>'
-    +'• Nunca ultrapassar G5 — RED TOTAL é aceito<br>'
-    +'• Stop Loss: 33% da banca em RED TOTAL<br>'
+    +'• Nunca ultrapassar G4 — RED TOTAL é aceito<br>'
+    +'• Over 2.5 é proteção (70%) — Over 3.5 é o lucro (30%)<br>'
     +'• Após RED TOTAL: parar o dia ou reduzir banca<br>'
-    +'• Over 2.5 é proteção — Over 3.5 é o lucro<br>'
-    +'• 5+ e 5+Time são especulativos — R$1 fixo nos primeiros gales'
+    +'• Conservador: 25% de exposição | Agressivo: 50%'
     +'</div>'
     +'<div style="background:#fffbe6;border:1px solid rgba(241,196,15,.5);border-radius:8px;padding:12px;font-size:12px;color:#7d6608;line-height:1.7">'
     +'<div style="font-size:13px;font-weight:700;color:#e67e00;margin-bottom:6px">⚠️ Disciplina Operacional</div>'
