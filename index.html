@@ -34,8 +34,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 #tAdm{background:#f0f2f5;overflow-y:auto}
 .adw{max-width:480px;margin:0 auto;padding:12px 14px}
 .adhdr{background:#1a2540;border-radius:10px;padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-#app{max-width:480px;margin:0 auto;background:#f0f2f5}
+#app{background:#f0f2f5}
+.pginner{max-width:800px;margin:0 auto}
 .hdr{background:#fff;border-bottom:1px solid #d0d8e4;padding:10px 14px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.hdrin{max-width:800px;margin:0 auto}
 .htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .logo{display:flex;align-items:center;gap:8px}
 .li{width:30px;height:30px;background:#00a85a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
@@ -53,6 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 .nb{background:none;border:none;color:#8090b0;padding:9px 11px;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;margin-bottom:-2px;cursor:pointer}
 .nb.a{color:#00a85a;border-bottom-color:#00a85a}
 .pg{display:none;padding:12px 14px}.pg.a{display:block}
+.pg.a > *{max-width:800px;margin-left:auto;margin-right:auto}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .mc{background:#fff;border:1px solid #d0d8e4;border-radius:10px;padding:10px 12px}
@@ -267,6 +270,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 <div id="app" class="tela">
   <!-- HEADER -->
   <div class="hdr">
+    <div class="hdrin">
     <div class="htop">
       <div class="logo">
         <div class="li">FB</div>
@@ -284,10 +288,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
       </div>
       <button onclick="abrirModalEstrategia()" style="background:rgba(0,168,90,.1);border:1px solid rgba(0,168,90,.3);border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;color:#00a85a;cursor:pointer" id="hEstrTag">Multi Mercado</button>
     </div>
+    </div>
   </div>
 
   <!-- NAVEGAÇÃO -->
-  <div class="nav">
+  <div class="nav" style="justify-content:center">
+    <div style="display:flex;max-width:800px;width:100%">
     <button class="nb a" onclick="goP('dash')">Dashboard</button>
     <button class="nb" onclick="goP('stakes')">📡 Stakes</button>
     <button class="nb" onclick="goP('exec')">Execução</button>
@@ -295,6 +301,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <button class="nb" onclick="goP('sim')">Simulador</button>
     <button class="nb" onclick="goP('rel')">Relatório</button>
     <button class="nb" onclick="goP('cfg')">Config</button>
+    </div>
   </div>
 
   <!-- DASHBOARD -->
@@ -383,6 +390,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="sec">
       <div class="sh">Lucro Estimado por Cenário</div>
       <div id="stkLucro" style="padding:12px"><div class="empty">Digite a banca para ver o lucro estimado</div></div>
+    </div>
+    <div class="sec" style="margin-top:10px">
+      <div class="sh">📋 Histórico de Sinais</div>
+      <div id="sinalHist"><div class="empty">Sem histórico</div></div>
     </div>
   </div>
 
@@ -490,17 +501,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   </div>
 
   <!-- SINAL -->
-  <div id="p-sinal" class="pg">
-    <div class="sec" style="margin-bottom:10px">
-      <div class="sh">📡 Sinal Ativo</div>
-      <div id="sinalAtivo" style="padding:14px"><div class="empty">Sem sinal no momento</div></div>
-    </div>
-    <div class="sec">
-      <div class="sh">Histórico de Sinais</div>
-      <div id="sinalHist"><div class="empty">Sem histórico</div></div>
-    </div>
-  </div>
-
   <!-- CONFIG -->
   <div id="p-cfg" class="pg">
     <div class="sec" style="margin-bottom:10px">
