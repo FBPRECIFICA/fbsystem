@@ -206,7 +206,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
     <!-- PUBLICAR SINAL -->
     <div class="sec" style="margin-bottom:10px">
-      <div class="sh">📡 Publicar Sinal</div>
+      <div class="sh">📡 Publicar Sinal
+        <button onclick="limparHistSinais()" style="background:#feecec;border:1px solid #e53935;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;color:#e53935;cursor:pointer">🗑 Limpar histórico</button>
+      </div>
       <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
         <input id="admSinalTxt" placeholder="Ex: EURO Over 2.5 — EXPLOSÃO Score 118" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;outline:none;width:100%">
         <div style="display:flex;gap:8px">
@@ -1567,6 +1569,11 @@ function pubSinal(){
       toast('Sinal publicado!');
     });
   });
+}
+
+function limparHistSinais(){
+  if(!confirm('Apagar todo o histórico de sinais?'))return;
+  db.ref('sinais_hist').remove().then(function(){toast('Histórico limpo!');});
 }
 
 function limparSinal(){
