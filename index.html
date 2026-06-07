@@ -210,7 +210,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
         <button onclick="limparHistSinais()" style="background:#feecec;border:1px solid #e53935;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700;color:#e53935;cursor:pointer">🗑 Limpar histórico</button>
       </div>
       <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
-        <input id="admSinalTxt" placeholder="Ex: EURO Over 2.5 — EXPLOSÃO Score 118" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;outline:none;width:100%">
+        <!-- Seleção rápida de liga -->
+        <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:2px">Liga:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="admSelecionarLiga('PREMIER')" id="admLigaPREMIER" style="background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#4a5880">PREMIER</button>
+          <button onclick="admSelecionarLiga('EURO')" id="admLigaEURO" style="background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#4a5880">EURO</button>
+          <button onclick="admSelecionarLiga('COPA')" id="admLigaCOPA" style="background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#4a5880">COPA</button>
+          <button onclick="admSelecionarLiga('SUPER')" id="admLigaSUPER" style="background:#f0f2f5;border:1.5px solid #d0d8e4;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#4a5880">SUPER</button>
+        </div>
+        <input id="admSinalTxt" placeholder="Ex: EURO Over 2.5 — Minutos: 13 - 16 - 19 - 22 - 25" style="background:#f0f2f5;border:1px solid #d0d8e4;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;outline:none;width:100%">
         <div style="display:flex;gap:8px">
           <button onclick="pubSinal()" style="flex:1;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer">Publicar</button>
           <button onclick="limparSinal()" style="background:#feecec;color:#e53935;border:none;border-radius:8px;padding:10px;font-weight:600;font-size:12px;cursor:pointer">Limpar</button>
@@ -245,6 +253,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="sec">
       <div class="sh">👥 Alunos <span id="admTotal" style="color:#00a85a;font-weight:700"></span></div>
       <div id="admLista"><div class="empty">Carregando...</div></div>
+    </div>
+
+    <!-- HISTÓRICO SINAIS ADMIN -->
+    <div class="sec" style="margin-top:10px">
+      <div class="sh">📋 Histórico de Sinais</div>
+      <div id="admSinalHistLista" style="max-height:300px;overflow-y:auto"><div class="empty">Sem histórico</div></div>
     </div>
   </div>
 </div>
@@ -336,6 +350,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
   <!-- STAKES -->
   <div id="p-stakes" class="pg">
+    <!-- Sinal ativo no topo da aba stakes -->
+    <div id="stkSinalBanner" style="display:none;background:rgba(0,168,90,.08);border:1.5px solid rgba(0,168,90,.4);border-radius:10px;padding:12px 14px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;color:#00a85a;margin-bottom:4px">📡 SINAL ATIVO</div>
+      <div id="stkSinalTxt" style="font-size:14px;font-weight:700;color:#1a2540"></div>
+      <div id="stkSinalRes" style="margin-top:6px"></div>
+    </div>
     <div class="sec">
       <div class="sh">📊 Calculadora de Stakes</div>
       <div style="padding:12px">
@@ -1377,11 +1397,22 @@ function initSinais(){
       if(at)at.innerHTML='<div style="background:#e6f7ef;border-radius:10px;padding:14px"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">📡 SINAL ATIVO</div><div style="font-size:14px;font-weight:600;color:#1a2540">'+s.texto+'</div><div style="font-size:10px;color:#8090b0;margin-top:6px">'+(s.ts||'')+'</div></div>';
       // Destacar botão de sinal na navbar
       var nb=g('nbSinal');if(nb){nb.style.color='#00a85a';nb.style.fontWeight='800';nb.textContent='📡 Sinal 🔴';}
+      // Sincronizar na aba Stakes
+      var stkB=g('stkSinalBanner'),stkT=g('stkSinalTxt'),stkR=g('stkSinalRes');
+      if(stkB)stkB.style.display='block';
+      if(stkT)stkT.textContent=s.texto;
+      if(stkR){
+        if(s.resultado){
+          var isG2=s.resultado==='GREEN';
+          stkR.innerHTML='<span style="font-weight:700;color:'+(isG2?'#00a85a':'#e53935')+';font-size:13px">'+(isG2?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>';
+        }else{stkR.innerHTML='';}
+      }
     }else{
       _ultimoSinal=null;
       if(banner)banner.style.display='none';
       if(at)at.innerHTML='<div class="empty">Sem sinal no momento</div>';
       var nb=g('nbSinal');if(nb){nb.style.color='';nb.style.fontWeight='';nb.textContent='📡 Sinal';}
+      var stkB=g('stkSinalBanner');if(stkB)stkB.style.display='none';
     }
   });
   db.ref('sinais_hist').limitToLast(10).on('value',function(snap){
@@ -1436,7 +1467,20 @@ function carregarAdm(){
       }else{el.innerHTML='<span style="color:#8090b0">Nenhum sinal ativo</span>';}
     }
   });
-  db.ref('users').once('value').then(function(snap){
+  // Histórico sinais no admin
+  db.ref('sinais_hist').limitToLast(10).on('value',function(snap){
+    var el=g('admSinalHistLista');if(!el)return;
+    var data=snap.val();
+    if(!data){el.innerHTML='<div class="empty">Sem histórico</div>';return;}
+    var items=Object.values(data).reverse();
+    el.innerHTML=items.map(function(s){
+      var resHtml=s.resultado?(' <span style="font-weight:700;color:'+(s.resultado==='GREEN'?'#00a85a':'#e53935')+'">'+(s.resultado==='GREEN'?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>'):'';
+      return '<div style="padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px">'
+        +'<div style="font-weight:600;color:#1a2540">'+s.texto+resHtml+'</div>'
+        +'<div style="font-size:10px;color:#8090b0">'+s.ts+'</div>'
+        +'</div>';
+    }).join('');
+  });
     var data=snap.val()||{};
     var lista=[];
     Object.entries(data).forEach(function(entry){
@@ -1491,8 +1535,10 @@ function renderAdm(lista){
     var diasTag=u.diasSem>=5?'<span style="background:#feecec;color:#e53935;border-radius:10px;padding:2px 8px;font-size:9px;font-weight:700">'+u.diasSem+'d sem atualizar</span>':u.diasSem>=3?'<span style="background:#fffbe6;color:#7d6608;border-radius:10px;padding:2px 8px;font-size:9px;font-weight:700">'+u.diasSem+'d sem atualizar</span>':'';
     return '<div style="padding:12px;border-bottom:1px solid #d0d8e4">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
-      +'<div><div style="font-size:13px;font-weight:700;color:#1a2540">'+u.nome+'</div>'
-      +'<div style="font-size:10px;color:#8090b0">'+u.email+'</div></div>'
+      +'<div>'
+      +'<div style="font-size:14px;font-weight:700;color:#1a2540">'+u.nome+'</div>'
+      +'<div style="font-size:10px;color:#8090b0">'+u.email+'</div>'
+      +'</div>'
       +'<span style="background:'+cor+'22;color:'+cor+';border:1px solid '+cor+'44;border-radius:10px;padding:2px 10px;font-size:10px;font-weight:700">'+u.status.toUpperCase()+'</span>'
       +'</div>'
       +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px">'
@@ -1502,10 +1548,11 @@ function renderAdm(lista){
       +'<div style="text-align:center"><div style="font-size:8px;color:#8090b0">Sacado</div><div style="font-size:12px;font-weight:700;color:#e65100">'+fR(u.totalSacado)+'</div></div>'
       +'</div>'
       +diasTag
-      +'<div style="display:flex;gap:6px;margin-top:8px">'
+      +'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'
       +(u.status==='pendente'?'<button onclick="aprAluno(\''+u.uid+'\')" style="flex:1;background:#e6f7ef;border:1px solid #00a85a;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#00a85a;cursor:pointer">✅ Aprovar</button>':'')
       +(u.status==='ativo'?'<button onclick="bloqAluno(\''+u.uid+'\')" style="flex:1;background:#feecec;border:1px solid #e53935;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#e53935;cursor:pointer">🔒 Bloquear</button>':'')
       +(u.status==='bloqueado'?'<button onclick="aprAluno(\''+u.uid+'\')" style="flex:1;background:#e6f7ef;border:1px solid #00a85a;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#00a85a;cursor:pointer">🔓 Reativar</button>':'')
+      +'<button onclick="enviarMsgAluno(\''+u.uid+'\',\''+u.nome+'\')" style="background:#e8f0fc;border:1px solid #1565c0;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;color:#1565c0;cursor:pointer">✉️ Msg</button>'
       +'</div>'
       +'</div>';
   }).join('');
@@ -1556,6 +1603,35 @@ function admResultado(tipo){
   });
 }
 
+var _admLigaSel='';
+function admSelecionarLiga(liga){
+  _admLigaSel=liga;
+  ['PREMIER','EURO','COPA','SUPER'].forEach(function(l){
+    var btn=g('admLiga'+l);if(!btn)return;
+    var sel=l===liga;
+    btn.style.background=sel?'#1a2540':'#f0f2f5';
+    btn.style.color=sel?'#fff':'#4a5880';
+    btn.style.borderColor=sel?'#1a2540':'#d0d8e4';
+  });
+  var inp=g('admSinalTxt');
+  if(inp){
+    var atual=inp.value;
+    ['PREMIER','EURO','COPA','SUPER'].forEach(function(l){atual=atual.replace(new RegExp('^'+l+'\\s*'),'');});
+    inp.value=liga+' '+atual.trim();
+    inp.focus();
+    inp.setSelectionRange(inp.value.length,inp.value.length);
+  }
+}
+
+function enviarMsgAluno(uid,nome){
+  var msg=prompt('Mensagem para '+nome+':');
+  if(!msg||!msg.trim())return;
+  var ts=new Date().toLocaleString('pt-BR');
+  db.ref('users/'+uid+'/mensagens').push({texto:msg.trim(),ts:ts,de:'Admin'}).then(function(){
+    toast('✉️ Mensagem enviada para '+nome);
+  });
+}
+
 function pubSinal(){
   var txt=(g('admSinalTxt').value||'').trim();
   if(!txt){toast('Digite o sinal');return;}
@@ -1577,7 +1653,7 @@ function limparHistSinais(){
 }
 
 function limparSinal(){
-  db.ref('sinal_ativo').remove().then(function(){toast('Sinal removido');});
+  db.ref('sinal_ativo').set(null).then(function(){toast('Sinal removido');});
 }
 
 // ===== REINICIAR =====
