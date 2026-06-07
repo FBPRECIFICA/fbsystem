@@ -289,12 +289,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <!-- NAVEGAÇÃO -->
   <div class="nav">
     <button class="nb a" onclick="goP('dash')">Dashboard</button>
-    <button class="nb" onclick="goP('stakes')">📊 Stakes</button>
+    <button class="nb" onclick="goP('stakes')">📡 Stakes</button>
     <button class="nb" onclick="goP('exec')">Execução</button>
     <button class="nb" onclick="goP('hist')">Histórico</button>
     <button class="nb" onclick="goP('sim')">Simulador</button>
     <button class="nb" onclick="goP('rel')">Relatório</button>
-    <button class="nb" id="nbSinal" onclick="goP('sinal')">📡 Sinal</button>
     <button class="nb" onclick="goP('cfg')">Config</button>
   </div>
 
@@ -1396,7 +1395,9 @@ function initSinais(){
       if(txt)txt.textContent=s.texto;
       if(at)at.innerHTML='<div style="background:#e6f7ef;border-radius:10px;padding:14px"><div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">📡 SINAL ATIVO</div><div style="font-size:14px;font-weight:600;color:#1a2540">'+s.texto+'</div><div style="font-size:10px;color:#8090b0;margin-top:6px">'+(s.ts||'')+'</div></div>';
       // Destacar botão de sinal na navbar
-      var nb=g('nbSinal');if(nb){nb.style.color='#00a85a';nb.style.fontWeight='800';nb.textContent='📡 Sinal 🔴';}
+      // Destacar aba stakes quando há sinal
+      var nbStakes=document.querySelectorAll('.nb')[1];
+      if(nbStakes){nbStakes.style.color='#00a85a';nbStakes.textContent='📡 Stakes';}
       // Sincronizar na aba Stakes
       var stkB=g('stkSinalBanner'),stkT=g('stkSinalTxt'),stkR=g('stkSinalRes');
       if(stkB)stkB.style.display='block';
@@ -1411,16 +1412,27 @@ function initSinais(){
       _ultimoSinal=null;
       if(banner)banner.style.display='none';
       if(at)at.innerHTML='<div class="empty">Sem sinal no momento</div>';
-      var nb=g('nbSinal');if(nb){nb.style.color='';nb.style.fontWeight='';nb.textContent='📡 Sinal';}
+      var nbStakes=document.querySelectorAll('.nb')[1];
+      if(nbStakes){nbStakes.style.color='';nbStakes.textContent='📡 Stakes';}
       var stkB=g('stkSinalBanner');if(stkB)stkB.style.display='none';
     }
   });
-  db.ref('sinais_hist').limitToLast(10).on('value',function(snap){
+  db.ref('sinais_hist').limitToLast(20).on('value',function(snap){
     var hist=g('sinalHist');if(!hist)return;
     var data=snap.val();
     if(!data){hist.innerHTML='<div class="empty">Sem histórico</div>';return;}
-    var items=Object.values(data).reverse();
-    hist.innerHTML=items.map(function(s){
+    var items=Object.entries(data).sort(function(a,b){return a[1].ts>b[1].ts?-1:1;});
+    // Deduplicar — mostrar só o mais recente de cada texto base
+    var vistos={};
+    var filtrados=items.filter(function(item){
+      var s=item[1];
+      if(!s||!s.texto||s.texto==='undefined')return false;
+      var base=s.texto;
+      if(vistos[base])return false;
+      vistos[base]=true;return true;
+    });
+    hist.innerHTML=filtrados.map(function(item){
+      var s=item[1];
       var resHtml='';
       if(s.resultado){
         var isG=s.resultado==='GREEN';
@@ -1472,8 +1484,16 @@ function carregarAdm(){
     var el=g('admSinalHistLista');if(!el)return;
     var data=snap.val();
     if(!data){el.innerHTML='<div class="empty">Sem histórico</div>';return;}
-    var items=Object.values(data).reverse();
-    el.innerHTML=items.map(function(s){
+    var items=Object.entries(data).sort(function(a,b){return a[1].ts>b[1].ts?-1:1;});
+    // Deduplicar — mostrar só o mais recente de cada texto base
+    var vistos={};
+    var filtrados=items.filter(function(item){
+      var base=item[1].texto||'';
+      if(vistos[base])return false;
+      vistos[base]=true;return true;
+    });
+    el.innerHTML=filtrados.map(function(item){
+      var s=item[1];
       var resHtml=s.resultado?(' <span style="font-weight:700;color:'+(s.resultado==='GREEN'?'#00a85a':'#e53935')+'">'+(s.resultado==='GREEN'?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>'):'';
       return '<div style="padding:8px 12px;border-bottom:1px solid #d0d8e4;font-size:11px">'
         +'<div style="font-weight:600;color:#1a2540">'+s.texto+resHtml+'</div>'
@@ -1500,7 +1520,7 @@ function carregarAdm(){
         var ultima=new Date(keys[keys.length-1]);
         diasSem=Math.floor((new Date()-ultima)/(1000*60*60*24));
       }
-      lista.push({uid:entry[0],nome:info.nome||'--',email:info.email||'--',status:info.status||'pendente',banca:b.banca||0,bancaBase:b.bancaBase||0,wins:b.wins||0,losses:b.losses||0,totalSacado:b.totalSacado||0,estrategia:b.estrategia||'over15',diasSem:diasSem});
+      lista.push({uid:entry[0],nome:info.nome||info.email||u.email||'(sem nome)',email:info.email||'--',status:info.status||'pendente',banca:b.banca||0,bancaBase:b.bancaBase||0,wins:b.wins||0,losses:b.losses||0,totalSacado:b.totalSacado||0,estrategia:b.estrategia||'over15',diasSem:diasSem});
     });
     renderAdm(lista);
   });
@@ -1677,7 +1697,7 @@ function goP(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('a');});
   var pg=g('p-'+id);if(pg)pg.classList.add('a');
-  var map={dash:0,stakes:1,exec:2,hist:3,sim:4,rel:5,sinal:6,cfg:7};
+  var map={dash:0,stakes:1,exec:2,hist:3,sim:4,rel:5,cfg:6};
   var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
   if(id==='exec'){renderDiario();renderExecStakes();}
   if(id==='hist'){setTimeout(function(){renderDados();},80);}
