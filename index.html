@@ -365,7 +365,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="sec">
       <div class="sh">📊 Calculadora de Stakes</div>
       <div style="padding:12px">
-        <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:8px">Modo de operação:</div>
+        <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <span>Modo de operação:</span>
+          <button onclick="abrirModalModo()" style="background:none;border:none;color:#1565c0;font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline">❓ Como escolher?</button>
+        </div>
         <div style="display:flex;gap:8px;margin-bottom:12px">
           <button id="stkModoCons" onclick="stkSetModo('cons')" style="flex:1;background:#e8f0fc;border:2px solid #1565c0;border-radius:8px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;color:#1565c0;line-height:1.5">🛡 Conservador<br><span style="font-size:10px;font-weight:400">25% da banca</span></button>
           <button id="stkModoAgr" onclick="stkSetModo('agr')" style="flex:1;background:#f0f2f5;border:2px solid #d0d8e4;border-radius:8px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;color:#4a5880;line-height:1.5">⚡ Agressivo<br><span style="font-size:10px;font-weight:400">50% da banca</span></button>
@@ -376,6 +379,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
           <button onclick="stkUsarBanca()" style="background:#1a2540;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">Usar banca ativa</button>
         </div>
         <div id="stkInfo" style="display:none;background:rgba(0,168,90,.08);border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#00a85a;font-weight:600"></div>
+        <!-- Meta diária -->
+        <div style="background:#f0f4ff;border:1px solid #c7d7f5;border-radius:8px;padding:12px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:11px;font-weight:700;color:#1565c0">🎯 Meta diária (%)</div>
+            <div style="font-size:10px;color:#8090b0">Recomendado: 5%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="range" id="stkMetaRange" min="1" max="30" value="5" oninput="stkAtualizarMeta()" style="flex:1;accent-color:#1565c0">
+            <div style="background:#1565c0;color:#fff;border-radius:6px;padding:4px 12px;font-size:14px;font-weight:800;min-width:50px;text-align:center" id="stkMetaVal">5%</div>
+          </div>
+          <div id="stkMetaInfo" style="font-size:11px;color:#4a5880;margin-top:8px;text-align:center"></div>
+        </div>
         <div style="overflow-x:auto">
           <table style="width:100%;border-collapse:collapse;font-size:11px">
             <thead>
@@ -527,6 +542,81 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   </div>
 
   <div class="footer">Estratégia Personalizada e Exclusiva de <strong>Fábio Marques</strong><br>FB Sistemas v8.0 · Todos os direitos reservados</div>
+</div>
+
+<!-- MODAL ESCOLHA DE MODO -->
+<div id="modalModo" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:100%;max-width:600px;margin:auto;box-shadow:0 8px 40px rgba(0,0,0,.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:800;color:#1a2540">Qual modo escolher?</div>
+      <button onclick="fecharModalModo()" style="background:#e8ebf0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:16px;color:#4a5880">✕</button>
+    </div>
+    <p style="font-size:13px;color:#4a5880;margin-bottom:20px;line-height:1.6">O FB Sistemas oferece dois perfis de operação. Nenhum é melhor ou pior. A escolha depende exclusivamente do seu perfil de risco.</p>
+
+    <!-- CONSERVADOR -->
+    <div style="background:#e6f7ef;border:2px solid #00a85a;border-radius:12px;padding:18px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:#00a85a;margin-bottom:10px">🟢 MODO CONSERVADOR</div>
+      <div style="font-size:12px;color:#1a6b3c;margin-bottom:10px">Exposição máxima por sequência: <strong>25% da banca</strong></div>
+      <p style="font-size:12px;color:#1a6b3c;margin-bottom:12px;line-height:1.6">Criado para quem busca maior proteção do capital e prefere um crescimento mais gradual.</p>
+      <div style="background:#fff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center">
+        <div style="font-size:11px;color:#8090b0;margin-bottom:4px">Banca R$1.000 — Green completo (Over 2.5 + Over 3.5)</div>
+        <div style="font-size:22px;font-weight:800;color:#00a85a">Lucro ≈ R$32,00</div>
+        <div style="font-size:12px;color:#4a5880">3,2% da banca</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">✅ Vantagens</div>
+          <div style="font-size:11px;color:#1a6b3c;line-height:1.8">• Menor exposição ao risco<br>• Menor impacto emocional<br>• Maior segurança para iniciantes<br>• Menor impacto em Red Total</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#e53935;margin-bottom:6px">⚠️ Desvantagens</div>
+          <div style="font-size:11px;color:#c0392b;line-height:1.8">• Mais Greens para atingir meta<br>• Crescimento mais lento</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGRESSIVO -->
+    <div style="background:#feecec;border:2px solid #e53935;border-radius:12px;padding:18px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:#e53935;margin-bottom:10px">🔴 MODO AGRESSIVO</div>
+      <div style="font-size:12px;color:#c0392b;margin-bottom:10px">Exposição máxima por sequência: <strong>50% da banca</strong></div>
+      <p style="font-size:12px;color:#c0392b;margin-bottom:12px;line-height:1.6">Para operadores que desejam acelerar o crescimento e aceitam maior exposição.</p>
+      <div style="background:#fff;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center">
+        <div style="font-size:11px;color:#8090b0;margin-bottom:4px">Banca R$1.000 — Green completo (Over 2.5 + Over 3.5)</div>
+        <div style="font-size:22px;font-weight:800;color:#e53935">Lucro ≈ R$64,00</div>
+        <div style="font-size:12px;color:#4a5880">6,4% da banca</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#00a85a;margin-bottom:6px">✅ Vantagens</div>
+          <div style="font-size:11px;color:#1a6b3c;line-height:1.8">• Crescimento mais rápido<br>• Menos Greens para meta<br>• Maior potencial diário</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#e53935;margin-bottom:6px">⚠️ Desvantagens</div>
+          <div style="font-size:11px;color:#c0392b;line-height:1.8">• Maior exposição da banca<br>• Maior impacto emocional<br>• Red Total mais significativo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARAÇÃO -->
+    <div style="background:#f0f2f5;border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#1a2540;margin-bottom:10px">📊 Comparação Prática</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#1a2540;color:#fff"><th style="padding:8px;text-align:left;border-radius:6px 0 0 0">Perfil</th><th style="padding:8px;text-align:right">Lucro por Green</th><th style="padding:8px;text-align:right;border-radius:0 6px 0 0">% da Banca</th></tr></thead>
+        <tbody>
+          <tr style="background:#fff"><td style="padding:8px;color:#00a85a;font-weight:700">🟢 Conservador</td><td style="padding:8px;text-align:right;font-weight:700">R$32,00</td><td style="padding:8px;text-align:right;color:#00a85a;font-weight:700">3,2%</td></tr>
+          <tr style="background:#f8f9fb"><td style="padding:8px;color:#e53935;font-weight:700">🔴 Agressivo</td><td style="padding:8px;text-align:right;font-weight:700">R$64,00</td><td style="padding:8px;text-align:right;color:#e53935;font-weight:700">6,4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- IMPORTANTE -->
+    <div style="background:#fffbe6;border:1px solid #f1c40f;border-radius:10px;padding:14px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#7d6608;margin-bottom:8px">⚠️ IMPORTANTE</div>
+      <p style="font-size:12px;color:#7d6608;line-height:1.7;margin:0">O modo agressivo <strong>não aumenta a qualidade dos sinais</strong>. O sinal é exatamente o mesmo. A única diferença é a quantidade da banca que você decide expor.<br><br>Não existe escolha certa ou errada. Existe apenas a escolha que melhor se adapta ao seu perfil e aos seus objetivos.</p>
+    </div>
+
+    <button onclick="fecharModalModo()" style="width:100%;background:#1a2540;color:#fff;border:none;border-radius:10px;padding:14px;font-weight:800;font-size:14px;cursor:pointer">Entendi — Fechar</button>
+  </div>
 </div>
 
 <!-- MODAL ESTRATÉGIA -->
@@ -1260,6 +1350,7 @@ function calcStakes(){
     +'</div>'
     +'</div>';
   lucroDiv.innerHTML=lHtml;
+  stkAtualizarMeta();
 }
 
 // ===== RELATÓRIO =====
@@ -1676,6 +1767,23 @@ function enviarMsgAluno(uid,nome){
     toast('✉️ Mensagem enviada para '+nome);
   });
 }
+
+function stkAtualizarMeta(){
+  var meta=parseInt(g('stkMetaRange').value)||5;
+  var el=g('stkMetaVal');if(el)el.textContent=meta+'%';
+  var b=parseFloat(g('stkBanca').value)||0;
+  var info=g('stkMetaInfo');
+  if(info&&b>0){
+    var metaVal=b*meta/100;
+    var pcts=ESTR.multi.pcts[_stkModo];
+    var lucroG0=Math.round(pcts[0].pct*b/100*pcts[0].o35*100)/100*3; // Over 3.5 @4 = lucro bruto
+    var greensNec=lucroG0>0?Math.ceil(metaVal/lucroG0):'-';
+    info.innerHTML='Meta: <strong style="color:#1565c0">'+fR(metaVal)+'</strong> | Greens necessários (G0): <strong style="color:#00a85a">~'+greensNec+'</strong>';
+  }else if(info){info.innerHTML='';}
+}
+
+function abrirModalModo(){var m=g('modalModo');if(m)m.style.display='flex';}
+function fecharModalModo(){var m=g('modalModo');if(m)m.style.display='none';}
 
 function pubSinal(){
   var txt=(g('admSinalTxt').value||'').trim();
