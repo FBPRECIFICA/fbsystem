@@ -1382,15 +1382,20 @@ function initSinais(){
       var nb=g('nbSinal');if(nb){nb.style.color='';nb.style.fontWeight='';nb.textContent='📡 Sinal';}
     }
   });
-  db.ref('sinais_hist').limitToLast(5).on('value',function(snap){
+  db.ref('sinais_hist').limitToLast(10).on('value',function(snap){
     var hist=g('sinalHist');if(!hist)return;
     var data=snap.val();
     if(!data){hist.innerHTML='<div class="empty">Sem histórico</div>';return;}
     var items=Object.values(data).reverse();
     hist.innerHTML=items.map(function(s){
+      var resHtml='';
+      if(s.resultado){
+        var isG=s.resultado==='GREEN';
+        resHtml='<span style="margin-left:6px;font-weight:700;color:'+(isG?'#00a85a':'#e53935')+'">'+(isG?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>';
+      }
       return '<div style="padding:10px 12px;border-bottom:1px solid #d0d8e4;font-size:12px">'
-        +'<div style="font-weight:600;color:#1a2540">'+s.texto+'</div>'
-        +'<div style="font-size:10px;color:#8090b0;margin-top:2px">'+(s.ts||'')+'</div>'
+        +'<div style="font-weight:600;color:#1a2540">'+s.texto+resHtml+'</div>'
+        +'<div style="font-size:10px;color:#8090b0;margin-top:2px">'+s.ts+'</div>'
         +'</div>';
     }).join('');
   });
@@ -1533,19 +1538,19 @@ function admResultado(tipo){
   var gale='G'+_admGaleSel;
   var emoji=tipo==='GREEN'?'✅':'❌';
   var ts=new Date().toLocaleString('pt-BR');
-  var textoResult=emoji+' '+tipo+' — '+placar+' | '+gale;
-  // Atualizar sinal ativo com resultado
   db.ref('sinal_ativo').once('value').then(function(snap){
     var s=snap.val()||{};
     var textoOriginal=s.texto||'';
-    var textoFinal=textoOriginal+'\n'+textoResult;
-    db.ref('sinal_ativo').update({resultado:tipo,placar:placar,gale:gale,tsResultado:ts,textoResultado:textoFinal}).then(function(){
-      // Salvar no histórico
-      db.ref('sinais_hist').push({texto:textoFinal,ts:ts,resultado:tipo,placar:placar,gale:gale});
-      toast(emoji+' Resultado publicado: '+tipo+' '+placar+' '+gale);
-      document.getElementById('admPlacar').value='';
-      admSetGale(0);
-    });
+    var sinalId=s.id||null;
+    // Atualizar sinal ativo com resultado
+    db.ref('sinal_ativo').update({resultado:tipo,placar:placar,gale:gale,tsResultado:ts});
+    // Atualizar no histórico — mesmo registro, não criar novo
+    if(sinalId){
+      db.ref('sinais_hist/'+sinalId).update({resultado:tipo,placar:placar,gale:gale,tsResultado:ts,textoResultado:emoji+' '+tipo+' — '+placar+' | '+gale});
+    }
+    toast(emoji+' Resultado: '+tipo+' '+placar+' '+gale);
+    document.getElementById('admPlacar').value='';
+    admSetGale(0);
   });
 }
 
@@ -1553,9 +1558,14 @@ function pubSinal(){
   var txt=(g('admSinalTxt').value||'').trim();
   if(!txt){toast('Digite o sinal');return;}
   var ts=new Date().toLocaleString('pt-BR');
-  db.ref('sinal_ativo').set({texto:txt,ts:ts}).then(function(){
-    db.ref('sinais_hist').push({texto:txt,ts:ts});
-    toast('Sinal publicado!');
+  // Criar no histórico e pegar o ID
+  var novoRef=db.ref('sinais_hist').push();
+  var sinalId=novoRef.key;
+  novoRef.set({texto:txt,ts:ts}).then(function(){
+    // Salvar no sinal_ativo com o mesmo ID
+    db.ref('sinal_ativo').set({texto:txt,ts:ts,id:sinalId}).then(function(){
+      toast('Sinal publicado!');
+    });
   });
 }
 
