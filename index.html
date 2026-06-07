@@ -1189,29 +1189,23 @@ function calcStakes(){
     +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#ce93d8">'+fR(tots.tf)+'</td>'
     +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#fff;background:#0d1a33">'+fR(tots.tot)+'</td>'
     +'</tr>';
-  // Lucro estimado
-  var lHtml='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">';
-  var custoAcum=0;
-  pcts.forEach(function(r,i){
-    var o25=Math.round(r.o25*b/100*100)/100;
-    var o35=Math.round(r.o35*b/100*100)/100;
-    var m5=Math.max(1,Math.round(r.m5*b/100*100)/100);
-    var tc=Math.max(1,Math.round(r.m5tc*b/100*100)/100);
-    var tf=Math.max(1,Math.round(r.m5tf*b/100*100)/100);
-    custoAcum+=o25+o35+m5+tc+tf;
-    var l35=o35*4-custoAcum;
-    var l5=m5*10-custoAcum;
-    var c35=l35>=0?'#00a85a':'#e53935';
-    var c5=l5>=0?'#e65100':'#e53935';
-    lHtml+='<div style="background:#f5f7fa;border:1px solid #d0d8e4;border-radius:8px;padding:8px;text-align:center">'
-      +'<div style="font-size:9px;font-weight:700;color:#4a5880;margin-bottom:4px">'+r.g+'</div>'
-      +'<div style="font-size:9px;color:#8090b0">Over 3.5</div>'
-      +'<div style="font-size:13px;font-weight:700;color:'+c35+'">'+(l35>=0?'+':'')+fR(l35)+'</div>'
-      +'<div style="font-size:9px;color:#8090b0;margin-top:4px">5+</div>'
-      +'<div style="font-size:12px;font-weight:600;color:'+c5+'">'+(l5>=0?'+':'')+fR(l5)+'</div>'
-      +'</div>';
-  });
-  lHtml+='</div>';
+  var lHtml='<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;font-size:12px;color:#1a6b3c;line-height:1.7">'
+    +'<div style="font-size:13px;font-weight:700;color:#00a85a;margin-bottom:6px">📌 Regras de Gestão</div>'
+    +'• Nunca ultrapassar G5 — RED TOTAL é aceito<br>'
+    +'• Stop Loss: 33% da banca em RED TOTAL<br>'
+    +'• Após RED TOTAL: parar o dia ou reduzir banca<br>'
+    +'• Over 2.5 é proteção — Over 3.5 é o lucro<br>'
+    +'• 5+ e 5+Time são especulativos — R$1 fixo nos primeiros gales'
+    +'</div>'
+    +'<div style="background:#fffbe6;border:1px solid rgba(241,196,15,.5);border-radius:8px;padding:12px;font-size:12px;color:#7d6608;line-height:1.7">'
+    +'<div style="font-size:13px;font-weight:700;color:#e67e00;margin-bottom:6px">⚠️ Disciplina Operacional</div>'
+    +'• Entrar apenas com Score ≥ 70 no Radar FB<br>'
+    +'• Seguir os horários do sinal no Telegram<br>'
+    +'• Não dobrar fora do gale planejado<br>'
+    +'• Atualizar a banca diariamente no sistema'
+    +'</div>'
+    +'</div>';
   lucroDiv.innerHTML=lHtml;
 }
 
