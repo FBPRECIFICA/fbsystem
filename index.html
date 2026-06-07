@@ -348,12 +348,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
             <thead>
               <tr style="background:#e8ebf0">
                 <th style="padding:7px 6px;text-align:left;font-weight:700;color:#4a5880">Gale</th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#1565c0;white-space:nowrap">Over 2.5<br><span style="font-weight:400;font-size:9px">@2.00</span></th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#00a85a;white-space:nowrap">Over 3.5<br><span style="font-weight:400;font-size:9px">@4.00</span></th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#e65100;white-space:nowrap">5+<br><span style="font-weight:400;font-size:9px">@10</span></th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#7b1fa2;white-space:nowrap">5+TC<br><span style="font-weight:400;font-size:9px">@150</span></th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#7b1fa2;white-space:nowrap">5+TF<br><span style="font-weight:400;font-size:9px">@150</span></th>
-                <th style="padding:7px 5px;text-align:center;font-weight:700;color:#1a2540;background:#f0f4ff;white-space:nowrap">Total</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:700;color:#1565c0;white-space:nowrap">Over 2.5<br><span style="font-weight:400;font-size:9px">@2.00</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:700;color:#00a85a;white-space:nowrap">Over 3.5<br><span style="font-weight:400;font-size:9px">@4.00</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:700;color:#1a2540;background:#f0f4ff;white-space:nowrap">Total</th>
               </tr>
             </thead>
             <tbody id="stkBody"><tr><td colspan="7" class="empty">Digite a banca para calcular</td></tr></tbody>
@@ -684,17 +681,30 @@ async function doRec(){
   catch(ex){err.textContent='Erro: '+ex.message;err.classList.add('v');}
 }
 
-async function doLogout(){_carregado=false;_uid=null;S=null;MS=null;await auth.signOut();show('tLogin');}
+async function doLogout(){
+  // Pedir atualização de banca antes de sair
+  if(S&&_uid){
+    var atualizar=confirm('Antes de sair, deseja atualizar o valor da sua banca atual?\n\nClique OK para atualizar ou Cancelar para sair direto.');
+    if(atualizar){
+      var val=parseFloat(prompt('Digite o valor atual da sua banca (R$):'));
+      if(!isNaN(val)&&val>0){
+        await db.ref('users/'+_uid+'/bancaDiaria/'+new Date().toISOString().split('T')[0]).set({banca:val,ts:new Date().toISOString(),data:new Date().toLocaleDateString('pt-BR')});
+        alert('✅ Banca atualizada: R$'+val.toFixed(2));
+      }
+    }
+  }
+  _carregado=false;_uid=null;S=null;MS=null;
+  await auth.signOut();show('tLogin');
+}
 
 // ===== ESTRATÉGIA =====
 var ESTR={
   multi:{nome:'Multi Mercado',pcts:[
-    {g:'G0',o25:1.25,o35:.75,m5:.05,m5tc:.05,m5tf:.05},
-    {g:'G1',o25:2.00,o35:1.25,m5:.05,m5tc:.05,m5tf:.05},
-    {g:'G2',o25:3.25,o35:2.00,m5:.05,m5tc:.05,m5tf:.05},
-    {g:'G3',o25:4.75,o35:3.00,m5:.05,m5tc:.05,m5tf:.05},
-    {g:'G4',o25:6.50,o35:4.25,m5:.05,m5tc:.05,m5tf:.05},
-    {g:'G5',o25:9.00,o35:6.50,m5:.25,m5tc:.10,m5tf:.10}
+    {g:'G0',o25:3.5,o35:1.5},
+    {g:'G1',o25:5.25,o35:2.25},
+    {g:'G2',o25:7.0,o35:3.0},
+    {g:'G3',o25:8.75,o35:3.75},
+    {g:'G4',o25:10.5,o35:4.5}
   ]},
   over15:{nome:'Over 1.5',perfis:{
     cons:{n:'Conservador',g0:.05,g1:.125,g2:.15,w:.02},
@@ -880,22 +890,30 @@ function renderExecStakes(){
   var est=S.estrategia||'over15';
   var html='';
   if(est==='multi'){
-    var row=ESTR.multi.pcts[0]; // G0
-    html='<div style="background:#e8f0fc;border-radius:8px;padding:10px;text-align:center;grid-column:span 3">'
-      +'<div style="font-size:9px;color:#8090b0;margin-bottom:4px">STAKES SUGERIDAS — G0</div>'
-      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">'
-      +'<div><div style="font-size:9px;color:#1565c0">O2.5</div><div style="font-size:13px;font-weight:700;color:#1565c0">'+fR(b*row.o25/100)+'</div></div>'
-      +'<div><div style="font-size:9px;color:#00a85a">O3.5</div><div style="font-size:13px;font-weight:700;color:#00a85a">'+fR(b*row.o35/100)+'</div></div>'
-      +'<div><div style="font-size:9px;color:#e65100">5+</div><div style="font-size:13px;font-weight:700;color:#e65100">'+fR(Math.max(1,b*row.m5/100))+'</div></div>'
+    var row=ESTR.multi.pcts[0];
+    var o25G0=Math.round(row.o25*b/100*100)/100;
+    var o35G0=Math.round(row.o35*b/100*100)/100;
+    html='<div style="background:#e8f0fc;border-radius:8px;padding:12px;text-align:center;grid-column:span 3">'
+      +'<div style="font-size:9px;color:#8090b0;margin-bottom:8px;font-weight:600">STAKES — G0</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      +'<div style="background:#fff;border-radius:8px;padding:10px;border:1.5px solid #1565c0">'
+      +'<div style="font-size:10px;color:#1565c0;font-weight:700;margin-bottom:4px">Over 2.5 @2.00</div>'
+      +'<div style="font-size:20px;font-weight:800;color:#1565c0">'+fR(o25G0)+'</div>'
+      +'<div style="font-size:9px;color:#8090b0">Proteção</div>'
       +'</div>'
-      +'<div style="font-size:9px;color:#8090b0;margin-top:4px">Ver aba 📊 Stakes para tabela completa</div>'
+      +'<div style="background:#fff;border-radius:8px;padding:10px;border:1.5px solid #00a85a">'
+      +'<div style="font-size:10px;color:#00a85a;font-weight:700;margin-bottom:4px">Over 3.5 @4.00</div>'
+      +'<div style="font-size:20px;font-weight:800;color:#00a85a">'+fR(o35G0)+'</div>'
+      +'<div style="font-size:9px;color:#8090b0">Lucro</div>'
+      +'</div>'
+      +'</div>'
+      +'<div style="font-size:10px;color:#8090b0;margin-top:8px">Ver aba 📊 Stakes para G1 a G4</div>'
       +'</div>';
     var bWin=g('bWin'),bLoss=g('bLoss'),esWin=g('esWin'),esLoss=g('esLoss');
     if(bWin)bWin.disabled=false;
     if(bLoss)bLoss.disabled=false;
-    var lucroEst=b*row.o35/100*3; // lucro over 3.5 no G0
-    if(esWin)esWin.textContent='+'+fR(lucroEst)+' est.';
-    if(esLoss)esLoss.textContent='-'+fR(b*row.o25/100+b*row.o35/100);
+    if(esWin)esWin.textContent='';
+    if(esLoss)esLoss.textContent='';
   }else{
     var perf=S.perfil||'mod';
     var pr=ESTR.over15.perfis[perf];
@@ -1156,38 +1174,29 @@ function calcStakes(){
   }
   var pcts=ESTR.multi.pcts;
   var totalExp=0;
-  pcts.forEach(function(r){totalExp+=(r.o25+r.o35+r.m5+r.m5tc+r.m5tf)*b/100;});
+  pcts.forEach(function(r){totalExp+=(r.o25+r.o35)*b/100;});
   if(info){info.style.display='block';info.textContent='Banca: '+fR(b)+' | Exposição total: '+fR(totalExp)+' ('+((totalExp/b)*100).toFixed(1)+'% da banca)';}
   var html='';
-  var tots={o25:0,o35:0,m5:0,tc:0,tf:0,tot:0};
-  var cores=['#fff','#f8f9fb','#fff','#f8f9fb','#fff','#fff0f0'];
+  var tots={o25:0,o35:0,tot:0};
+  var cores=['#fff','#f8f9fb','#fff','#f8f9fb','#fff'];
   pcts.forEach(function(r,i){
     var o25=Math.round(r.o25*b/100*100)/100;
     var o35=Math.round(r.o35*b/100*100)/100;
-    var m5=Math.max(1,Math.round(r.m5*b/100*100)/100);
-    var tc=Math.max(1,Math.round(r.m5tc*b/100*100)/100);
-    var tf=Math.max(1,Math.round(r.m5tf*b/100*100)/100);
-    var tot=o25+o35+m5+tc+tf;
-    tots.o25+=o25;tots.o35+=o35;tots.m5+=m5;tots.tc+=tc;tots.tf+=tf;tots.tot+=tot;
-    html+='<tr style="background:'+cores[i]+';'+(i===5?'border-top:2px solid #f87171':'')+'">'
-      +'<td style="padding:7px 6px;font-weight:700;color:'+(i===5?'#c0392b':'#1a2540')+'">'+r.g+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:600;color:#1565c0">'+fR(o25)+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:600;color:#00a85a">'+fR(o35)+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:600;color:#e65100">'+fR(m5)+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:600;color:#7b1fa2">'+fR(tc)+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:600;color:#7b1fa2">'+fR(tf)+'</td>'
-      +'<td style="padding:7px 5px;text-align:center;font-weight:700;background:#f0f4ff">'+fR(tot)+'</td>'
+    var tot=o25+o35;
+    tots.o25+=o25;tots.o35+=o35;tots.tot+=tot;
+    html+='<tr style="background:'+cores[i]+'">'
+      +'<td style="padding:8px 6px;font-weight:700;color:#1a2540">'+r.g+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;font-weight:600;color:#1565c0">'+fR(o25)+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;font-weight:600;color:#00a85a">'+fR(o35)+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;font-weight:700;background:#f0f4ff">'+fR(tot)+'</td>'
       +'</tr>';
   });
   body.innerHTML=html;
   foot.innerHTML='<tr style="background:#1a2540">'
-    +'<td style="padding:7px 6px;font-weight:700;color:#fff;font-size:10px">TOTAL</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#64b5f6">'+fR(tots.o25)+'</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#69f0ae">'+fR(tots.o35)+'</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#ffab40">'+fR(tots.m5)+'</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#ce93d8">'+fR(tots.tc)+'</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#ce93d8">'+fR(tots.tf)+'</td>'
-    +'<td style="padding:7px 5px;text-align:center;font-weight:700;color:#fff;background:#0d1a33">'+fR(tots.tot)+'</td>'
+    +'<td style="padding:8px 6px;font-weight:700;color:#fff;font-size:10px">TOTAL</td>'
+    +'<td style="padding:8px 10px;text-align:center;font-weight:700;color:#64b5f6">'+fR(tots.o25)+'</td>'
+    +'<td style="padding:8px 10px;text-align:center;font-weight:700;color:#69f0ae">'+fR(tots.o35)+'</td>'
+    +'<td style="padding:8px 10px;text-align:center;font-weight:700;color:#fff;background:#0d1a33">'+fR(tots.tot)+'</td>'
     +'</tr>';
   var lHtml='<div style="display:flex;flex-direction:column;gap:8px">'
     +'<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;font-size:12px;color:#1a6b3c;line-height:1.7">'
