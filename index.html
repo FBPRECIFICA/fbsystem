@@ -1481,6 +1481,8 @@ function carregarAdm(){
         +'</div>';
     }).join('');
   });
+  // Carregar alunos
+  db.ref('users').once('value').then(function(snap){
     var data=snap.val()||{};
     var lista=[];
     Object.entries(data).forEach(function(entry){
@@ -1552,7 +1554,7 @@ function renderAdm(lista){
       +(u.status==='pendente'?'<button onclick="aprAluno(\''+u.uid+'\')" style="flex:1;background:#e6f7ef;border:1px solid #00a85a;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#00a85a;cursor:pointer">✅ Aprovar</button>':'')
       +(u.status==='ativo'?'<button onclick="bloqAluno(\''+u.uid+'\')" style="flex:1;background:#feecec;border:1px solid #e53935;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#e53935;cursor:pointer">🔒 Bloquear</button>':'')
       +(u.status==='bloqueado'?'<button onclick="aprAluno(\''+u.uid+'\')" style="flex:1;background:#e6f7ef;border:1px solid #00a85a;border-radius:6px;padding:6px;font-size:11px;font-weight:700;color:#00a85a;cursor:pointer">🔓 Reativar</button>':'')
-      +'<button onclick="enviarMsgAluno(\''+u.uid+'\',\''+u.nome+'\')" style="background:#e8f0fc;border:1px solid #1565c0;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;color:#1565c0;cursor:pointer">✉️ Msg</button>'
+      +'<button onclick="enviarMsgAluno(\''+u.uid+'\',\''+u.nome.replace(/'/g,"\\'")+'\')" style="background:#e8f0fc;border:1px solid #1565c0;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;color:#1565c0;cursor:pointer">✉️ Msg</button>'
       +'</div>'
       +'</div>';
   }).join('');
@@ -1569,14 +1571,14 @@ function bloqAluno(uid){
 
 var _admGaleSel=0;
 
-function admSetGale(g){
-  _admGaleSel=g;
+function admSetGale(galeNum){
+  _admGaleSel=galeNum;
   for(var i=0;i<=5;i++){
     var btn=document.getElementById('admG'+i);
     if(btn){
-      btn.style.background=i===g?'#1a2540':'#f0f2f5';
-      btn.style.color=i===g?'#fff':'#4a5880';
-      btn.style.borderColor=i===g?'#1a2540':'#d0d8e4';
+      btn.style.background=i===galeNum?'#1a2540':'#f0f2f5';
+      btn.style.color=i===galeNum?'#fff':'#4a5880';
+      btn.style.borderColor=i===galeNum?'#1a2540':'#d0d8e4';
     }
   }
 }
