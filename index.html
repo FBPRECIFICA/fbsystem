@@ -746,6 +746,7 @@ auth.onAuthStateChanged(function(user){
       verificarBancaDiaria();
       render();
       initSinais();
+      _refreshSinalStakes();
       // PRESENCE — registrar online
       var presRef=db.ref('online/'+_uid);
       presRef.set({nome:info.nome||user.email,ts:new Date().toISOString(),pagina:'app'});
@@ -1471,6 +1472,25 @@ function tocarSomSinal(){
   }catch(e){}
 }
 
+function _refreshSinalStakes(){
+  db.ref('sinal_ativo').once('value').then(function(snap){
+    var s=snap.val();
+    var stkB=g('stkSinalBanner'),stkT=g('stkSinalTxt'),stkR=g('stkSinalRes');
+    if(s&&s.texto){
+      if(stkB)stkB.style.display='block';
+      if(stkT)stkT.textContent=s.texto;
+      if(stkR){
+        if(s.resultado){
+          var isG=s.resultado==='GREEN';
+          stkR.innerHTML='<span style="font-weight:700;color:'+(isG?'#00a85a':'#e53935')+';font-size:13px">'+(isG?'✅':'❌')+' '+s.resultado+' — '+s.placar+' | '+s.gale+'</span>';
+        }else{stkR.innerHTML='';}
+      }
+    }else{
+      if(stkB)stkB.style.display='none';
+    }
+  });
+}
+
 function initSinais(){
   var _ultimoSinal=null;
   var _ultimoResultado=null;
@@ -1832,7 +1852,7 @@ function goP(id){
   var nbs=document.querySelectorAll('.nb');if(nbs[map[id]])nbs[map[id]].classList.add('a');
   if(id==='exec'){renderDiario();renderExecStakes();}
   if(id==='hist'){setTimeout(function(){renderDados();},80);}
-  if(id==='stakes'){setTimeout(calcStakes,50);}
+  if(id==='stakes'){setTimeout(calcStakes,50);_refreshSinalStakes();}
   if(id==='rel'){renderRel();}
   if(id==='dash'){verificarBancaDiaria();}
 }
