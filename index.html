@@ -473,18 +473,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="sec" style="margin-bottom:10px">
       <div class="sh"><span>Histórico de Operações</span><span id="totDias" style="color:#8090b0">0 dias</span></div>
       <div style="padding:10px">
-        <div class="mfrow" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <span style="font-size:11px;color:#4a5880;font-weight:500;flex-shrink:0">Registrar dia manualmente</span>
+        <div style="font-size:11px;color:#8090b0;margin-bottom:10px">Informe o valor atual da banca — o resultado do dia é calculado automaticamente pela banca inicial do dia.</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div style="flex:2">
+            <div style="font-size:10px;color:#4a5880;font-weight:600;margin-bottom:4px">Banca atual (R$)</div>
+            <input type="number" id="mfBF" inputmode="decimal" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:10px;font-size:16px;font-weight:700;font-family:inherit;outline:none" placeholder="Ex: 1865">
+          </div>
+          <div style="flex:1">
+            <div style="font-size:10px;color:#4a5880;font-weight:600;margin-bottom:4px">Data</div>
+            <input type="date" id="mfD" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:10px;font-size:13px;font-family:inherit;outline:none">
+          </div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <div style="flex:1"><div style="font-size:10px;color:#8090b0;margin-bottom:4px">Banca final</div><input type="number" id="mfBF" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px;font-size:13px;font-family:inherit;outline:none" placeholder="R$"></div>
-          <div style="flex:1"><div style="font-size:10px;color:#8090b0;margin-bottom:4px">Data</div><input type="date" id="mfD" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px;font-size:13px;font-family:inherit;outline:none"></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <div style="flex:1"><div style="font-size:10px;color:#8090b0;margin-bottom:4px">Wins</div><input type="number" id="mfW" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px;font-size:13px;font-family:inherit;outline:none" placeholder="0"></div>
-          <div style="flex:1"><div style="font-size:10px;color:#8090b0;margin-bottom:4px">Losses</div><input type="number" id="mfL" style="width:100%;background:#f0f2f5;border:1px solid #d0d8e4;border-radius:7px;padding:8px;font-size:13px;font-family:inherit;outline:none" placeholder="0"></div>
-        </div>
-        <button onclick="regManual()" style="width:100%;background:#1a2540;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer">Registrar dia</button>
+        <input type="hidden" id="mfW" value="0">
+        <input type="hidden" id="mfL" value="0">
+        <button onclick="regManual()" style="width:100%;background:#1a2540;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer">📊 Atualizar Banca do Dia</button>
       </div>
       <div id="histTabela" style="overflow-x:auto"></div>
     </div>
@@ -1222,14 +1224,35 @@ function regManual(){
   var w=parseInt(g('mfW').value)||0, l=parseInt(g('mfL').value)||0;
   if(isNaN(bf)||bf<=0){toast('Digite a banca final');return;}
   var dtBR=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):fmtBR(S.dataOperando||new Date().toDateString());
-  var bi=S.bancaBase||S.banca;
   var idx=-1;
   for(var i=0;i<S.histDiario.length;i++){if(S.histDiario[i].data===dtBR){idx=i;break;}}
-  var entry={data:dtBR,bancaInicial:idx>=0?S.histDiario[idx].bancaInicial:bi,bancaFinal:bf,resultado:bi>0?((bf-bi)/bi*100):0,wins:w,losses:l,estrategia:S.estrategia};
+  // bancaInicial do dia = preservar o primeiro registro do dia
+  var biDia=idx>=0?S.histDiario[idx].bancaInicial:(S.bancaBase||S.banca);
+  var resultado=biDia>0?((bf-biDia)/biDia*100):0;
+  var entry={
+    data:dtBR,
+    bancaInicial:biDia,  // sempre preserva o primeiro do dia
+    bancaFinal:bf,
+    resultado:resultado,
+    wins:idx>=0?(S.histDiario[idx].wins||0)+w:w,
+    losses:idx>=0?(S.histDiario[idx].losses||0)+l:l,
+    estrategia:S.estrategia
+  };
   if(idx>=0)S.histDiario[idx]=entry;
   else S.histDiario.unshift(entry);
-  S.banca=bf;S.bancaBase=bf;S.wins=(S.wins||0)+w;S.losses=(S.losses||0)+l;
-  sv();render();renderDados();toast('Dia registrado!');
+  S.banca=bf;
+  // Não atualizar bancaBase aqui — ela é a base do dia
+  MS.bancas[MS.bancaAtiva]=JSON.parse(JSON.stringify(S));
+  db.ref('users/'+_uid+'/state').set(JSON.parse(JSON.stringify(MS))).then(function(){
+    S=MS.bancas[MS.bancaAtiva];
+    // Limpar campos
+    g('mfBF').value='';
+    g('mfW').value='';
+    g('mfL').value='';
+    render();
+    renderDados();
+    toast('✅ Dia registrado! Lucro: '+(resultado>=0?'+':'')+resultado.toFixed(1)+'%');
+  });
 }
 
 function renderDados(){
