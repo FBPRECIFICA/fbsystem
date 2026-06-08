@@ -499,13 +499,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
   <!-- SIMULADOR -->
   <div id="p-sim" class="pg">
     <div class="sec" style="margin-bottom:10px">
-      <div class="sh">Simulador de Crescimento</div>
-      <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
-      <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Meta % por dia</div><input id="simM" type="number" class="simi" value="10" inputmode="decimal"></div>
-      <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
-      <div style="padding:10px"><button onclick="calcSim()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">Calcular</button></div>
-      <div id="simSum" style="padding:0 12px 10px;font-size:11px;color:#4a5880"></div>
-      <div style="overflow-x:auto"><table class="stt"><thead><tr><th>Semana</th><th>Banca</th><th>Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
+      <div class="sh">📈 Simulador de Juros Compostos</div>
+      <div style="padding:12px">
+        <!-- Modo -->
+        <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:8px">Visualizar por:</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button id="simModoDia" onclick="simSetModo('dia')" style="flex:1;background:#1a2540;color:#fff;border:2px solid #1a2540;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer">📅 Dias</button>
+          <button id="simModoSem" onclick="simSetModo('sem')" style="flex:1;background:#f0f2f5;color:#4a5880;border:2px solid #d0d8e4;border-radius:8px;padding:8px;font-weight:700;font-size:12px;cursor:pointer">📆 Semanas</button>
+        </div>
+        <!-- Período -->
+        <div id="simPeriodoRow" style="margin-bottom:12px">
+          <div style="font-size:10px;color:#4a5880;font-weight:700;margin-bottom:6px">Período: <span id="simPeriodoVal" style="color:#1a2540">5 dias</span></div>
+          <input type="range" id="simPeriodo" min="1" max="10" value="5" oninput="simAtualizarPeriodo()" style="width:100%;accent-color:#1a2540">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#8090b0;margin-top:2px">
+            <span id="simPMin">1</span><span id="simPMax">10</span>
+          </div>
+        </div>
+        <!-- Inputs -->
+        <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Banca inicial (R$)</div><input id="simB" type="number" class="simi" value="1000" inputmode="decimal"></div>
+        <div class="simr"><div style="font-size:12px;color:#4a5880;font-weight:500">Meta % por dia</div><input id="simM" type="number" class="simi" value="10" inputmode="decimal"></div>
+        <div class="simr" id="simSqRow"><div style="font-size:12px;color:#4a5880;font-weight:500">Saque semanal (%)</div><input id="simSq" type="number" class="simi" value="50" inputmode="decimal"></div>
+        <div style="padding:10px 0"><button onclick="calcSim()" style="width:100%;background:#00a85a;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:800;font-size:14px;cursor:pointer">Calcular</button></div>
+        <div id="simSum" style="font-size:11px;color:#4a5880;margin-bottom:10px"></div>
+        <div style="overflow-x:auto"><table class="stt"><thead><tr><th id="simColPer">Dia</th><th>Banca</th><th id="simColSq">Saque</th><th>Acumulado</th></tr></thead><tbody id="simBody"></tbody></table></div>
+      </div>
     </div>
   </div>
 
@@ -1287,26 +1304,73 @@ function renderHistChart(){
 }
 
 // ===== SIMULADOR =====
+var _simModo='dia';
+function simSetModo(modo){
+  _simModo=modo;
+  var bd=g('simModoDia'),bs=g('simModoSem');
+  if(bd){bd.style.background=modo==='dia'?'#1a2540':'#f0f2f5';bd.style.color=modo==='dia'?'#fff':'#4a5880';bd.style.borderColor=modo==='dia'?'#1a2540':'#d0d8e4';}
+  if(bs){bs.style.background=modo==='sem'?'#1a2540':'#f0f2f5';bs.style.color=modo==='sem'?'#fff':'#4a5880';bs.style.borderColor=modo==='sem'?'#1a2540':'#d0d8e4';}
+  var per=g('simPeriodo'),pMin=g('simPMin'),pMax=g('simPMax'),sqRow=g('simSqRow'),colSq=g('simColSq'),colPer=g('simColPer');
+  if(modo==='dia'){
+    if(per){per.min=1;per.max=10;per.value=5;}
+    if(pMin)pMin.textContent='1';if(pMax)pMax.textContent='10';
+    if(sqRow)sqRow.style.display='none';
+    if(colSq)colSq.textContent='Lucro';
+    if(colPer)colPer.textContent='Dia';
+  }else{
+    if(per){per.min=1;per.max=4;per.value=2;}
+    if(pMin)pMin.textContent='1';if(pMax)pMax.textContent='4 semanas';
+    if(sqRow)sqRow.style.display='flex';
+    if(colSq)colSq.textContent='Saque';
+    if(colPer)colPer.textContent='Semana';
+  }
+  simAtualizarPeriodo();
+  calcSim();
+}
+function simAtualizarModo(){simSetModo(_simModo);}
+function simAtualizarPeriodo(){
+  var per=parseInt(g('simPeriodo').value)||5;
+  var el=g('simPeriodoVal');
+  if(el)el.textContent=per+(_simModo==='dia'?' dias':' semana'+(per>1?'s':''));
+}
 function calcSim(){
   var bi=parseFloat(g('simB').value)||1000;
   var meta=parseFloat(g('simM').value)||10;
+  var periodo=parseInt(g('simPeriodo').value)||5;
   var sq=parseFloat(g('simSq').value);
   if(isNaN(sq))sq=50;
   sq=sq/100;
-  var b=bi,acum=0;
+  var b=bi,acum=0,tb='';
   var rows=[];
-  for(var i=1;i<=8;i++){
-    for(var d=0;d<5;d++){b=b*(1+meta/100);}
-    var saque=b*sq;acum+=saque;
-    rows.push({sem:i,b:b-saque,sq:saque,acum:acum});
-    b=b-saque;
+  if(_simModo==='dia'){
+    // Modo diário — juros compostos dia a dia
+    for(var d=1;d<=periodo;d++){
+      var lucro=b*(meta/100);
+      b=b+lucro;
+      rows.push({per:'Dia '+d,b:b,lucro:lucro,acum:b-bi});
+    }
+    rows.forEach(function(r){
+      tb+='<tr><td>'+r.per+'</td><td style="font-weight:700;color:#00a85a">'+fR(r.b)+'</td><td style="color:#1565c0">+'+fR(r.lucro)+'</td><td style="color:#e65100">+'+fR(r.acum)+'</td></tr>';
+    });
+    var ult=rows[rows.length-1];
+    g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> · Meta +'+meta+'%/dia · '+periodo+' dias<br>'
+      +'Banca final: <strong style="color:#00a85a">'+fR(ult.b)+'</strong> · Lucro total: <strong style="color:#e65100">+'+fR(ult.acum)+'</strong> (+'+((ult.acum/bi)*100).toFixed(1)+'%)';
+  }else{
+    // Modo semanal — 5 dias por semana com saque
+    for(var s=1;s<=periodo;s++){
+      for(var d2=0;d2<5;d2++){b=b*(1+meta/100);}
+      var saque=b*sq;acum+=saque;
+      rows.push({per:'Semana '+s,b:b-saque,sq:saque,acum:acum});
+      b=b-saque;
+    }
+    rows.forEach(function(r){
+      tb+='<tr><td>'+r.per+'</td><td style="font-weight:700;color:#00a85a">'+fR(r.b)+'</td><td style="color:#1565c0">'+fR(r.sq)+'</td><td style="color:#e65100">'+fR(r.acum)+'</td></tr>';
+    });
+    var ult2=rows[rows.length-1];
+    g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> · Meta +'+meta+'%/dia · Saque '+((sq)*100).toFixed(0)+'% · '+periodo+' semana(s)<br>'
+      +'Banca final: <strong style="color:#00a85a">'+fR(ult2.b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(ult2.acum)+'</strong>';
   }
-  var tb='';
-  rows.forEach(function(r){
-    tb+='<tr><td>'+r.sem+'</td><td>'+fR(r.b)+'</td><td>'+fR(r.sq)+'</td><td>'+fR(r.acum)+'</td></tr>';
-  });
   g('simBody').innerHTML=tb;
-  g('simSum').innerHTML='Banca inicial: <strong>'+fR(bi)+'</strong> · Meta +'+meta+'%/dia · Saque '+(sq*100).toFixed(0)+'%<br>Semana 8: banca <strong style="color:#00a85a">'+fR(rows[7].b)+'</strong> · Total sacado: <strong style="color:#e65100">'+fR(rows[7].acum)+'</strong>';
 }
 
 // ===== CALCULADORA STAKES =====
@@ -1883,6 +1947,7 @@ function goP(id){
 // Init datas
 var hjEl=g('mfD');if(hjEl)hjEl.value=new Date().toISOString().split('T')[0];
 var sqDEl=g('sqManData');if(sqDEl)sqDEl.value=new Date().toISOString().split('T')[0];
+simSetModo('dia');
 calcSim();
 </script>
 </body>
