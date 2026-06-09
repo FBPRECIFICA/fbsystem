@@ -1883,9 +1883,23 @@ function stkAtualizarMeta(){
   if(info&&b>0){
     var metaVal=b*meta/100;
     var pcts=ESTR.multi.pcts[_stkModo];
-    var lucroG0=Math.round(pcts[0].pct*b/100*pcts[0].o35*100)/100*3; // Over 3.5 @4 = lucro bruto
+    if(!pcts||!pcts[0]){info.innerHTML='';return;}
+    var r0=pcts[0];
+    var total0=Math.round(r0.pct*b/100*100)/100;
+    var o25_0=Math.round(total0*r0.o25*100)/100;
+    var o35_0=Math.round(total0*r0.o35*100)/100;
+    // Lucro = retorno - stake (custo)
+    // Over 2.5 @2.00: retorno = stake*2, lucro = stake*1
+    // Over 3.5 @4.00: retorno = stake*4, lucro = stake*3
+    var lucroO25=o25_0*1;  // stake × (2.00 - 1)
+    var lucroO35=o35_0*3;  // stake × (4.00 - 1)
+    var lucroG0=lucroO25+lucroO35;
     var greensNec=lucroG0>0?Math.ceil(metaVal/lucroG0):'-';
-    info.innerHTML='Meta: <strong style="color:#1565c0">'+fR(metaVal)+'</strong> | Greens necessários (G0): <strong style="color:#00a85a">~'+greensNec+'</strong>';
+    info.innerHTML='Meta: <strong style="color:#1565c0">'+fR(metaVal)+'</strong>'
+      +' | O2.5: '+fR(o25_0)+' → +'+fR(lucroO25)
+      +' | O3.5: '+fR(o35_0)+' → +'+fR(lucroO35)
+      +'<br>Lucro por Green: <strong style="color:#00a85a">'+fR(lucroG0)+' ('+((lucroG0/b)*100).toFixed(1)+'%)</strong>'
+      +' | Greens necessários: <strong style="color:#00a85a">~'+greensNec+'</strong>';
   }else if(info){info.innerHTML='';}
 }
 
