@@ -645,7 +645,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div style="font-size:12px;color:#8090b0;text-align:center;margin-bottom:20px">Cada estratégia tem seus próprios cálculos de stake</div>
     <button class="estbtn" onclick="setEstrategia('multi')" id="estBtnMulti">
       <div style="font-size:14px;font-weight:700;color:#1a2540;margin-bottom:4px">🎯 Multi Mercado</div>
-      <div style="font-size:11px;color:#8090b0">Over 2.5 + Over 3.5 + 5+ + 5+TC + 5+TF · G0 a G5</div>
+      <div style="font-size:11px;color:#8090b0">Over 2.5 + Over 3.5 · G0 a G4 · Conservador / Agressivo</div>
+    </button>
+    <button class="estbtn" onclick="setEstrategia('express')" id="estBtnExpress">
+      <div style="font-size:14px;font-weight:700;color:#e67e00;margin-bottom:4px">🏆 EXPRESS</div>
+      <div style="font-size:11px;color:#8090b0">Casa Vence por placar · 6 mercados · G0 a G3 · Meta 3%</div>
     </button>
     <button class="estbtn" onclick="setEstrategia('over15')" id="estBtnOver15">
       <div style="font-size:14px;font-weight:700;color:#1a2540;margin-bottom:4px">📈 Over 1.5</div>
@@ -851,6 +855,14 @@ var ESTR={
       {g:'G4',pct:18.0,o25:0.70,o35:0.30}
     ]
   }},
+  express:{nome:'EXPRESS',placares:[
+    {placar:'1x0',odd:5.00,pcts:{g0:1.10,g1:2.10,g2:2.80,g3:5.30}},
+    {placar:'2x0',odd:10.00,pcts:{g0:0.50,g1:1.00,g2:1.40,g3:2.70}},
+    {placar:'2x1',odd:11.00,pcts:{g0:0.50,g1:0.90,g2:1.30,g3:2.40}},
+    {placar:'3x0',odd:26.00,pcts:{g0:0.20,g1:0.40,g2:0.50,g3:1.00}},
+    {placar:'3x1',odd:34.00,pcts:{g0:0.10,g1:0.30,g2:0.40,g3:0.70}},
+    {placar:'4x0',odd:126.00,pcts:{g0:0.05,g1:0.10,g2:0.10,g3:0.10}}
+  ],totalPcts:{g0:2.45,g1:4.80,g2:6.50,g3:12.20},exposicao:25.95},
   over15:{nome:'Over 1.5',perfis:{
     cons:{n:'Conservador',g0:.05,g1:.125,g2:.15,w:.02},
     mod:{n:'Moderado',g0:.075,g1:.1875,g2:.225,w:.03},
@@ -859,8 +871,9 @@ var ESTR={
 };
 
 function abrirModalEstrategia(){
-  var est=S?S.estrategia:'over15';
+  var est=S?S.estrategia:'multi';
   if(g('estBtnMulti'))g('estBtnMulti').classList.toggle('sel',est==='multi');
+  if(g('estBtnExpress'))g('estBtnExpress').classList.toggle('sel',est==='express');
   if(g('estBtnOver15'))g('estBtnOver15').classList.toggle('sel',est==='over15');
   g('modalEstrategia').classList.add('v');
 }
@@ -877,9 +890,9 @@ function setEstrategia(est){
 function renderEstrTag(){
   var tag=g('hEstrTag');
   if(!tag||!S)return;
-  var est=S.estrategia||'over15';
-  var estrObj=ESTR[est];
-  tag.textContent=estrObj?estrObj.nome:'Multi Mercado';
+  var est=S.estrategia||'multi';
+  var nomes={multi:'Multi Mercado',express:'🏆 EXPRESS',over15:'Over 1.5'};
+  tag.textContent=nomes[est]||'Multi Mercado';
 }
 
 // ===== GERENCIAR BANCAS =====
@@ -1391,6 +1404,48 @@ function calcStakes(){
     if(foot)foot.innerHTML='';
     if(lucroDiv)lucroDiv.innerHTML='<div class="empty">Digite a banca para ver as regras</div>';
     if(info)info.style.display='none';
+    return;
+  }
+  // EXPRESS
+  if(S&&S.estrategia==='express'){
+    var exp=ESTR.express;
+    var gales=['g0','g1','g2','g3'];
+    var galNomes=['G0','G1','G2','G3'];
+    var lucros=['3% lucro','3% lucro','Break Even','Break Even'];
+    var html2='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:11px">';
+    html2+='<thead><tr style="background:#e8ebf0"><th style="padding:7px 6px;text-align:left;color:#4a5880">Placar</th><th style="padding:7px 6px;text-align:center;color:#4a5880">Odd</th>';
+    gales.forEach(function(gk,i){html2+='<th style="padding:7px 6px;text-align:center;color:'+(i<=1?'#00a85a':'#1565c0')+'">'+galNomes[i]+'<br><span style="font-size:9px;font-weight:400">'+lucros[i]+'</span></th>';});
+    html2+='</tr></thead><tbody>';
+    exp.placares.forEach(function(p,pi){
+      html2+='<tr style="background:'+(pi%2===0?'#fff':'#f8f9fb')+'">';
+      html2+='<td style="padding:8px 6px;font-weight:700;color:#1a2540">'+p.placar+'</td>';
+      html2+='<td style="padding:8px 6px;text-align:center;color:#e67e00;font-weight:700">@'+p.odd+'</td>';
+      gales.forEach(function(gk){
+        var val=Math.round(p.pcts[gk]*b/100*100)/100;
+        html2+='<td style="padding:8px 6px;text-align:center;font-weight:600;color:#1a2540">'+fR(val)+'</td>';
+      });
+      html2+='</tr>';
+    });
+    html2+='<tr style="background:#1a2540">';
+    html2+='<td colspan="2" style="padding:8px 6px;font-weight:700;color:#fff;font-size:10px">TOTAL</td>';
+    gales.forEach(function(gk){
+      var tot=Math.round(exp.totalPcts[gk]*b/100*100)/100;
+      html2+='<td style="padding:8px 6px;text-align:center;font-weight:700;color:#fbbf24">'+fR(tot)+'</td>';
+    });
+    html2+='</tr></tbody></table></div>';
+    html2+='<div style="margin-top:8px;background:#fffbe6;border:1px solid #f1c40f;border-radius:8px;padding:10px;font-size:11px;color:#7d6608">'
+      +'<strong>Exposição Red Total:</strong> '+fR(Math.round(exp.exposicao*b/100*100)/100)+' ('+exp.exposicao+'%)<br>'
+      +'<strong>Qualquer placar que bater = GREEN +3% = '+fR(Math.round(3*b/100*100)/100)+'</strong>'
+      +'</div>';
+    if(body)body.innerHTML='<tr><td colspan="4" style="padding:0">'+html2+'</td></tr>';
+    if(foot)foot.innerHTML='';
+    if(info){info.style.display='block';info.textContent='Banca: '+fR(b)+' | EXPRESS | Meta por Green: +3% = '+fR(b*0.03);}
+    if(lucroDiv)lucroDiv.innerHTML='<div style="background:#e6f7ef;border:1px solid rgba(0,168,90,.3);border-radius:8px;padding:12px;font-size:12px;color:#1a6b3c;line-height:1.7">'
+      +'<div style="font-size:13px;font-weight:700;color:#00a85a;margin-bottom:6px">📌 Regras EXPRESS</div>'
+      +'• G0 e G1: Green = +3% de lucro<br>• G2 e G3: Green = Break Even<br>'
+      +'• Red Total = -'+exp.exposicao+'% da banca<br>'
+      +'• Mercado: Casa Vence por placar · 6 mercados simultâneos'
+      +'</div>';
     return;
   }
   var pcts=ESTR.multi.pcts[_stkModo];
